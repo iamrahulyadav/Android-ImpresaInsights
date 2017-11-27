@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         checkBox.setChecked(true);
         registerReceiver(new CheckConnectivityStateChange(this),new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         mProgressView = (ProgressBar)findViewById(R.id.login_progress);
-        isNetworkAvaliableToast();
+        //isNetworkAvaliableToast();
         userName.setText(sharedPreferences.getString("userName",""));
         password.setText(sharedPreferences.getString("password",""));
 
@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
-                                onStatusLogin("Failure","Wrong UserName or Password. Try again");
+                                onStatusLogin(getResources().getString(R.string.Error),getResources().getString(R.string.wrong_password));
                                 Log.e("my app","could not be parse");
                             }
                         }
@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
 
             requestQueueLogin.add(jsonObjRequest);
             dialog = new ProgressDialog(this);
-            dialog.setMessage("Login In...");
+            dialog.setMessage(getResources().getString(R.string.LoginMessage));
             dialog.setCancelable(true);
             dialog.show();
 
@@ -138,15 +138,15 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void isNetworkAvaliableToast(){
-        boolean isConnect = nb.isConnected();
-        if(isConnect){
-            //Toast.makeText(MainActivity.this,"Network Connected",Toast.LENGTH_LONG).show();
-        }
-        else{
-            Toast.makeText(MainActivity.this,"No Network Connected",Toast.LENGTH_LONG).show();
-        }
-    }
+//    public void isNetworkAvaliableToast(){
+//        boolean isConnect = nb.isConnected();
+//        if(isConnect){
+//            //Toast.makeText(MainActivity.this,"Network Connected",Toast.LENGTH_LONG).show();
+//        }
+//        else{
+//            Toast.makeText(MainActivity.this,"No Network Connected",Toast.LENGTH_LONG).show();
+//        }
+//    }
     public void onLoginSucess(){
         editor.putString("SurveyorId",usernameString);
         editor.apply();
@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
             }
             this.onLoginSucess();
         }else{
-            showMessage("Error","Wrong UserName or Password. Try again!!");
+            showMessage(getResources().getString(R.string.Error),message);
         }
 
 
@@ -206,17 +206,17 @@ public class MainActivity extends AppCompatActivity {
                         this.onLoginSucess();
                         //showProgress(false);
                     } else {
-                        showMessage("Error","Wrong UserName or Password. Try again");
+                        showMessage(getResources().getString(R.string.Error),getResources().getString(R.string.wrong_password));
                         //showProgress(false);
                     }
                 } else {
-                    showMessage("Error","Wrong UserName or Password. Try again");
+                    showMessage(getResources().getString(R.string.Error),getResources().getString(R.string.wrong_password));
                     //showProgress(false);
                 }
             }
         }else
         {
-            showMessage("Error","Username and Password cannot be empty");
+            showMessage(getResources().getString(R.string.Error),getResources().getString(R.string.LoginEmptyFieldMessage));
             //showProgress(false);
         }
 

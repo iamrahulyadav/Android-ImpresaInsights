@@ -310,17 +310,17 @@ public class QuestionDynamic extends AppCompatActivity {
             //gbl.incrementSectionCount();
             if (!(gbl.getSectionCount() < section.getCount()) && gbl.getCounter() >= gbl.getCount()) {
                 if (getIntent().getStringExtra("SURVEY_ID").equals("1")) {
-                    showMessageWithNoAndYes("Info", "Are you sure you want to Save and Exit?", true);
+                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.saveAndExit), true);
                 } else {
-                    showMessageWithNoAndYes("Info", "Are you sure you want to Save and Exit?", true);
+                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.saveAndExit), true);
                 }
             } else {
                 if (getIntent().getStringExtra("SURVEY_ID").equals("1")) {
-                    showMessageWithNoAndYes("Info", "Are you sure you want to exit? All the data will be lost", false);
+                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.dataLost), false);
 
 
                 } else {
-                    showMessageWithNoAndYes("Info", "Are you sure you want to Save and Exit?", true);
+                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.saveAndExit), true);
                 }
             }
         }
@@ -420,19 +420,15 @@ public class QuestionDynamic extends AppCompatActivity {
             }
         }
         if (!emptyFlag) {
-            showMessage("Info", "Field cannot be empty!!");
-        }
-        if (!phoneFlag) {
-            showMessage("Info", "Enter valid  phone number!!");
-        }
-        if (!emailFlag) {
-            showMessage("Info", "Enter valid email!!");
-        }
-        if (!radioFlag) {
-            showMessage("Info", "Select one from the options");
-        }
-        if(!imageFlag){
-            showMessage("Info", "Select photo from the gallery");
+            showMessage(getResources().getString(R.string.info), getResources().getString(R.string.emptyField));
+        }else if (!phoneFlag) {
+            showMessage(getResources().getString(R.string.info), getResources().getString(R.string.validNumber));
+        }else if (!emailFlag) {
+            showMessage(getResources().getString(R.string.info), getResources().getString(R.string.validEmail));
+        }else  if (!radioFlag) {
+            showMessage(getResources().getString(R.string.info), getResources().getString(R.string.validRadio));
+        }else if(!imageFlag){
+            showMessage(getResources().getString(R.string.info), getResources().getString(R.string.validImage));
         }
         if (emptyFlag && phoneFlag && emailFlag && radioFlag && imageFlag) {
             SaveAnswerInJsonArray();
@@ -469,17 +465,13 @@ public class QuestionDynamic extends AppCompatActivity {
                         i.putExtra("SECTION_DESC", section.getString(3));
                         startActivity(i);
                     } else {
-                        //gbl.countIncrement();
                         gbl.decrementSectionCount();
-                        showMessageWithNoAndYes("ThankYou", "Survey is completed. Do you want to Save And Exit?", true);
-                        //showMessage("Info","Survey is completed");
+                        showMessageWithNoAndYes(getResources().getString(R.string.tankYou), getResources().getString(R.string.surveyCompleted), true);
                     }
                 }
-                //section.close();
             }
 
         }
-        //progressDialog.hide();
     }
     public int ifAnswerExist(String questionId){
         JSONArray answer = gbl.getAnswer();
@@ -880,92 +872,92 @@ public class QuestionDynamic extends AppCompatActivity {
         LLQuestion.addView(tvQuestion);
 
     }
-    public void createEditTextViewPlain(String questionId,Boolean isSkipFlag){
-        JSONObject obj = new JSONObject();
-        obj = getAnswerIfsaved(questionId);
-        String answer = "";
-        boolean flagChecked = false;
-
-            try {
-                answer = obj.getString("answer");
-                if(answer.equals("__123__")){
-                    answer = "";
-                }else if(answer.equals("")){
-                    flagChecked = true;
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-        tvQuestion = new EditText(this);
-        //tvQuestion.setId(@+id/1);
-        tvQuestion.setHint("Please specify");
-        tvQuestion.setBackgroundColor(getResources().getColor(R.color.white));
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
-        tvQuestion.setTextColor(getResources().getColor(R.color.darkgrey));
-        tvQuestion.setTextSize(16);
-        List<String> data = new ArrayList<String>();
-        data.add(questionId);
-        data.add("not_radio");
-        tvQuestion.setTag(data);
-        if(answer != ""){
-            tvQuestion.setText(answer);
-        }
-        layoutParams.setMargins(0,0,0,marginBottomPxl);
-        tvQuestion.setInputType(InputType.TYPE_CLASS_TEXT);
-        tvQuestion.setPadding(marginBottomPxl,marginBottomPxl,marginBottomPxl,marginBottomPxl);
-        tvQuestion.setLayoutParams(layoutParams);
-        Random r = new Random();
-        tvQuestion.setId(r.nextInt(9999999));
-        LLQuestion.addView(tvQuestion);
-        if(isSkipFlag){
-            //create check box
-            createCheckBox(tvQuestion.getId(),flagChecked);
-        }
-    }
-    public void createEditTextViewPhone(String questionId ,boolean isSkipFlag){
-        JSONObject obj = new JSONObject();
-        obj = getAnswerIfsaved(questionId);
-        String answer = "";
-        boolean flagChecked = false;
-
-        try {
-            answer = obj.getString("answer");
-            if(answer.equals("__123__")){
-                answer = "";
-            }else if(answer.equals("")){
-                flagChecked = true;
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        EditText tvQuestion = new EditText(this);
-        //tvQuestion.setId(@+id/1);
-        tvQuestion.setHint("Please specify");
-        tvQuestion.setBackgroundColor(getResources().getColor(R.color.white));
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
-        tvQuestion.setTextColor(getResources().getColor(R.color.darkgrey));
-        //tvQuestion.setTypeface(Typeface.DEFAULT_BOLD);
-        tvQuestion.setTextSize(16);
-        if(answer != ""){
-            tvQuestion.setText(answer);
-        }
-        layoutParams.setMargins(0,0,0,marginBottomPxl);
-        tvQuestion.setInputType(InputType.TYPE_CLASS_PHONE);
-        List<String> data = new ArrayList<String>();
-        data.add(questionId);
-        data.add("not_radio");
-        tvQuestion.setTag(data);
-        tvQuestion.setPadding(marginBottomPxl,marginBottomPxl,marginBottomPxl,marginBottomPxl);
-        tvQuestion.setLayoutParams(layoutParams);
-        Random r = new Random();
-        tvQuestion.setId(r.nextInt(9999999));
-        LLQuestion.addView(tvQuestion);
-        if(isSkipFlag){
-            //create check box
-            createCheckBox(tvQuestion.getId(),flagChecked);
-        }
-    }
+//    public void createEditTextViewPlain(String questionId,Boolean isSkipFlag){
+//        JSONObject obj = new JSONObject();
+//        obj = getAnswerIfsaved(questionId);
+//        String answer = "";
+//        boolean flagChecked = false;
+//
+//            try {
+//                answer = obj.getString("answer");
+//                if(answer.equals("__123__")){
+//                    answer = "";
+//                }else if(answer.equals("")){
+//                    flagChecked = true;
+//                }
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//
+//        tvQuestion = new EditText(this);
+//        //tvQuestion.setId(@+id/1);
+//        tvQuestion.setHint("Please specify");
+//        tvQuestion.setBackgroundColor(getResources().getColor(R.color.white));
+//        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
+//        tvQuestion.setTextColor(getResources().getColor(R.color.darkgrey));
+//        tvQuestion.setTextSize(16);
+//        List<String> data = new ArrayList<String>();
+//        data.add(questionId);
+//        data.add("not_radio");
+//        tvQuestion.setTag(data);
+//        if(answer != ""){
+//            tvQuestion.setText(answer);
+//        }
+//        layoutParams.setMargins(0,0,0,marginBottomPxl);
+//        tvQuestion.setInputType(InputType.TYPE_CLASS_TEXT);
+//        tvQuestion.setPadding(marginBottomPxl,marginBottomPxl,marginBottomPxl,marginBottomPxl);
+//        tvQuestion.setLayoutParams(layoutParams);
+//        Random r = new Random();
+//        tvQuestion.setId(r.nextInt(9999999));
+//        LLQuestion.addView(tvQuestion);
+//        if(isSkipFlag){
+//            //create check box
+//            createCheckBox(tvQuestion.getId(),flagChecked);
+//        }
+//    }
+//    public void createEditTextViewPhone(String questionId ,boolean isSkipFlag){
+//        JSONObject obj = new JSONObject();
+//        obj = getAnswerIfsaved(questionId);
+//        String answer = "";
+//        boolean flagChecked = false;
+//
+//        try {
+//            answer = obj.getString("answer");
+//            if(answer.equals("__123__")){
+//                answer = "";
+//            }else if(answer.equals("")){
+//                flagChecked = true;
+//            }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        EditText tvQuestion = new EditText(this);
+//        //tvQuestion.setId(@+id/1);
+//        tvQuestion.setHint("Please specify");
+//        tvQuestion.setBackgroundColor(getResources().getColor(R.color.white));
+//        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
+//        tvQuestion.setTextColor(getResources().getColor(R.color.darkgrey));
+//        //tvQuestion.setTypeface(Typeface.DEFAULT_BOLD);
+//        tvQuestion.setTextSize(16);
+//        if(answer != ""){
+//            tvQuestion.setText(answer);
+//        }
+//        layoutParams.setMargins(0,0,0,marginBottomPxl);
+//        tvQuestion.setInputType(InputType.TYPE_CLASS_PHONE);
+//        List<String> data = new ArrayList<String>();
+//        data.add(questionId);
+//        data.add("not_radio");
+//        tvQuestion.setTag(data);
+//        tvQuestion.setPadding(marginBottomPxl,marginBottomPxl,marginBottomPxl,marginBottomPxl);
+//        tvQuestion.setLayoutParams(layoutParams);
+//        Random r = new Random();
+//        tvQuestion.setId(r.nextInt(9999999));
+//        LLQuestion.addView(tvQuestion);
+//        if(isSkipFlag){
+//            //create check box
+//            createCheckBox(tvQuestion.getId(),flagChecked);
+//        }
+//    }
     public void createEditTextViewEmail(String questionId ,boolean isSkipFlag,String inputType){
         JSONObject obj = new JSONObject();
         obj = getAnswerIfsaved(questionId);
@@ -985,12 +977,10 @@ public class QuestionDynamic extends AppCompatActivity {
         final EditText tvQuestion = new EditText(this);
         Random r = new Random();
         tvQuestion.setId(r.nextInt(9999999));
-        //tvQuestion.setId(@+id/1);
-        tvQuestion.setHint("Please specify");
+        tvQuestion.setHint(getResources().getString(R.string.placeholder));
         tvQuestion.setBackgroundColor(getResources().getColor(R.color.white));
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
         tvQuestion.setTextColor(getResources().getColor(R.color.darkgrey));
-        //tvQuestion.setTypeface(Typeface.DEFAULT_BOLD);
         tvQuestion.setTextSize(16);
         if(answer != ""){
             tvQuestion.setText(answer);
@@ -1003,7 +993,7 @@ public class QuestionDynamic extends AppCompatActivity {
             case "date":
                 tvQuestion.setInputType(InputType.TYPE_DATETIME_VARIATION_DATE);
                 tvQuestion.setFocusable(false);
-                tvQuestion.setHint("Select Date");
+                tvQuestion.setHint(getResources().getString(R.string.selectDate));
                 tvQuestion.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -1019,7 +1009,7 @@ public class QuestionDynamic extends AppCompatActivity {
             case "phone":
                 tvQuestion.setInputType(InputType.TYPE_CLASS_PHONE);
                 int maxLength = 14;
-                tvQuestion.setHint("Please enter phone number with country code");
+                tvQuestion.setHint(getResources().getString(R.string.placeholderPhone));
                 tvQuestion.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
                 break;
             case "numeric":
@@ -1034,7 +1024,7 @@ public class QuestionDynamic extends AppCompatActivity {
                 break;
             case "yearmonth":
                 tvQuestion.setInputType(InputType.TYPE_DATETIME_VARIATION_DATE);
-                tvQuestion.setHint("YY/MM");
+                tvQuestion.setHint(getResources().getString(R.string.placeholderYearMonth));
                 break;
             default:
                 tvQuestion.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -1104,7 +1094,7 @@ public class QuestionDynamic extends AppCompatActivity {
             e.printStackTrace();
         }
         Button btn = new Button(this);
-        btn.setText("Select Photo");
+        btn.setText(getResources().getString(R.string.selectPhoto));
         Random r = new Random();
         int id = (r.nextInt(9999));
         btn.setTag(id);
@@ -1167,18 +1157,12 @@ public class QuestionDynamic extends AppCompatActivity {
             Uri uri = data.getData();
             int id = requestCode;//data.getStringExtra()
             Bitmap bitmap = null;
-           // try {
-                //bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                //int countChild = LLQuestion.getChildCount();
                 bitmap = getScaledBitmap(uri);
                 if(id>0) {
                     ImageView img = (ImageView) findViewById(id);
                     img.setImageBitmap(bitmap);
                 }
 
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
 
         }
     }
@@ -1240,7 +1224,7 @@ public class QuestionDynamic extends AppCompatActivity {
 
             if(!btn1.getTag().equals("radio")){
                 tvQuestion = new EditText(this);
-                tvQuestion.setHint("Please specify");
+                tvQuestion.setHint(getResources().getString(R.string.placeholder));
                 tvQuestion.setBackgroundColor(getResources().getColor(R.color.white));
                 LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
                 tvQuestion.setTextColor(getResources().getColor(R.color.darkgrey));
@@ -1259,7 +1243,7 @@ public class QuestionDynamic extends AppCompatActivity {
                     case "date":
                         tvQuestion.setInputType(InputType.TYPE_DATETIME_VARIATION_DATE);
                         tvQuestion.setFocusable(false);
-                        tvQuestion.setHint("Select Date");
+                        tvQuestion.setHint(getResources().getString(R.string.selectDate));
                         tvQuestion.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -1275,7 +1259,7 @@ public class QuestionDynamic extends AppCompatActivity {
                     case "phone":
                         tvQuestion.setInputType(InputType.TYPE_CLASS_PHONE);
                         int maxLength = 14;
-                        tvQuestion.setHint("Please enter phone number with country code");
+                        tvQuestion.setHint(getResources().getString(R.string.placeholderPhone));
                         tvQuestion.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
                         break;
                     case "numeric":
@@ -1290,7 +1274,7 @@ public class QuestionDynamic extends AppCompatActivity {
                         break;
                     case "yearmonth":
                         tvQuestion.setInputType(InputType.TYPE_DATETIME_VARIATION_DATE);
-                        tvQuestion.setHint("YY/MM");
+                        tvQuestion.setHint(getResources().getString(R.string.placeholderYearMonth));
                         break;
                     default:
                         tvQuestion.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -1337,13 +1321,8 @@ public class QuestionDynamic extends AppCompatActivity {
                             edt.setVisibility(View.GONE);
                         }
                     }
-                    //gbl.setRadioInputTextCheckToZero();
                 }
-//                if(gbl.getRadioInputTextCheck()>0 && !rb.getTag().equals(gbl.getRadioInputTextCheck())){
-//                    EditText edt = (EditText)findViewById(gbl.getRadioInputTextCheck());
-//                    edt.setVisibility(View.GONE);
-//                    gbl.setRadioInputTextCheckToZero();
-//                }
+
             }
         });
     }

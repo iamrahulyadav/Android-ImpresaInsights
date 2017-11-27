@@ -77,9 +77,7 @@ public class welcome extends AppCompatActivity {
         getSupportActionBar().setCustomView(R.layout.action_bar);
         sharedPreferences = getSharedPreferences("userInfo", Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
-        //Toolbar parent= (Toolbar)(R.layout.action_bar).getParent();
         final TextView helloTextView = (TextView) findViewById(R.id.action_text);
-        //final ImageView imageView= (ImageView)findViewById(R.id.imageButton) ;
         helloTextView.setText("Welcome");
         if((getIntent().getStringExtra("from").equals("main"))) {
             getQuestionListFromAPI();
@@ -124,8 +122,8 @@ public class welcome extends AppCompatActivity {
                         }
                         surveyID = ans.getString(6);
                         if(ans.getString(1).equals("3")) {
-                            //phone = ans.getString(4);
-                            phone = "10101010101";
+                            phone = ans.getString(4);
+                            //phone = "10101010101";
                         }
                     }while(ans.moveToNext());
                     ans.close();
@@ -203,6 +201,7 @@ public class welcome extends AppCompatActivity {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     //dialog.hide();
+                    showMessage(getResources().getString(R.string.Error),error.getMessage());
                     dialog1.hide();
 
                 }
@@ -239,7 +238,7 @@ public class welcome extends AppCompatActivity {
             requestQueueLogin.add(jsonObjRequest);
             if(count == noOfServiceCall){
             dialog1 = new ProgressDialog(this);
-            dialog1.setMessage("Uploading answers");
+            dialog1.setMessage(getResources().getString(R.string.uploadingAnswers));
             dialog1.setCanceledOnTouchOutside(false);
             //dialog.setCancelable(true);
             dialog1.show();
@@ -333,6 +332,7 @@ public void getQuestionListFromAPI(){
 
             @Override
             public void onErrorResponse(VolleyError error) {
+                showMessage(getResources().getString(R.string.Error),error.getMessage());
                 dialog.hide();
 
             }
@@ -356,7 +356,7 @@ public void getQuestionListFromAPI(){
         jsonObjRequest.setRetryPolicy(policy);
         requestQueueLogin.add(jsonObjRequest);
         dialog = new ProgressDialog(this);
-        dialog.setMessage("Updating Data");
+        dialog.setMessage(getResources().getString(R.string.updating));
         dialog.setCanceledOnTouchOutside(false);
         //dialog.setCancelable(true);
         dialog.show();

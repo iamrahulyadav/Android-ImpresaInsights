@@ -150,10 +150,10 @@ public class SurveyList extends AppCompatActivity {
                                 @Override
                                 public void onClick(View v) {
                                     if(gbl.getClientId().equals("new") && !str.equals("1")){
-                                        showMessage("Info","If you are a new Client ,Please register yourself through Recruitment Survey ");
+                                        showMessage(getResources().getString(R.string.info),getResources().getString(R.string.newClientMessage));
                                     }else{
                                         if(v.getTag().equals("red")){
-                                            showMessage("Info","Survey already taken");
+                                            showMessage(getResources().getString(R.string.info),getResources().getString(R.string.surveyTaken));
                                         }else {
                                             Intent intent = new Intent(SurveyList.this, SelectLanguage.class);
                                             intent.putExtra("SURVEY_ID", str);
@@ -170,7 +170,7 @@ public class SurveyList extends AppCompatActivity {
 
             }
         }else {
-            showMessage("Error","Empty Survey Table");
+            showMessage(getResources().getString(R.string.info),getResources().getString(R.string.emptySurveyTable));
         }
        // mProgressView.setVisibility(View.GONE);
     }

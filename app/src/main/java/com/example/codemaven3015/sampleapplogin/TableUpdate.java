@@ -1,6 +1,7 @@
 package com.example.codemaven3015.sampleapplogin;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.View;
@@ -20,7 +21,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TableUpdate {
+public class TableUpdate extends Activity {
     DataBaseHealper myDB;
     RequestQueue requestQueueLogin;
     isNetworkAvaliable nb;

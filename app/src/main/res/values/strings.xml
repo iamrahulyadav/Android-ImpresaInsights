@@ -15,6 +15,30 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="wrong_password">Wrong UserName or Password. Try again!!</string>
+    <string name="failure">Failure</string>
+    <string name="LoginMessage">Login In...</string>
+    <string name="Error">Error</string>
+    <string name="LoginEmptyFieldMessage">Username and Password cannot be empty</string>
+    <string name="updating">Updating Data</string>
+    <string name="uploadingAnswers">Uploading answers</string>
+    <string name="info">Info</string>
+    <string name="saveAndExit">Are you sure you want to Save and Exit?</string>
+    <string name="dataLost">Are you sure you want to exit? All the data will be lost</string>
+    <string name="emptyField">Field cannot be empty!!</string>
+    <string name="validNumber">Enter valid  phone number!!</string>
+    <string name="validEmail">Enter valid email!!</string>
+    <string name="validRadio">Select one from the options!!</string>
+    <string name="validImage">Select photo from the gallery!!</string>
+    <string name="tankYou">Thank You</string>
+    <string name="surveyCompleted">"Survey is completed. Do you want to Save And Exit?"</string>
+    <string name="placeholder">Please specify</string>
+    <string name="placeholderPhone">Please enter phone number with country code</string>
+    <string name="placeholderYearMonth">YY/MM</string>
+    <string name="selectPhoto">Select Photo</string>
+    <string name="selectDate">Select Date</string>
+    <string name="newClientMessage">If you are a new Client ,Please register yourself through Recruitment Survey.</string>
+    <string name="surveyTaken">Survey already taken.</string>
+    <string name="emptySurveyTable">Empty Survey Table.</string>
     <string name="large_text">
         "\nHello, my name is surveyor test, and Iwork with Innovations for Poverty Action(IPA) on a"
         "project to learn more about small business owners in your area. Through this project we "

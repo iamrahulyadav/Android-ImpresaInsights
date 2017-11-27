@@ -85,15 +85,15 @@ public class SurveySection extends AppCompatActivity {
             //gbl.incrementSectionCount();
             if (!(gbl.getSectionCount() < section.getCount()) && gbl.getCounter() >= gbl.getCount()) {
                 if (getIntent().getStringExtra("SURVEY_ID").equals("1")) {
-                    showMessageWithNoAndYes("Info", "Are you sure you want to Save and Exit?",true);
+                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.saveAndExit),true);
                 } else {
-                    showMessageWithNoAndYes("Info", "Are you sure you want to Save and Exit?",true);
+                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.saveAndExit),true);
                 }
             } else {
                 if (getIntent().getStringExtra("SURVEY_ID").equals("1")) {
-                    showMessageWithNoAndYes("Info", "Are you sure you want to exit? All the data will be lost",false);
+                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.dataLost),false);
                 } else {
-                    showMessageWithNoAndYes("Info", "Are you sure you want to Save and Exit?",true);
+                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.saveAndExit),true);
                 }
             }
         }
