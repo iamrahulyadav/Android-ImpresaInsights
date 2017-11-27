@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">Impresa Insights</string>
+    <string name="prompt_username">Username</string>
+    <string name="prompt_password">Password</string>
+    <string name="welcome">Welcome to</string>
+    <string name="entreinfo">IMPRESA INSIGHTS</string>
+    <string name="survey">Survey App</string>
+    <string name="new_client">New Client</string>
+    <string name="existing_client">Existing Client</string>
+    <string name="correction">Correction</string>
+    <string name="login_button">Login</string>
+    <string name="title_activity_language">language</string>
+    <string name="logout_title">Logout</string>
+    <string name="logout_message">Are you sure yo want to logout?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="wrong_password">Wrong UserName or Password. Try again!!</string>
+    <string name="large_text">
+        "\nHello, my name is surveyor test, and Iwork with Innovations for Poverty Action(IPA) on a"
+        "project to learn more about small business owners in your area. Through this project we "
+        "hope to assist entrepreneurs in growing their businesses. We would like to ask you a few"
+        "questions about you and your main business.\n\n"
+        "Please note:\n\n"
+        "1. Your participation is voluntary.\n\n"
+        "2. There are no risks involved in completing this survey, either to you or your business.\n\n"
+        "3. Your information will always remain confidential and well protected. No information "
+        "will be shared with any third party, and no names will be published from the study.\n\n"
+        "4. You should be as honest and accurate with your answers as possible as this information"
+        "will be used to develop products and services that better meet the needs of small business"
+        "owners like you.\n\n"
+        "5. You can choose not to answer a question, or to stop the survey at any time.This will pose"
+        " no risk to you or your business.\n\n"
+        "6. This survey should take approximately 35 minutes of your time, depending on how you respond.\n\n"
+        "By agreeing, you confirm that you understood the information above and have agreed to complete"
+        " to complete the survey.\n\n"
+    </string>
+    <string name="action_settings">Settings</string>
+</resources>
