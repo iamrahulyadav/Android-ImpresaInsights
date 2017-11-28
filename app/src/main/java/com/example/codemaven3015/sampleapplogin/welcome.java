@@ -54,7 +54,6 @@ public class welcome extends AppCompatActivity {
 
     public void openSurveyList(View v){
         Intent i = new Intent(welcome.this , SurveyList.class);
-        //i.putExtra("CLIENT", "new");
         gbl.setClientId("new");
         startActivity(i);
 
@@ -95,56 +94,75 @@ public class welcome extends AppCompatActivity {
             //
             JSONArray answerAllUser = new JSONArray();
             Cursor newClient = myDB.selectNewDistictClient();
-            newClient.moveToNext();
-            do{
-                Log.e("CLIENT ID",newClient.getString(0));
-                Cursor ans = myDB.getAnswerFromDB(newClient.getString(0));
-                String phone = "";
-                String surveyID = "";
-                JSONArray response = new JSONArray();
-                JSONObject data = new JSONObject();
-                JSONArray imageQuestion = new JSONArray();
-                JSONArray image = new JSONArray();
-                if(ans.getCount()>0){
-                    ans.moveToFirst();
-                    do{
-                        JSONObject obj = new JSONObject();
-                        JSONObject imageObj = new JSONObject();
-                        if(ans.getString(7).equals("image")){
-                            imageQuestion.put(ans.getString(1));
-                            imageObj.put("questionId",ans.getString(1));
-                            imageObj.put("image",ans.getString(4));
-                            image.put(imageObj);
-                        }else {
-                            obj.put("questionId", ans.getString(1));
-                            obj.put("answer", ans.getString(4));
-                            response.put(obj);
-                        }
-                        surveyID = ans.getString(6);
-                        if(ans.getString(1).equals("3")) {
-                            phone = ans.getString(4);
-                            //phone = "10101010101";
-                        }
-                    }while(ans.moveToNext());
-                    ans.close();
-                    data.put("phone",phone);
-                    data.put("survey_id",surveyID);
-                    data.put("surveyor_id",sharedPreferences.getString("SurveyorId",""));
-                    data.put("response",response);
-                    data.put("image_question",imageQuestion);
-                    //data.put("image",image);
-                    JSONObject alldata = new JSONObject();
-                    alldata.put("ClientId",newClient.getString(0));
-                    alldata.put("data",data);
-                    alldata.put("image",image);
-                    answerAllUser.put(alldata);
-                }
+            Cursor existingClient = myDB.selectExistingDistinctClient();
+
+            if(newClient.getCount()>0) {
+                newClient.moveToFirst();
+                do{
+                answerAllUser.put(getAllDataWithAnswer(newClient.getString(0),true));
             }while(newClient.moveToNext());
+            }
+            if(existingClient.getCount()>0) {
+                existingClient.moveToFirst();
+                do{
+                    answerAllUser.put(getAllDataWithAnswer(existingClient.getString(0),false));
+                }while(existingClient.moveToNext());
+            }
             newClient.close();
             Log.e("ALLDATA",answerAllUser.toString());
             sendAnswerToServer(answerAllUser);
 
         }
+    }
+    public JSONObject getAllDataWithAnswer(String clientid,Boolean flag) throws JSONException {
+        Cursor ans = myDB.getAnswerFromDB(clientid,flag);
+        String phone = "";
+        String client_id = "";
+        String surveyID = "";
+        JSONArray response = new JSONArray();
+        JSONObject data = new JSONObject();
+        JSONArray imageQuestion = new JSONArray();
+        JSONArray image = new JSONArray();
+        JSONObject alldata = new JSONObject();
+        if (ans.getCount() > 0) {
+            ans.moveToFirst();
+            do {
+                JSONObject obj = new JSONObject();
+                JSONObject imageObj = new JSONObject();
+                if (ans.getString(7).equals("image")) {
+                    imageQuestion.put(ans.getString(1));
+                    imageObj.put("questionId", ans.getString(1));
+                    imageObj.put("image", ans.getString(4));
+                    image.put(imageObj);
+                } else {
+                    obj.put("questionId", ans.getString(1));
+                    obj.put("answer", ans.getString(4));
+                    response.put(obj);
+                }
+                surveyID = ans.getString(6);
+                if(flag) {
+                    if (ans.getString(1).equals("3")) {
+                        phone = ans.getString(4);
+                        //phone = "10101010101";
+                        client_id = "new";
+                    }
+                }else{
+                    client_id = clientid;
+                }
+            } while (ans.moveToNext());
+            ans.close();
+            data.put("phone", phone);
+            data.put("client_id",client_id);
+            data.put("survey_id", surveyID);
+            data.put("surveyor_id", sharedPreferences.getString("SurveyorId", ""));
+            data.put("response", response);
+            data.put("image_question", imageQuestion);
+            alldata.put("ClientId", clientid);
+            alldata.put("data", data);
+            alldata.put("image", image);
+
+        }
+        return alldata;
     }
     public void sendAnswerToServer(JSONArray answerAllUser) throws JSONException {
         noOfServiceCall = answerAllUser.length()-1;
@@ -156,7 +174,6 @@ public class welcome extends AppCompatActivity {
             JSONObject data = new JSONObject();
             //String surveyID = obj.getString("survey_id");
             JSONArray image = new JSONArray();
-            //image.put(obj.getJSONArray("image"));
             data.put("data",obj.getJSONObject("data"));
             String surveyID = obj.getJSONObject("data").getString("survey_id");
             apiToUpdateanswerAtServer(data,clientId,i,surveyID,obj.getJSONArray("image"));
@@ -201,7 +218,7 @@ public class welcome extends AppCompatActivity {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     //dialog.hide();
-                    showMessage(getResources().getString(R.string.Error),error.getMessage());
+                    //showMessage(getResources().getString(R.string.Error),error.getMessage());
                     dialog1.hide();
 
                 }
@@ -332,7 +349,7 @@ public void getQuestionListFromAPI(){
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                showMessage(getResources().getString(R.string.Error),error.getMessage());
+                //showMessage(getResources().getString(R.string.Error),error.getMessage());
                 dialog.hide();
 
             }

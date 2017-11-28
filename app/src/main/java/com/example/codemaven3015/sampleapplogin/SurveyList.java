@@ -172,7 +172,6 @@ public class SurveyList extends AppCompatActivity {
         }else {
             showMessage(getResources().getString(R.string.info),getResources().getString(R.string.emptySurveyTable));
         }
-       // mProgressView.setVisibility(View.GONE);
     }
     public void showMessage(String title, String Message){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

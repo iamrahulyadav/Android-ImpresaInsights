@@ -112,8 +112,13 @@ public class QuestionDynamic extends AppCompatActivity {
         sectionNameId = (TextView)findViewById(R.id.sectionNameId);
         sectionDescription = (TextView)findViewById(R.id.sectionDescription);
         helloTextView.setText(getIntent().getStringExtra("SURVEY_NAME"));
-        clientId.setText("");
-        clientId.setVisibility(View.GONE);
+        if(gbl.getClientId().equals("new")) {
+            clientId.setText("");
+            clientId.setVisibility(View.GONE);
+        }else{
+            clientId.setText(gbl.getClientId());
+            clientId.setVisibility(View.VISIBLE);
+        }
         sectionNameId.setText("SECTION "+getIntent().getStringExtra("SECTION_NO")+": "+getIntent().getStringExtra("SECTION_NAME"));
         survey_ID = getIntent().getStringExtra("SURVEY_ID");
         sectionDescription.setVisibility(View.GONE);
@@ -316,7 +321,7 @@ public class QuestionDynamic extends AppCompatActivity {
                 }
             } else {
                 if (getIntent().getStringExtra("SURVEY_ID").equals("1")) {
-                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.dataLost), false);
+                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.dataLost), true);
 
 
                 } else {
@@ -333,7 +338,12 @@ public class QuestionDynamic extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if(flag){
-                    db.updateAnswerInTable(gbl.getAnswer(),false,survey_ID);
+                    if(gbl.getClientId().equals("new")){
+                        db.updateAnswerInTable(gbl.getAnswer(),false,survey_ID,gbl.getClientId());
+                    }else{
+                        db.updateAnswerInTable(gbl.getAnswer(),true,survey_ID,gbl.getClientId());
+                    }
+
                 }
                 Intent i = new Intent(QuestionDynamic.this , welcome.class);
                 i.putExtra("from","not_main");
@@ -562,7 +572,6 @@ public class QuestionDynamic extends AppCompatActivity {
                 if(!(checkboxOptional.getVisibility() == View.VISIBLE) && !(checkboxOptional.isChecked())) {
                     int id = rbg.getCheckedRadioButtonId();
                     RadioButton r = (RadioButton) findViewById(id);
-                    //RadioButton r = (RadioButton) rbg.getChildAt(id);
 
                     selectedtext = r.getText().toString();
                 }

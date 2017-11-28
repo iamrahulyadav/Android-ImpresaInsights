@@ -14,6 +14,9 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class IAgree extends AppCompatActivity {
     String SurveyId;
     int Iagree = 0;
@@ -76,6 +79,23 @@ public class IAgree extends AppCompatActivity {
         imageView.setVisibility(View.GONE);
         SurveyId = getIntent().getStringExtra("SURVEY_ID");
         surveyDetails = db.getSurveyDetails(SurveyId);
+        if(!gbl.getClientId().equals("new")){
+            Cursor ifSurveyDone = db.ifSurveyDone(gbl.getClientId(),SurveyId);
+            if(ifSurveyDone.getCount()>0){
+                ifSurveyDone.moveToFirst();
+                do{
+                    JSONObject obj = new JSONObject();
+                    try {
+                        obj.put("question_no", ifSurveyDone.getString(1));
+                        obj.put("answer", ifSurveyDone.getString(4));
+                        obj.put("radio", ifSurveyDone.getString(7));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    gbl.addAnswerInJsonArray(obj);
+                }while (ifSurveyDone.moveToNext());
+            }
+        }
         //db.insertDataQuestion();
         if(surveyDetails.length >0 ) {
             helloTextView.setText(surveyDetails[1]);

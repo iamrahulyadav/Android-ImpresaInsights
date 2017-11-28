@@ -122,12 +122,14 @@ public class DataBaseHealper extends SQLiteOpenHelper {
         Cursor res = db.rawQuery(Query,new String[] {clientId}, null);
         return res;
     }
-    public void updateAnswerInTable( JSONArray answer,boolean isOldClient,String survey_id){
+    public void updateAnswerInTable( JSONArray answer,boolean isOldClient,String survey_id,String client_id){
         SQLiteDatabase db = this.getWritableDatabase();
         int clientId = 0;
         if(!isOldClient){
             Random r = new Random();
             clientId = (r.nextInt(9999999));
+        }else{
+            clientId = 0;
         }
         for(int i =0;i<answer.length();i++) {
             JSONObject obj = new JSONObject();
@@ -137,7 +139,7 @@ public class DataBaseHealper extends SQLiteOpenHelper {
                 contentValue.put("QUESTION_ID", obj.getString("question_no"));
                 contentValue.put("SURVEY_ID",survey_id);
                 if (isOldClient) {
-                    contentValue.put("CLIENT_ID", "");
+                    contentValue.put("CLIENT_ID", client_id);
                 } else {
                     contentValue.put("CLIENT_ID_TEMP", clientId);
                 }
@@ -155,7 +157,7 @@ public class DataBaseHealper extends SQLiteOpenHelper {
                 if(radio.equals("image")){
                     contentValue.put("TYPE","image");
                 }else{
-                    contentValue.put("TYPE","");
+                    contentValue.put("TYPE",radio);
                 }
                 contentValue.put("FLAG", "0");
                 db.insert(TABLE_SURVEY_ANSWER,null,contentValue);
@@ -170,6 +172,7 @@ public class DataBaseHealper extends SQLiteOpenHelper {
     public void deleteAnswerIfUpdated(String clientId){
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_SURVEY_ANSWER, "CLIENT_ID_TEMP =?", new String[]{clientId});
+        db.delete(TABLE_SURVEY_ANSWER, "CLIENT_ID =?", new String[]{clientId});
     }
     public Boolean checkAnswerToupdate(){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -182,16 +185,32 @@ public class DataBaseHealper extends SQLiteOpenHelper {
             return false;
         }
     }
-    public Cursor getAnswerFromDB(String clientId){
+    public Cursor getAnswerFromDB(String clientId,boolean flag){
         SQLiteDatabase db = this.getWritableDatabase();
-        String Query = "SELECT * FROM " + TABLE_SURVEY_ANSWER + " WHERE CLIENT_ID_TEMP =?";
+        String Query = "";
+        if(flag){
+            Query = "SELECT * FROM " + TABLE_SURVEY_ANSWER + " WHERE CLIENT_ID_TEMP =?";
+        }else{
+            Query = "SELECT * FROM " + TABLE_SURVEY_ANSWER + " WHERE CLIENT_ID =?";
+        }
         Cursor res = db.rawQuery(Query,new String[] {clientId}, null);
         //Cursor res = db.rawQuery("select * from "+TABLE_SURVEY_ANSWER+" WHERE FLAG = 0", null,);
         return res;
     }
+    public Cursor ifSurveyDone(String clientId,String surveyId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String Query = "SELECT * FROM " + TABLE_SURVEY_ANSWER + " WHERE CLIENT_ID =? AND SURVEY_ID =?";
+        Cursor res = db.rawQuery(Query,new String[] {clientId,surveyId}, null);
+        return res;
+    }
     public Cursor selectNewDistictClient(){
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("select DISTINCT CLIENT_ID_TEMP from "+TABLE_SURVEY_ANSWER+" WHERE FLAG = 0", null);
+        Cursor res = db.rawQuery("select DISTINCT CLIENT_ID_TEMP from "+TABLE_SURVEY_ANSWER+" WHERE FLAG = 0 AND CLIENT_ID_TEMP IS NOT NULL", null);
+        return res;
+    }
+    public Cursor selectExistingDistinctClient(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select DISTINCT CLIENT_ID from "+TABLE_SURVEY_ANSWER+" WHERE FLAG = 0 AND CLIENT_ID IS NOT NULL", null);
         return res;
     }
     public Cursor getLanguageList(){

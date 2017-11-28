@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     dialog.hide();
-                    showMessage("Info","Check your Network Connection");
+                    showMessage(getResources().getString(R.string.info),"Check your Network Connection");
 
                 }
             }) {

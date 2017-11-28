@@ -108,7 +108,11 @@ public class SurveySection extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if(flag){
-                    db.updateAnswerInTable(gbl.getAnswer(),false,surveyId);
+                    if(gbl.getClientId().equals("new")){
+                        db.updateAnswerInTable(gbl.getAnswer(),false,surveyId,gbl.getClientId());
+                    }else{
+                        db.updateAnswerInTable(gbl.getAnswer(),true,surveyId,gbl.getClientId());
+                    }
                 }
                 Intent i = new Intent(SurveySection.this , welcome.class);
                 i.putExtra("from","not_main");
