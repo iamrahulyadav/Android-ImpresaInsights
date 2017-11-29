@@ -38,7 +38,7 @@
     <string name="selectDate">Select Date</string>
     <string name="newClientMessage">If you are a new Client ,Please register yourself through Recruitment Survey.</string>
     <string name="surveyTaken">Survey already taken.</string>
-    <string name="emptySurveyTable">Empty Survey Table.</string>
+    <string name="emptySurveyTable">Please Logout and login to update survey data.</string>
     <string name="large_text">
         "\nHello, my name is surveyor test, and Iwork with Innovations for Poverty Action(IPA) on a"
         "project to learn more about small business owners in your area. Through this project we "

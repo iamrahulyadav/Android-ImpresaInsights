@@ -33,6 +33,7 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -79,8 +80,9 @@ public class welcome extends AppCompatActivity {
         final TextView helloTextView = (TextView) findViewById(R.id.action_text);
         helloTextView.setText("Welcome");
         if((getIntent().getStringExtra("from").equals("main"))) {
-            getQuestionListFromAPI();
+            //getQuestionListFromAPI();
             try {
+                getTimeStampFromApi();
                 uploadAnswerFromDB();
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -88,6 +90,100 @@ public class welcome extends AppCompatActivity {
         }
         //updateLanguageAndSurveyListDB();
 
+    }
+    public void compareStoredTimeStampWithServer( JSONObject data){
+        String lastUpdate_local = sharedPreferences.getString("lastUpdateTimeStamp", "");
+        String lastUpdate_server = "";
+        boolean isCallServiceForServerData = true;
+        try {
+            lastUpdate_server = data.getString("maxTime");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Timestamp ts_server = Timestamp.valueOf(lastUpdate_server);
+        Timestamp ts_local ;
+        if(!lastUpdate_local.equals("")){
+            ts_local = Timestamp.valueOf(lastUpdate_local);
+            if(ts_server.after(ts_local)){
+                isCallServiceForServerData = true;
+                editor.putString("lastUpdateTimeStamp",lastUpdate_server);
+                editor.apply();
+
+            }else{
+                isCallServiceForServerData = false;
+            }
+        }else{
+            editor.putString("lastUpdateTimeStamp",lastUpdate_server);
+            editor.apply();
+            isCallServiceForServerData = true;
+        }
+        if(isCallServiceForServerData){
+            getQuestionListFromAPI();
+        }else{
+            dialog.hide();
+        }
+    }
+    public void getTimeStampFromApi(){
+        String url = "http://104.238.125.119/~codedev/api/lastUpdateTimeStamp.php ";
+        if (nb.isConnected()) {
+            StringRequest jsonObjRequest = new StringRequest(Request.Method.POST,
+                    url,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            Log.e("****", "123"+response);
+                            try {
+                                JSONObject jsonObject = new JSONObject(response);
+                                Log.e("****",jsonObject.toString());
+                                String status = jsonObject.getString("status");
+                                if(status.equals("Success")){
+                                    //getTimeStampFromResult(jsonObject.getJSONObject("data"))
+                                    compareStoredTimeStampWithServer(jsonObject.getJSONObject("data"));
+
+                                }else{
+                                    dialog.hide();
+                                    showMessage(status,jsonObject.getString("message"));
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    //showMessage(getResources().getString(R.string.Error),error.getMessage());
+                    dialog.hide();
+
+                }
+            }) {
+
+                @Override
+                public String getBodyContentType() {
+                    return "application/x-www-form-urlencoded; charset=UTF-8";
+                }
+
+                @Override
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("timeStamp", "1");
+                    return params;
+                }
+
+            };
+            int socketTimeout = 10000;//30 seconds - change to what you want
+            RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+            jsonObjRequest.setRetryPolicy(policy);
+            requestQueueLogin.add(jsonObjRequest);
+            dialog = new ProgressDialog(this);
+            dialog.setMessage(getResources().getString(R.string.updating));
+            dialog.setCanceledOnTouchOutside(false);
+            //dialog.setCancelable(true);
+            dialog.show();
+
+
+        }
     }
     public void uploadAnswerFromDB() throws JSONException {
         if(myDB.checkAnswerToupdate()){
@@ -339,6 +435,8 @@ public void getQuestionListFromAPI(){
                                 questionDataFormating(jsonObject);
                             }else{
                                 showMessage(status,jsonObject.getString("message"));
+                                editor.putString("lastUpdateTimeStamp","");
+                                editor.apply();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -350,6 +448,8 @@ public void getQuestionListFromAPI(){
             @Override
             public void onErrorResponse(VolleyError error) {
                 //showMessage(getResources().getString(R.string.Error),error.getMessage());
+                editor.putString("lastUpdateTimeStamp","");
+                editor.apply();
                 dialog.hide();
 
             }
@@ -372,11 +472,7 @@ public void getQuestionListFromAPI(){
         RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
         jsonObjRequest.setRetryPolicy(policy);
         requestQueueLogin.add(jsonObjRequest);
-        dialog = new ProgressDialog(this);
-        dialog.setMessage(getResources().getString(R.string.updating));
-        dialog.setCanceledOnTouchOutside(false);
-        //dialog.setCancelable(true);
-        dialog.show();
+
 
 
     }

@@ -321,7 +321,7 @@ public class QuestionDynamic extends AppCompatActivity {
                 }
             } else {
                 if (getIntent().getStringExtra("SURVEY_ID").equals("1")) {
-                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.dataLost), true);
+                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.dataLost), false);
 
 
                 } else {
@@ -415,6 +415,20 @@ public class QuestionDynamic extends AppCompatActivity {
                                 if(childOfRadio instanceof EditText){
                                     if(childOfRadio.getVisibility()==View.VISIBLE){
                                         emptyFlag = emptyFieldValidation(((EditText) childOfRadio).getText().toString());
+                                        EditText edt = (EditText) childOfRadio;
+                                        if (edt.getInputType() != InputType.TYPE_CLASS_TEXT) {
+                                            if (edt.getInputType() == InputType.TYPE_CLASS_PHONE) {
+                                                if (phoneFlag) {
+
+                                                    phoneFlag = phoneValidation(edt.getText().toString());
+                                                }
+
+                                            } else if (edt.getInputType() == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS) {
+                                                if (emailFlag)
+                                                    emailFlag = emailValidation(edt.getText().toString());
+
+                                            }
+                                        }
 
                                     }
                                 }
