@@ -60,6 +60,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 import static android.R.attr.id;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
@@ -190,6 +191,15 @@ public class QuestionDynamic extends AppCompatActivity {
             return true;
         }
     }
+    public boolean specialCharValidation(String s){
+        Pattern regex = Pattern.compile("[$&+:;=\\\\?@#|/<>^*()%!-]");
+
+        if (regex.matcher(s).find()) {
+            return false;
+        }else {
+            return true;
+        }
+    }
     public boolean emailValidation(String email){
         if(!TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches()){
             return true;
@@ -199,7 +209,11 @@ public class QuestionDynamic extends AppCompatActivity {
     }
     public boolean phoneValidation(String phone){
         if(phone.length()>8){
-            return true;
+            if(phone.matches("^[+]?[0-9]{10,13}$")) {
+                return true;
+            }else {
+                return false;
+            }
         }else {
             return false;
         }
@@ -213,11 +227,15 @@ public class QuestionDynamic extends AppCompatActivity {
         }
     }
     public void onclickBack(View view){
+        view.setEnabled(false);
+        view.setClickable(false);
         Cursor questionBack = gbl.getQuestionCursor();
         int questionCount = gbl.getCounter();
         Log.e("BACK",gbl.getCounter()+"");
         if(gbl.getCounter() < 1){
             onClickBackIfFirstQuestion();
+            view.setEnabled(true);
+            view.setClickable(true);
             return;
         }
         gbl.countDecrement();
@@ -230,6 +248,8 @@ public class QuestionDynamic extends AppCompatActivity {
                 onClickBackIfFirstQuestion();
                 gbl.countIncrement();
                 gbl.countIncrement();
+                view.setEnabled(true);
+                view.setClickable(true);
                 return;
             }
             //setQuestionData(gbl.getCounter());
@@ -253,6 +273,8 @@ public class QuestionDynamic extends AppCompatActivity {
                         gbl.countIncrement();
                     }
                     //group.close();
+                    view.setEnabled(true);
+                    view.setClickable(true);
                     return;
                 }
             }
@@ -287,6 +309,8 @@ public class QuestionDynamic extends AppCompatActivity {
             //group.close();
 
         }
+        view.setEnabled(true);
+        view.setClickable(true);
     }
     public void onClickBackIfFirstQuestion() {
         Cursor section = gbl.getSectionList();
@@ -365,12 +389,17 @@ public class QuestionDynamic extends AppCompatActivity {
     public void onClickNext(View view) {
         //showMessage("info","Next question");
         //progressDialog.show();
+        view.setEnabled(false);
+        view.setClickable(false);
         int nViews = LLQuestion.getChildCount();
         Boolean emptyFlag = true;
         Boolean phoneFlag = true;
         Boolean emailFlag = true;
         Boolean radioFlag = true;
         Boolean imageFlag = true;
+        Boolean splCharFlag = true;
+        Boolean dateFlag = true;
+        Boolean numericFlag = true;
         if(!((checkboxOptional.getVisibility() == View.VISIBLE) && (checkboxOptional.isChecked()))) {
             for (int i = 0; i < nViews; i++) {
                 View child = LLQuestion.getChildAt(i);
@@ -394,12 +423,37 @@ public class QuestionDynamic extends AppCompatActivity {
                                         if (phoneFlag) {
 
                                             phoneFlag = phoneValidation(edt.getText().toString());
+                                            if(!phoneValidation(edt.getText().toString())){
+                                                edt.setError("Please enter valid  phone number!!");
+                                            }
                                         }
 
                                     } else if (edt.getInputType() == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS) {
                                         if (emailFlag)
                                             emailFlag = emailValidation(edt.getText().toString());
+                                        if(!emailValidation(edt.getText().toString())){
+                                            edt.setError("Please enter valid  email!!");
+                                        }
 
+                                    }else if(edt.getInputType() == InputType.TYPE_CLASS_NUMBER){
+                                        if(numericFlag){
+                                            numericFlag = TextUtils.isDigitsOnly(edt.getText());
+                                        }
+                                        if(!TextUtils.isDigitsOnly(edt.getText())){
+                                            edt.setError("Please enter valid value!!");
+                                        }
+                                    }
+                                }else{
+                                    if (splCharFlag)
+                                    splCharFlag = specialCharValidation(edt.getText().toString());
+                                    if(!specialCharValidation(edt.getText().toString())){
+                                        edt.setError("Please enter valid text!!");
+                                    }
+                                }if(edt.getInputType() == (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE)){
+                                    if (splCharFlag)
+                                        splCharFlag = specialCharValidation(edt.getText().toString());
+                                    if(!specialCharValidation(edt.getText().toString())){
+                                        edt.setError("Please enter valid text!!");
                                     }
                                 }
                             }
@@ -422,11 +476,29 @@ public class QuestionDynamic extends AppCompatActivity {
 
                                                     phoneFlag = phoneValidation(edt.getText().toString());
                                                 }
+                                                if(!phoneValidation(edt.getText().toString())){
+                                                    edt.setError("Please enter valid phone number!!");
+                                                }
 
                                             } else if (edt.getInputType() == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS) {
                                                 if (emailFlag)
                                                     emailFlag = emailValidation(edt.getText().toString());
+                                                if(!emailValidation(edt.getText().toString())){
+                                                    edt.setError("Please enter valid email!!");
+                                                }
 
+                                            }else if(edt.getInputType() == InputType.TYPE_CLASS_NUMBER){
+                                                if(numericFlag){
+                                                    numericFlag = TextUtils.isDigitsOnly(edt.getText());
+                                                }
+                                                if(!TextUtils.isDigitsOnly(edt.getText())){
+                                                    edt.setError("Please enter valid value!!");
+                                                }
+                                            }
+                                        }else{
+                                            splCharFlag = specialCharValidation(edt.getText().toString());
+                                            if(!specialCharValidation(edt.getText().toString())){
+                                                edt.setError("Please enter valid text!!");
                                             }
                                         }
 
@@ -453,8 +525,14 @@ public class QuestionDynamic extends AppCompatActivity {
             showMessage(getResources().getString(R.string.info), getResources().getString(R.string.validRadio));
         }else if(!imageFlag){
             showMessage(getResources().getString(R.string.info), getResources().getString(R.string.validImage));
+        }else if(!splCharFlag){
+            showMessage(getResources().getString(R.string.info),"Please enter valid text");
+        }else if(!numericFlag){
+            showMessage(getResources().getString(R.string.info),"Please enter valid value");
+        }else if(!dateFlag){
+            showMessage(getResources().getString(R.string.info),"Please enter valid number of months");
         }
-        if (emptyFlag && phoneFlag && emailFlag && radioFlag && imageFlag) {
+        if (emptyFlag && phoneFlag && emailFlag && radioFlag && imageFlag && splCharFlag && dateFlag && numericFlag) {
             SaveAnswerInJsonArray();
             if (gbl.getCounter() < gbl.getCount()) {
                 //setAnswerJsonArray();
@@ -496,6 +574,8 @@ public class QuestionDynamic extends AppCompatActivity {
             }
 
         }
+        view.setEnabled(true);
+        view.setClickable(true);
     }
     public int ifAnswerExist(String questionId){
         JSONArray answer = gbl.getAnswer();
@@ -578,7 +658,14 @@ public class QuestionDynamic extends AppCompatActivity {
                         EditText edt = (EditText) child1;
                         if (edt.getVisibility() == View.VISIBLE && child.getVisibility() != View.GONE){
                             ans = edt.getText().toString();
+                            if((edt.getInputType() == InputType.TYPE_CLASS_PHONE)){
+                                String firstLetter = ans.substring(0,1);
+                                if(!(firstLetter.equals("+"))){
+                                    ans = "+"+ans;
+                                }
+                            }
                         }
+
                     }
 
                 }
@@ -1014,7 +1101,7 @@ public class QuestionDynamic extends AppCompatActivity {
                 tvQuestion.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                 break;
             case "date":
-                tvQuestion.setInputType(InputType.TYPE_DATETIME_VARIATION_DATE);
+                tvQuestion.setInputType(InputType.TYPE_DATETIME_VARIATION_NORMAL);
                 tvQuestion.setFocusable(false);
                 tvQuestion.setHint(getResources().getString(R.string.selectDate));
                 tvQuestion.setOnClickListener(new View.OnClickListener() {
@@ -1031,12 +1118,14 @@ public class QuestionDynamic extends AppCompatActivity {
                 break;
             case "phone":
                 tvQuestion.setInputType(InputType.TYPE_CLASS_PHONE);
-                int maxLength = 14;
                 tvQuestion.setHint(getResources().getString(R.string.placeholderPhone));
+                int maxLength = 14;
                 tvQuestion.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
                 break;
             case "numeric":
                 tvQuestion.setInputType(InputType.TYPE_CLASS_NUMBER);
+                int maxLengthNumeric = 13;
+                tvQuestion.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLengthNumeric)});
                 break;
             case "textarea":
                 tvQuestion.setSingleLine(false);
@@ -1046,8 +1135,11 @@ public class QuestionDynamic extends AppCompatActivity {
                 tvQuestion.setMaxLines(3);
                 break;
             case "yearmonth":
-                tvQuestion.setInputType(InputType.TYPE_DATETIME_VARIATION_DATE);
-                tvQuestion.setHint(getResources().getString(R.string.placeholderYearMonth));
+                tvQuestion.setInputType(InputType.TYPE_CLASS_NUMBER);
+                tvQuestion.setHint("Please enter total number of months");
+                //tvQuestion.setHint(getResources().getString(R.string.placeholderYearMonth));
+                int maxLengthYear = 3;
+                tvQuestion.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLengthYear)});
                 break;
             default:
                 tvQuestion.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -1264,7 +1356,7 @@ public class QuestionDynamic extends AppCompatActivity {
                         tvQuestion.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                         break;
                     case "date":
-                        tvQuestion.setInputType(InputType.TYPE_DATETIME_VARIATION_DATE);
+                        tvQuestion.setInputType(InputType.TYPE_DATETIME_VARIATION_NORMAL);
                         tvQuestion.setFocusable(false);
                         tvQuestion.setHint(getResources().getString(R.string.selectDate));
                         tvQuestion.setOnClickListener(new View.OnClickListener() {
@@ -1287,6 +1379,8 @@ public class QuestionDynamic extends AppCompatActivity {
                         break;
                     case "numeric":
                         tvQuestion.setInputType(InputType.TYPE_CLASS_NUMBER);
+                        int maxLengthNumeric = 13;
+                        tvQuestion.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLengthNumeric)});
                         break;
                     case "textarea":
                         tvQuestion.setSingleLine(false);
@@ -1296,8 +1390,11 @@ public class QuestionDynamic extends AppCompatActivity {
                         tvQuestion.setMaxLines(3);
                         break;
                     case "yearmonth":
-                        tvQuestion.setInputType(InputType.TYPE_DATETIME_VARIATION_DATE);
-                        tvQuestion.setHint(getResources().getString(R.string.placeholderYearMonth));
+                        tvQuestion.setInputType(InputType.TYPE_CLASS_NUMBER);
+                        tvQuestion.setHint("Please enter total number of months");
+                        //tvQuestion.setHint(getResources().getString(R.string.placeholderYearMonth));
+                        int maxLengthYear = 3;
+                        tvQuestion.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLengthYear)});
                         break;
                     default:
                         tvQuestion.setInputType(InputType.TYPE_CLASS_TEXT);

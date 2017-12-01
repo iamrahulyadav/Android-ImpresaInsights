@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             };
-            int socketTimeout = 8000;//30 seconds - change to what you want
+            int socketTimeout = 10000;//30 seconds - change to what you want
             RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
             jsonObjRequest.setRetryPolicy(policy);
 
@@ -185,6 +185,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
     public void onLoginClick(View v){
+        v.setEnabled(false);
+        v.setClickable(false);
         usernameString = userName.getText().toString().trim();
         passwordString = password.getText().toString().trim();
         boolean isConnect = nb.isConnected();
@@ -210,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
                         //showProgress(false);
                     }
                 } else {
-                    showMessage(getResources().getString(R.string.Error),getResources().getString(R.string.wrong_password));
+                    showMessage(getResources().getString(R.string.Error),"Check your network connection");
                     //showProgress(false);
                 }
             }
@@ -220,7 +222,8 @@ public class MainActivity extends AppCompatActivity {
             //showProgress(false);
         }
 
-
+        v.setEnabled(true);
+        v.setClickable(true);
         //showProgress(false);
     }
     public void showMessage(String title, String Message){

@@ -66,13 +66,13 @@ public class welcome extends AppCompatActivity {
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_welcome);
         myDB = new DataBaseHealper(this);
         nb = new isNetworkAvaliable(this);
         tableUpdate = new TableUpdate(this);
         requestQueueLogin = Volley.newRequestQueue(this);
         gbl = (GlobalVariables)getApplicationContext();
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_welcome);
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.action_bar);
         sharedPreferences = getSharedPreferences("userInfo", Context.MODE_PRIVATE);
@@ -172,7 +172,7 @@ public class welcome extends AppCompatActivity {
                 }
 
             };
-            int socketTimeout = 10000;//30 seconds - change to what you want
+            int socketTimeout = 8000;//30 seconds - change to what you want
             RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
             jsonObjRequest.setRetryPolicy(policy);
             requestQueueLogin.add(jsonObjRequest);
@@ -345,7 +345,7 @@ public class welcome extends AppCompatActivity {
                 }
 
             };
-            int socketTimeout = 20000;//30 seconds - change to what you want
+            int socketTimeout = 20000;//20 seconds - change to what you want
             RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
             jsonObjRequest.setRetryPolicy(policy);
             requestQueueLogin.add(jsonObjRequest);
@@ -364,7 +364,7 @@ public class welcome extends AppCompatActivity {
         String participant_id = "";
         try {
             participant_id = obj.getString("participant_id");
-            myDB.updateClientIdTable(participant_id,survey_id);
+            myDB.updateClientIdTable(participant_id.toUpperCase(),survey_id);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -447,7 +447,6 @@ public void getQuestionListFromAPI(){
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                //showMessage(getResources().getString(R.string.Error),error.getMessage());
                 editor.putString("lastUpdateTimeStamp","");
                 editor.apply();
                 dialog.hide();

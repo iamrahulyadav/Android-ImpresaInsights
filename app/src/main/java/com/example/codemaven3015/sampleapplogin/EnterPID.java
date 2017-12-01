@@ -16,7 +16,7 @@ public class EnterPID extends AppCompatActivity {
     EditText editText ;
     GlobalVariables gbl;
     public void openSurveyList(View v) {
-        String client_id = editText.getText().toString().trim();
+        String client_id = editText.getText().toString().trim().toUpperCase();
         if(db.ifClientExist(client_id)){
             gbl.setClientId(client_id);
             Intent i = new Intent(EnterPID.this, SurveyList.class);

@@ -25,8 +25,8 @@
     <string name="saveAndExit">Are you sure you want to Save and Exit?</string>
     <string name="dataLost">Are you sure you want to exit? All the data will be lost</string>
     <string name="emptyField">Field cannot be empty!!</string>
-    <string name="validNumber">Enter valid  phone number!!</string>
-    <string name="validEmail">Enter valid email!!</string>
+    <string name="validNumber">Please enter valid  phone number!!</string>
+    <string name="validEmail">Please enter valid email!!</string>
     <string name="validRadio">Select one from the options!!</string>
     <string name="validImage">Select photo from the gallery!!</string>
     <string name="tankYou">Thank You</string>
@@ -34,8 +34,8 @@
     <string name="placeholder">Please specify</string>
     <string name="placeholderPhone">Please enter phone number with country code</string>
     <string name="placeholderYearMonth">YY/MM</string>
-    <string name="selectPhoto">Select Photo</string>
-    <string name="selectDate">Select Date</string>
+    <string name="selectPhoto">Please select Photo</string>
+    <string name="selectDate">Please select Date</string>
     <string name="newClientMessage">If you are a new Client ,Please register yourself through Recruitment Survey.</string>
     <string name="surveyTaken">Survey already taken.</string>
     <string name="emptySurveyTable">Please Logout and login to update survey data.</string>
