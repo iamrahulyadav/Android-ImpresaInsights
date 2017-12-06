@@ -101,10 +101,28 @@ public class DataBaseHealper extends SQLiteOpenHelper {
     }
     public void updateClientIdTable(String clientId,String surveyId){
         SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValue = new ContentValues() ;
-        contentValue.put("CLIENT_ID",clientId);
-        contentValue.put("SURVEY_ID",surveyId);
-        db.insert(TABLE_CLIENT_INFO,null,contentValue);
+        String Query = "SELECT * FROM " + TABLE_CLIENT_INFO + " WHERE CLIENT_ID =? AND SURVEY_ID =?";
+        Cursor res = db.rawQuery(Query,new String[] {clientId,surveyId}, null);
+        if(res.getCount() < 1) {
+            ContentValues contentValue = new ContentValues();
+            contentValue.put("CLIENT_ID", clientId);
+            contentValue.put("SURVEY_ID", surveyId);
+            db.insert(TABLE_CLIENT_INFO, null, contentValue);
+        }
+    }
+    public void updateClientTablefromAPI(JSONArray data) throws JSONException {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String Query = "SELECT * FROM " + TABLE_CLIENT_INFO;
+        Cursor res = db.rawQuery(Query, null);
+        if(res.getCount()>0){
+            db.delete(TABLE_CLIENT_INFO, null, null);
+        }
+        for(int i = 0;i<data.length();i++){
+            ContentValues contentValue = new ContentValues();
+            contentValue.put("CLIENT_ID", data.getJSONObject(i).getString("participant_id"));
+            contentValue.put("SURVEY_ID", data.getJSONObject(i).getString("survey_type"));
+            db.insert(TABLE_CLIENT_INFO, null, contentValue);
+        }
     }
     public boolean ifClientExist(String clientId){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -373,6 +391,17 @@ public class DataBaseHealper extends SQLiteOpenHelper {
         return csr;
 
     }
+    public Cursor getQuestionByQuestionOrder(String question_order,String section_id){
+        Cursor csr;
+        SQLiteDatabase db = this.getWritableDatabase();
+        String Query = "SELECT * FROM " + TABLE_SURVEY_QUESTION + " WHERE QUESTION_ORDER =? AND SECTION_ID =? ";
+        csr = db.rawQuery(Query,new String[] {question_order,section_id}, null);
+        return csr;
+
+    }
+
+
+
     public Cursor getQuestionList(String sectionId){
         Cursor cursor;
         SQLiteDatabase db = this.getWritableDatabase();

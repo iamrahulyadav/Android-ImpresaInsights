@@ -93,20 +93,7 @@
                 android:textColor="@color/blue"
                 android:textSize="16dp"
                 android:textStyle="italic"/>
-            <RadioButton
-                android:id="@+id/radio1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#ffffff"
-                android:text="Please enter your response"
-                android:paddingBottom="15dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="15dp"
-                android:layout_marginBottom="15dp"
-                android:textColor="@color/darkgrey"
-                android:textSize="18dp"
-                />
+
             <EditText
                 android:id="@+id/editTextName1"
                 android:layout_width="match_parent"
@@ -114,7 +101,7 @@
                 android:background="#ffffff"
                 android:ems="10"
                 android:hint="Please specify"
-                android:inputType="textPersonName"
+                android:inputType="number"
                 android:paddingBottom="15dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
@@ -123,90 +110,22 @@
                 android:textColor="@color/darkgrey"
                 android:textColorHint="#e6e7e9"
                 android:textSize="18dp" />
-
-            <EditText
-                android:id="@+id/editTextPhone"
+            <RadioGroup
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
-                android:background="#ffffff"
-                android:ems="10"
-                android:hint="Please specify"
-                android:inputType="phone"
-                android:paddingBottom="15dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="15dp"
-                android:textColor="@color/darkgrey"
-                android:textColorHint="#e6e7e9"
-                android:textSize="18dp" />
-
-            <EditText
-                android:id="@+id/editTextemail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
-                android:background="#ffffff"
-                android:ems="10"
-                android:hint="Please specify"
-                android:inputType="textEmailAddress"
-                android:paddingBottom="15dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="15dp"
-                android:textColor="@color/darkgrey"
-                android:textColorHint="#e6e7e9"
-                android:textSize="18dp" />
-            <RadioButton
-                android:id="@+id/radio2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#ffffff"
-                android:text="Please enter your response"
-                android:paddingBottom="15dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="15dp"
-                android:layout_marginBottom="15dp"
-                android:textColor="@color/darkgrey"
-                android:textSize="18dp"
-                />
-
-            <TextView
-                android:id="@+id/textViewQuestionNumber2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
-                android:text="Question 1B."
-                android:textColor="@color/darkgrey"
-                android:textSize="20dp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textViewQuestion2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
-                android:text="What is your last name?"
-                android:textColor="@color/darkgrey"
-                android:textSize="20dp" />
-
-            <EditText
-                android:id="@+id/editTextName2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#ffffff"
-                android:ems="10"
-                android:hint="Please specify"
-                android:inputType="textPersonName"
-                android:paddingBottom="15dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="15dp"
-                android:textColor="@color/darkgrey"
-                android:textColorHint="#e6e7e9"
-                android:textSize="18dp" />
-
+                android:id="@+id/radioGroup"
+                android:orientation="vertical">
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/yes"
+                    android:text="Yes"/>
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/no"
+                    android:text="No"/>
+            </RadioGroup>
 
         </LinearLayout>
 

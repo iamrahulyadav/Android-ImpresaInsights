@@ -66,6 +66,16 @@ public class GlobalVariables extends Application {
     public JSONArray getAnswer(){
         return answer;
     }
+    public String getAnswerByQuestionOrder(String order) throws JSONException {
+        for(int i =0;i<answer.length();i++){
+            JSONObject obj = answer.getJSONObject(i);
+            if(order.equals(obj.getString("order"))){
+                return (obj.getString("answer"));
+            }
+
+        }
+        return "";
+    }
     public void addAnswerInJsonArray(JSONObject obj){
         answer.put(obj);
     }

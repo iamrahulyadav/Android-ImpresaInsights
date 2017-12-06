@@ -83,6 +83,7 @@ public class welcome extends AppCompatActivity {
             //getQuestionListFromAPI();
             try {
                 getTimeStampFromApi();
+                updateClientSurveyDB();
                 uploadAnswerFromDB();
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -90,6 +91,66 @@ public class welcome extends AppCompatActivity {
         }
         //updateLanguageAndSurveyListDB();
 
+    }
+    public void updateClientSurveyDB(){
+            String url = "http://104.238.125.119/~codedev/api/clientSurveyList.php ";
+            if (nb.isConnected()) {
+                StringRequest jsonObjRequest = new StringRequest(Request.Method.POST,
+                        url,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                Log.e("****", "123"+response);
+                                try {
+                                    JSONObject jsonObject = new JSONObject(response);
+                                    Log.e("****",jsonObject.toString());
+                                    String status = jsonObject.getString("status");
+                                    if(status.equals("Success")){
+                                        
+                                        //compareStoredTimeStampWithServer(jsonObject.getJSONObject("data"));
+                                        updateClientSurveyListToDB(jsonObject.getJSONObject("data"));
+
+                                    }else{
+                                        showMessage(status,jsonObject.getString("message"));
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }) {
+
+                    @Override
+                    public String getBodyContentType() {
+                        return "application/x-www-form-urlencoded; charset=UTF-8";
+                    }
+
+                    @Override
+                    protected Map<String, String> getParams() {
+                        Map<String, String> params = new HashMap<String, String>();
+                        params.put("clientSurvey", "1");
+                        return params;
+                    }
+
+                };
+                int socketTimeout = 8000;//30 seconds - change to what you want
+                RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+                jsonObjRequest.setRetryPolicy(policy);
+                requestQueueLogin.add(jsonObjRequest);
+
+            }
+    }
+    public void updateClientSurveyListToDB(JSONObject list) throws JSONException {
+        JSONArray data = list.getJSONArray("data");
+        if(data.length()>0){
+            myDB.updateClientTablefromAPI(data);
+        }
     }
     public void compareStoredTimeStampWithServer( JSONObject data){
         String lastUpdate_local = sharedPreferences.getString("lastUpdateTimeStamp", "");
@@ -146,6 +207,7 @@ public class welcome extends AppCompatActivity {
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
+                                dialog.hide();
                             }
 
                         }
