@@ -43,14 +43,26 @@ public class IAgree extends AppCompatActivity {
                 sectionName = res.getString(2);
                 sectionId = res.getString(0);
                 String sectionDesc = res.getString(3);
-                Intent i = new Intent(IAgree.this, SurveySection.class);
-                i.putExtra("SURVEY_NAME", surveyDetails[1]);
-                i.putExtra("SURVEY_ID", SurveyId);
-                i.putExtra("SECTION_NAME", sectionName);
-                i.putExtra("SECTION_ID", sectionId);
-                i.putExtra("SECTION_NO","1");
-                i.putExtra("SECTION_DESC",sectionDesc);
-                startActivity(i);
+                if(!SurveyId.equals("1")) {
+                    Intent i = new Intent(IAgree.this, SurveySection.class);
+                    i.putExtra("SURVEY_NAME", surveyDetails[1]);
+                    i.putExtra("SURVEY_ID", SurveyId);
+                    i.putExtra("SECTION_NAME", sectionName);
+                    i.putExtra("SECTION_ID", sectionId);
+                    i.putExtra("SECTION_NO", "1");
+                    i.putExtra("SECTION_DESC", sectionDesc);
+                    startActivity(i);
+                }else{
+                    Intent i = new Intent(IAgree.this, Question.class);
+                    i.putExtra("from","iagree");
+                    i.putExtra("SURVEY_NAME", surveyDetails[1]);
+                    i.putExtra("SURVEY_ID", SurveyId);
+                    i.putExtra("SECTION_NAME", sectionName);
+                    i.putExtra("SECTION_ID", sectionId);
+                    i.putExtra("SECTION_NO", "1");
+                    i.putExtra("SECTION_DESC", sectionDesc);
+                    startActivity(i);
+                }
             }else{
                 showMessage("Info","No Section");
             }

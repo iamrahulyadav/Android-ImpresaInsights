@@ -30,7 +30,7 @@
     <string name="validRadio">Select one from the options!!</string>
     <string name="validImage">Select photo from the gallery!!</string>
     <string name="tankYou">Thank You</string>
-    <string name="surveyCompleted">"Survey is completed. Do you want to Save And Exit?"</string>
+    <string name="surveyCompleted">", Survey is completed. Do you want to Save And Exit?"</string>
     <string name="placeholder">Please specify</string>
     <string name="placeholderPhone">Please enter phone number with country code</string>
     <string name="placeholderYearMonth">YY/MM</string>

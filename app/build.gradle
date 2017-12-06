@@ -5,7 +5,7 @@ android {
     buildToolsVersion "26.0.2"
     defaultConfig {
         applicationId "com.example.codemaven3015.sampleapplogin"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -18,6 +18,16 @@ android {
         }
         debug {
             debuggable true
+        }
+    }
+    productFlavors {
+    }
+}
+allprojects {
+    repositories {
+        jcenter()
+        maven {
+            url "https://maven.google.com"
         }
     }
 }
@@ -34,4 +44,5 @@ dependencies {
     compile 'com.googlecode.libphonenumber:libphonenumber:7.0.4'
     testCompile 'junit:junit:4.12'
     compile files('libs/exp4j-0.4.8.jar')
+    compile 'com.hbb20:ccp:2.1.0'
 }

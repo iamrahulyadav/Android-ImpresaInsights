@@ -130,6 +130,7 @@
         </LinearLayout>
 
         <RelativeLayout
+            android:id="@+id/footerButtons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -171,7 +172,6 @@
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
                 android:layout_marginLeft="15dp"
-                android:onClick="OnBackClick"
                 android:layout_marginRight="15dp"
                 android:text="Save and Exit"
                 android:textColor="#ffffff"

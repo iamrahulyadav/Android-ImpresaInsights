@@ -19,6 +19,7 @@ public class GlobalVariables extends Application {
     private int sectionCount = 0;
     private int questionCount;
     private int questionCounter = 0;
+    private String name = "";
     private String clientId = "new";
     private JSONArray answer = new JSONArray() ;
 //    public void setRadioInputTextCheck(int i){
@@ -30,9 +31,16 @@ public class GlobalVariables extends Application {
 //    public int getRadioInputTextCheck(){
 //        return radioInputTextCheck;
 //    }
+    public void setName(String setname){
+        name = setname;
+    }
+    public String getName(){
+        return name;
+    }
     public void resetAllGlobalVariable(){
         sectionCount = 0;
         questionCounter = 0;
+        name = "";
        //radioInputTextCheck=0;
         answer = new JSONArray();
         //Question = null;
@@ -47,7 +55,7 @@ public class GlobalVariables extends Application {
     public String getClientId(){
         return clientId;
     }
-    public void updateAtAnswer(int i,String ans,String queId,String radio){
+    public void updateAtAnswer(int i,String ans,String queId,String radio,boolean flag){
         JSONObject obj = new JSONObject();
 
         try {
@@ -56,7 +64,12 @@ public class GlobalVariables extends Application {
             }
             obj.put("answer",ans);
             obj.put("question_no",queId);
-            obj.put("radio",radio);
+            if(flag) {
+                obj.put("radio", radio);
+            }else{
+                obj.put("order", radio);
+            }
+
             answer.put(i,obj);
         } catch (JSONException e) {
             e.printStackTrace();

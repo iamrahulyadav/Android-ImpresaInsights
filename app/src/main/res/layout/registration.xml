@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginRight="20dp"
+    android:layout_marginLeft="20dp">
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:textColor="@color/darkgrey"
+        android:textSize="20dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+        android:text="First Name:"
+        />
+
+    <EditText
+        android:id="@+id/editTextName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:ems="10"
+        android:hint="Please specify"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+        android:paddingTop="10dp"
+        android:layout_marginBottom="15dp"
+        android:textColor="@color/darkgrey"
+        android:textColorHint="#e6e7e9"
+        android:textSize="18dp"
+        android:inputType="textPersonName"
+         />
+
+    <TextView
+        android:id="@+id/lastName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:textColor="@color/darkgrey"
+        android:textSize="20dp"
+        android:text="Last Name:"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+         />
+
+    <EditText
+        android:id="@+id/editTextLastName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:ems="10"
+        android:hint="Please specify"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+        android:paddingTop="10dp"
+        android:layout_marginBottom="15dp"
+        android:textColor="@color/darkgrey"
+        android:textColorHint="#e6e7e9"
+        android:textSize="18dp"
+        android:inputType="textPersonName"
+        />
+
+    <TextView
+        android:id="@+id/phone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+        android:textColor="@color/darkgrey"
+        android:textSize="20dp"
+        android:text="Phone Number:"
+         />
+
+
+    <com.hbb20.CountryCodePicker
+        android:id="@+id/ccp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:ccp_showFullName="true"
+        app:ccp_showPhoneCode="true"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+        app:ccp_showNameCode="false"/>
+
+
+    <EditText
+        android:id="@+id/editTextPhone"
+        android:maxLength="10"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:hint="Please specify"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+        android:paddingTop="10dp"
+        android:layout_marginBottom="15dp"
+        android:textColor="@color/darkgrey"
+        android:textColorHint="#e6e7e9"
+        android:textSize="18dp"
+        android:ems="10"
+        android:inputType="phone" />
+    <Button
+        android:layout_width="match_parent"
+        android:id="@+id/register"
+        android:layout_height="55dp"
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginTop="0dp"
+        android:background="@color/blue"
+        android:onClick="openSurveyList"
+        android:text="Register"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
+</LinearLayout>

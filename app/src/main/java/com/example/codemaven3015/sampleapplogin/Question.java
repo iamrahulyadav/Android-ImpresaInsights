@@ -9,15 +9,25 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.SwitchCompat;
 import android.text.TextUtils;
 import android.util.Patterns;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.hbb20.CountryCodePicker;
 
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
@@ -26,18 +36,26 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.regex.Pattern;
+
 public class Question extends AppCompatActivity {
     DataBaseHealper db;
-    TextView textViewDetails ,textViewQuestion1,textViewQuestionNumber1,textViewQuestionInfo;
+    TextView textViewDetails ,textViewQuestion1,textViewQuestionNumber1,textViewQuestionInfo,sectionName,clientId;
     RadioButton  radio1,radio2;
     EditText editTextName1;
     GlobalVariables gbl;
     String sectionNameId,survey_ID;
     String questionOrder;
     RadioGroup radioGroup;
+    RelativeLayout footerButtons;
+    EditText firstname, lastname,phone;
+    CountryCodePicker cpp;
+    Button register;
 
     public void OnBackClick(View v) {
         Intent i = new Intent(Question.this, welcome.class);
+        i.putExtra("from","not_main");
         startActivity(i);
     }
 
@@ -52,7 +70,10 @@ public class Question extends AppCompatActivity {
         gbl = (GlobalVariables)getApplicationContext();
         helloTextView.setText(getIntent().getStringExtra("SURVEY_NAME"));
         sectionNameId = ("SECTION "+getIntent().getStringExtra("SECTION_NO")+": "+getIntent().getStringExtra("SECTION_NAME"));
+        sectionName = (TextView)findViewById(R.id.textView3);
+        clientId = (TextView)findViewById(R.id.textView2);
         survey_ID = getIntent().getStringExtra("SURVEY_ID");
+        db = new DataBaseHealper(this);
         textViewDetails = (TextView)findViewById(R.id.textViewDetails);
         textViewQuestionNumber1 = (TextView)findViewById(R.id.textViewQuestionNumber1);
         textViewQuestionInfo = (TextView)findViewById(R.id.textViewQuestionInfo);
@@ -61,6 +82,10 @@ public class Question extends AppCompatActivity {
         textViewDetails.setVisibility(textViewDetails.GONE);
         textViewQuestionInfo.setVisibility(textViewQuestionInfo.GONE);
         radioGroup = (RadioGroup)findViewById(R.id.radioGroup);
+        radioGroup.setVisibility(View.GONE);
+        footerButtons = (RelativeLayout)findViewById(R.id.footerButtons);
+        footerButtons.setVisibility(View.VISIBLE);
+        sectionName.setVisibility(View.VISIBLE);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
@@ -73,9 +98,84 @@ public class Question extends AppCompatActivity {
             }
         });
 
+        if(getIntent().getStringExtra("from").equals("iagree")){
+            textViewDetails.setVisibility(View.GONE);
+            textViewQuestion1.setVisibility(View.GONE);
+            textViewQuestionNumber1.setVisibility(View.GONE);
+            editTextName1.setVisibility(View.GONE);
+            footerButtons.setVisibility(View.GONE);
+            sectionName.setVisibility(View.GONE);
+            clientId.setText("REGISTRATION");
+            setRegistrationView();
+        }else{
+            sectionName.setText(sectionNameId);
+            clientId.setText(gbl.getClientId());
+            setSurveyQuestion();
+        }
 
-        setSurveyQuestion();
+    }
+    public void setRegistrationView(){
 
+        LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(this.LAYOUT_INFLATER_SERVICE);
+        View view = layoutInflater.inflate(R.layout.registration,null);
+        LinearLayout LL = (LinearLayout)findViewById(R.id.linearLayout);
+        LL.addView(view);
+        cpp = (CountryCodePicker)view.findViewById(R.id.ccp);
+        register = (Button)view.findViewById(R.id.register);
+        firstname = (EditText)view.findViewById(R.id.editTextName);
+        lastname = (EditText)view.findViewById(R.id.editTextLastName);
+        phone = (EditText)view.findViewById(R.id.editTextPhone);
+        register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String first,last,phoneNo;
+                first = firstname.getText().toString();
+                last = lastname.getText().toString();
+                phoneNo = phone.getText().toString();
+                if(!specialCharValidation(first) || !emptyFieldValidation(first)){
+                    firstname.setError("Please enter valid name");
+                    return;
+                }
+                if(!specialCharValidation(last) || !emptyFieldValidation(last)){
+                    lastname.setError("Please enter valid name");
+                    return;
+                }
+                if(!specialCharValidation(phoneNo) || !emptyFieldValidation(phoneNo)){
+                    if(!(phoneNo.length()==10)) {
+                        phone.setError("Please enter valid name");
+                        return;
+                    }
+                }
+                phoneNo = cpp.getSelectedCountryCodeWithPlus()+phoneNo;
+                //showMessage("",phoneNo);
+                db.addRegistrationDetails(first,last,phoneNo);
+                gbl.setName(first+" "+last);
+                Intent i = new Intent(Question.this, SurveySection.class);
+                i.putExtra("SURVEY_NAME", getIntent().getStringExtra("SURVEY_NAME"));
+                i.putExtra("SURVEY_ID", getIntent().getStringExtra("SURVEY_ID"));
+                i.putExtra("SECTION_NAME", getIntent().getStringExtra("SECTION_NAME"));
+                i.putExtra("SECTION_ID", getIntent().getStringExtra("SECTION_ID"));
+                i.putExtra("SECTION_NO", "1");
+                i.putExtra("SECTION_DESC", getIntent().getStringExtra("SECTION_DESC"));
+                startActivity(i);
+            }
+        });
+    }
+    public boolean specialCharValidation(String s){
+        Pattern regex = Pattern.compile("[$&+:;=\\\\?@#|/<>^*()%!-]");
+
+        if (regex.matcher(s).find()) {
+            return false;
+        }else {
+            return true;
+        }
+    }
+    public boolean emptyFieldValidation(String s){
+        if(s.isEmpty()){
+            return false;
+        }else{
+            return true;
+        }
     }
     public void setSurveyQuestion(){
         //Cursor csr = db.getQuestionByQuestionOrder("1a",getIntent().getStringExtra("SECTION_NO").toString());
@@ -162,15 +262,82 @@ public class Question extends AppCompatActivity {
                     editTextName1.setError("Reenter the number");
                 }
                 break;
+            case "4a":
+                if(answer >=0){
+                    showMessageWithNoAndYes("Info","Thank you. We have recorded "+answer+" as your Best Guess for total SALES in the PAST SEVEN DAYS. Reply 'yes' if correct or 'no' to re-answer","4a");
+                }else{
+                    editTextName1.setError("Reenter the correct number");
+                }
+                break;
+            case "5a":
+                if(answer >= 0 && answer< 8){
+                    showNextQuestion();
+                }else{
+                    editTextName1.setError("Reenter the correct number");
+                }
+                break;
+            case "5b":
+                if(answer >= 0 && answer< 8){
+                    showNextQuestion();
+                }else{
+                    editTextName1.setError("Reenter the correct number");
+                }
+                break;
+            case "5c":
+                if(answer >= 0 && answer< 8){
+                    String message = "Thanks for completing Impresa Insights this week! You are 25%  of the way to receiving this month's full report for your business! BASED ON TODAY'S RESPONSES, here is your weekly SALES estimate:Weekly Sales = "+gbl.getAnswerByQuestionOrder("3c");
+                    //showMessage("Info",message);
+                    textViewQuestion1.setText(message);
+                    textViewQuestionNumber1.setVisibility(View.GONE);
+                    editTextName1.setVisibility(View.GONE);
+                    JSONObject obj = new JSONObject();
+                    obj.put("answer",editTextName1.getText().toString());
+                    obj.put("question_no",editTextName1.getTag().toString());
+                    obj.put("order",questionOrder);
+                    gbl.addAnswerInJsonArray(obj);
+                    db.updateAnswerInTable(gbl.getAnswer(),true,survey_ID,gbl.getClientId());
+                    questionOrder = "last";
+
+                    //showNextQuestion();
+                }else{
+                    editTextName1.setError("Reenter the correct number");
+                }
+                break;
+            case "last":
+                Intent i = new Intent(Question.this, welcome.class);
+                i.putExtra("from","not_main");
+                startActivity(i);
+                break;
 
         }
+    }
+    public int ifAnswerExist(String questionId){
+        JSONArray answer = gbl.getAnswer();
+        for(int i=0;i<answer.length();i++){
+            try {
+                JSONObject obj = answer.getJSONObject(i);
+                if(questionId.equals(obj.getString("question_no"))){
+                    return i;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return -1;
+
     }
     public void showNextQuestion() throws JSONException {
         JSONObject obj = new JSONObject();
         obj.put("answer",editTextName1.getText().toString());
         obj.put("question_no",editTextName1.getTag().toString());
         obj.put("order",questionOrder);
-        gbl.addAnswerInJsonArray(obj);
+        int position = ifAnswerExist(editTextName1.getTag().toString());
+        if(position >0){
+            gbl.updateAtAnswer(position,editTextName1.getText().toString(),editTextName1.getTag().toString(),questionOrder,false);
+        }else {
+            gbl.addAnswerInJsonArray(obj);
+        }
         gbl.countIncrement();
         editTextName1.setText("");
         String type;
@@ -208,9 +375,9 @@ public class Question extends AppCompatActivity {
                 Integer val1 = Integer.parseInt(gbl.getAnswerByQuestionOrder("2a"));
                 Integer val2 =(Integer.parseInt(gbl.getAnswerByQuestionOrder("2a"))+Integer.parseInt(gbl.getAnswerByQuestionOrder("2b")))/2;
                 Integer val3 =Integer.parseInt(gbl.getAnswerByQuestionOrder("3c"))* Integer.parseInt(gbl.getAnswerByQuestionOrder("3e"));
-                text = text.replaceAll("[1a]",val1.toString());
-                text = text.replaceAll("[2c]",val2.toString());
-                text = text.replaceAll("[3g]",val3.toString());
+                text = text.replace("[1a]",val1.toString());
+                text = text.replace("[2c]",val2.toString());
+                text = text.replace("[3g]",val3.toString());
                 break;
 
         }
@@ -283,7 +450,7 @@ public class Question extends AppCompatActivity {
                         break;
                     default:
                         dialog.dismiss();
-                        editTextName1.setError("Please enter correct  value");
+                        editTextName1.setError("Please reenter correct  value");
                         break;
 
                 }

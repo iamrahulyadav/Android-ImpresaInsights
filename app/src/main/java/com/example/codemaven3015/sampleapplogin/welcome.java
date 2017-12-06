@@ -275,6 +275,7 @@ public class welcome extends AppCompatActivity {
     public JSONObject getAllDataWithAnswer(String clientid,Boolean flag) throws JSONException {
         Cursor ans = myDB.getAnswerFromDB(clientid,flag);
         String phone = "";
+        String name = "";
         String client_id = "";
         String surveyID = "";
         JSONArray response = new JSONArray();
@@ -282,6 +283,15 @@ public class welcome extends AppCompatActivity {
         JSONArray imageQuestion = new JSONArray();
         JSONArray image = new JSONArray();
         JSONObject alldata = new JSONObject();
+        if(flag){
+            Cursor reg = myDB.getRegistrationDetails(clientid);
+            if(reg.getCount()>0){
+                reg.moveToFirst();
+                phone = reg.getString(3);
+                name = reg.getString(1)+" "+reg.getString(2);
+                myDB.deleteRegistrationDetails(clientid);
+            }
+        }
         if (ans.getCount() > 0) {
             ans.moveToFirst();
             do {
@@ -299,17 +309,16 @@ public class welcome extends AppCompatActivity {
                 }
                 surveyID = ans.getString(6);
                 if(flag) {
-                    if (ans.getString(1).equals("3")) {
-                        phone = ans.getString(4);
-                        //phone = "10101010101";
-                        client_id = "new";
-                    }
+
+                    client_id = "new";
+
                 }else{
                     client_id = clientid;
                 }
             } while (ans.moveToNext());
             ans.close();
             data.put("phone", phone);
+            data.put("name",name);
             data.put("client_id",client_id);
             data.put("survey_id", surveyID);
             data.put("surveyor_id", sharedPreferences.getString("SurveyorId", ""));

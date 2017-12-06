@@ -26,6 +26,7 @@ public class DataBaseHealper extends SQLiteOpenHelper {
     public static final String TABLE_SURVEY_QUESTION = "Survey_Question_Table";
     public static final String TABLE_SURVEY_ANSWER = "Survey_Answer_Table";
     public static final String TABLE_CLIENT_INFO = "Client_Info_Table";
+    public static final String TABLE_REGISTRATION = "New_Client_Registration";
     //public static final String TABLE_GROWTH_ORITENTAION_SURVEY_ANSWER = "Survey_Answer_Table";
 
     public static final String SurveySectionCOL1 = "SECTION_ID";
@@ -84,6 +85,7 @@ public class DataBaseHealper extends SQLiteOpenHelper {
         //db.execSQL("create table "+ TABLE_SURVEY_QUESTION_OPTION+" (OPTION_ID INTEGER, QUESTION_ID INTEGER, OPTION_DESC TEXT)");
         db.execSQL("create table "+ TABLE_SURVEY_ANSWER+" (ANSWER_ID INTEGER PRIMARY KEY AUTOINCREMENT, QUESTION_ID INTEGER, CLIENT_ID INTEGER, CLIENT_ID_TEMP INTEGER,ANSWER_TEXT TEXT, FLAG INTEGER,SURVEY_ID INTEGER,TYPE TEXT)");
         db.execSQL("create table "+TABLE_CLIENT_INFO+" (CLIENT_ID INTEGER, SURVEY_ID INTEGER)");
+        db.execSQL("create table "+TABLE_REGISTRATION+"(CLIENT_ID INTEGER, FIRST_NAME TEXT, LAST_NAME TEXT, PHONE_NUMBER TEXT)");
     }
 
     @Override
@@ -97,7 +99,26 @@ public class DataBaseHealper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_SURVEY_QUESTION);
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_SURVEY_ANSWER);
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_CLIENT_INFO);
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_REGISTRATION);
         onCreate(db);
+    }
+    public void addRegistrationDetails(String first,String last,String phone){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValue = new ContentValues();
+        contentValue.put("CLIENT_ID", "1");
+        contentValue.put("FIRST_NAME", first);
+        contentValue.put("LAST_NAME", last);
+        contentValue.put("PHONE_NUMBER", phone);
+        db.insert(TABLE_REGISTRATION, null, contentValue);
+    }
+    public void updateClientId(int updateClientId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("UPDATE "+TABLE_REGISTRATION+" SET CLIENT_ID= "+updateClientId +" WHERE CLIENT_ID = 1");
+       //db.update(TABLE_REGISTRATION,contentValue,"USERNAME = ?",new String[] { username });
+    }
+    public void deleteRegistrationDetails(String clientId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_REGISTRATION, "CLIENT_ID =?", new String[]{clientId});
     }
     public void updateClientIdTable(String clientId,String surveyId){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -140,12 +161,21 @@ public class DataBaseHealper extends SQLiteOpenHelper {
         Cursor res = db.rawQuery(Query,new String[] {clientId}, null);
         return res;
     }
+    public Cursor getRegistrationDetails(String clientId){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        String Query = "SELECT * FROM " + TABLE_REGISTRATION + " WHERE CLIENT_ID =?";
+        Cursor res = db.rawQuery(Query,new String[] {clientId}, null);
+        return res;
+
+    }
     public void updateAnswerInTable( JSONArray answer,boolean isOldClient,String survey_id,String client_id){
         SQLiteDatabase db = this.getWritableDatabase();
         int clientId = 0;
         if(!isOldClient){
             Random r = new Random();
             clientId = (r.nextInt(9999999));
+            updateClientId(clientId);
         }else{
             clientId = 0;
         }
@@ -162,7 +192,11 @@ public class DataBaseHealper extends SQLiteOpenHelper {
                     contentValue.put("CLIENT_ID_TEMP", clientId);
                 }
                 String ans = obj.getString("answer");
-                String radio = obj.getString("radio");
+                String radio = "";
+                if(!(survey_id.equals("2")&& survey_id.equals("3"))){
+                    radio = obj.getString("radio");
+                }
+
                 if(ans.equals("")){
                     if(radio.equals("")){
                         contentValue.put("ANSWER_TEXT", "");

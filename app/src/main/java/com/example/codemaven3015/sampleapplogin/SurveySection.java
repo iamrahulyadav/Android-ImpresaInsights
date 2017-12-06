@@ -64,6 +64,7 @@ public class SurveySection extends AppCompatActivity {
             }
             if(surveyId.equals("2")||surveyId.equals("3")){
                 Intent i = new Intent(SurveySection.this, Question.class);
+                i.putExtra("from","surveySection");
                 i.putExtra("SURVEY_NAME", surveyName);
                 i.putExtra("FIRST", "first");
                 i.putExtra("SURVEY_ID", surveyId);

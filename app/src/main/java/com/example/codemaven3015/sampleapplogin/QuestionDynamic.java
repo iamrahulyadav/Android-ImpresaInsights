@@ -212,15 +212,15 @@ public class QuestionDynamic extends AppCompatActivity {
         }
     }
     public boolean phoneValidation(String phone){
-        if(phone.length()>8){
-            if(phone.matches("^[+]?[0-9]{10,13}$")) {
-
-                return PhoneNumberUtils.isGlobalPhoneNumber(phone);
-            }else {
+        if(!(phone.length()==10)){
+//            if(phone.matches("^[+]?[0-9]{10,13}$")) {
+//
+//                return PhoneNumberUtils.isGlobalPhoneNumber(phone);
+//            }else {
                 return false;
-            }
+            //}
         }else {
-            return false;
+            return true;
         }
 
     }
@@ -573,7 +573,7 @@ public class QuestionDynamic extends AppCompatActivity {
                         startActivity(i);
                     } else {
                         gbl.decrementSectionCount();
-                        showMessageWithNoAndYes(getResources().getString(R.string.tankYou), getResources().getString(R.string.surveyCompleted), true);
+                        showMessageWithNoAndYes(getResources().getString(R.string.tankYou), "Thank You "+gbl.getName()+getResources().getString(R.string.surveyCompleted), true);
                     }
                 }
             }
@@ -612,12 +612,12 @@ public class QuestionDynamic extends AppCompatActivity {
                 if(child.getVisibility() == View.GONE){
                     ans = "";
                 }
-                if((edt.getInputType() == InputType.TYPE_CLASS_PHONE)){
-                    String firstLetter = ans.substring(0,1);
-                    if(!(firstLetter.equals("+"))){
-                        ans = "+"+ans;
-                    }
-                }
+//                if((edt.getInputType() == InputType.TYPE_CLASS_PHONE)){
+//                    String firstLetter = ans.substring(0,1);
+//                    if(!(firstLetter.equals("+"))){
+//                        ans = "+"+ans;
+//                    }
+//                }
 
                 JSONObject obj = new JSONObject();
                 String questionId= ((List<String>)edt.getTag()).get(0).toString();
@@ -628,7 +628,7 @@ public class QuestionDynamic extends AppCompatActivity {
                         Log.e("POSITION",position+"");
                         if(ifRadio.equals("not_radio")) {
                             if (position >= 0) {
-                                gbl.updateAtAnswer(position, ans, questionId, "");
+                                gbl.updateAtAnswer(position, ans, questionId, "",true);
                             } else {
                                 obj.put("question_no", questionId);
                                 obj.put("answer", ans);
@@ -638,7 +638,7 @@ public class QuestionDynamic extends AppCompatActivity {
                             }
                         }else{
                             if (position >= 0) {
-                                gbl.updateAtAnswer(position,ans, questionId, "radio");
+                                gbl.updateAtAnswer(position,ans, questionId, "radio",true);
                             } else {
                                 obj.put("question_no", questionId);
                                 obj.put("answer", ans);
@@ -684,7 +684,7 @@ public class QuestionDynamic extends AppCompatActivity {
                 JSONObject obj = new JSONObject();
                 int position = ifAnswerExist(rbg.getTag().toString());
                 if(position>=0){
-                    gbl.updateAtAnswer(position,ans ,rbg.getTag().toString(),selectedtext);
+                    gbl.updateAtAnswer(position,ans ,rbg.getTag().toString(),selectedtext,true);
                 }else{
                     try {
                         obj.put("question_no",rbg.getTag());
@@ -714,7 +714,7 @@ public class QuestionDynamic extends AppCompatActivity {
                 int position = ifAnswerExist(imageView.getTag().toString());
                 JSONObject obj = new JSONObject();
                 if(position >= 0){
-                    gbl.updateAtAnswer(position,encodedImageString,imageView.getTag().toString(),"image");
+                    gbl.updateAtAnswer(position,encodedImageString,imageView.getTag().toString(),"image",true);
                 }else{
                     try {
                         obj.put("question_no",imageView.getTag());
@@ -1038,8 +1038,8 @@ public class QuestionDynamic extends AppCompatActivity {
                 break;
             case "phone":
                 tvQuestion.setInputType(InputType.TYPE_CLASS_PHONE);
-                tvQuestion.setHint(getResources().getString(R.string.placeholderPhone));
-                int maxLength = 14;
+                //tvQuestion.setHint(getResources().getString(R.string.placeholderPhone));
+                int maxLength = 10;
                 tvQuestion.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
                 break;
             case "numeric":
@@ -1288,8 +1288,8 @@ public class QuestionDynamic extends AppCompatActivity {
                         break;
                     case "phone":
                         tvQuestion.setInputType(InputType.TYPE_CLASS_PHONE);
-                        int maxLength = 14;
-                        tvQuestion.setHint(getResources().getString(R.string.placeholderPhone));
+                        int maxLength = 10;
+                        //tvQuestion.setHint(getResources().getString(R.string.placeholderPhone));
                         tvQuestion.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLength)});
                         break;
                     case "numeric":
