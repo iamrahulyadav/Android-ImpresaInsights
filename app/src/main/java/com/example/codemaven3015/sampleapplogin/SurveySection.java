@@ -62,18 +62,18 @@ public class SurveySection extends AppCompatActivity {
             while (question.moveToNext()){
                 Log.e("Option",question.getString(8));
             }
-            if(surveyId.equals("2")||surveyId.equals("3")){
-                Intent i = new Intent(SurveySection.this, Question.class);
-                i.putExtra("from","surveySection");
-                i.putExtra("SURVEY_NAME", surveyName);
-                i.putExtra("FIRST", "first");
-                i.putExtra("SURVEY_ID", surveyId);
-                i.putExtra("SECTION_NAME", sectionTittle);
-                i.putExtra("SECTION_ID", sectionId);
-                i.putExtra("SECTION_NO", sectionNo);
-                i.putExtra("SECTION_DESC", sectionDesc);
-                startActivity(i);
-            }else {
+//            if(surveyId.equals("2")||surveyId.equals("3")){
+//                Intent i = new Intent(SurveySection.this, Question.class);
+//                i.putExtra("from","surveySection");
+//                i.putExtra("SURVEY_NAME", surveyName);
+//                i.putExtra("FIRST", "first");
+//                i.putExtra("SURVEY_ID", surveyId);
+//                i.putExtra("SECTION_NAME", sectionTittle);
+//                i.putExtra("SECTION_ID", sectionId);
+//                i.putExtra("SECTION_NO", sectionNo);
+//                i.putExtra("SECTION_DESC", sectionDesc);
+//                startActivity(i);
+//            }else {
                 Intent i = new Intent(SurveySection.this, QuestionDynamic.class);
                 i.putExtra("SURVEY_NAME", surveyName);
                 i.putExtra("FIRST", "first");
@@ -83,7 +83,7 @@ public class SurveySection extends AppCompatActivity {
                 i.putExtra("SECTION_NO", sectionNo);
                 i.putExtra("SECTION_DESC", sectionDesc);
                 startActivity(i);
-            }
+            //}
         }else{
             showMessage("Info","No Question");
         }

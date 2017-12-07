@@ -27,6 +27,7 @@ public class DataBaseHealper extends SQLiteOpenHelper {
     public static final String TABLE_SURVEY_ANSWER = "Survey_Answer_Table";
     public static final String TABLE_CLIENT_INFO = "Client_Info_Table";
     public static final String TABLE_REGISTRATION = "New_Client_Registration";
+    public static final String TABLE_WEEK = "Weekly_Money_Market_Update";
     //public static final String TABLE_GROWTH_ORITENTAION_SURVEY_ANSWER = "Survey_Answer_Table";
 
     public static final String SurveySectionCOL1 = "SECTION_ID";
@@ -85,7 +86,8 @@ public class DataBaseHealper extends SQLiteOpenHelper {
         //db.execSQL("create table "+ TABLE_SURVEY_QUESTION_OPTION+" (OPTION_ID INTEGER, QUESTION_ID INTEGER, OPTION_DESC TEXT)");
         db.execSQL("create table "+ TABLE_SURVEY_ANSWER+" (ANSWER_ID INTEGER PRIMARY KEY AUTOINCREMENT, QUESTION_ID INTEGER, CLIENT_ID INTEGER, CLIENT_ID_TEMP INTEGER,ANSWER_TEXT TEXT, FLAG INTEGER,SURVEY_ID INTEGER,TYPE TEXT)");
         db.execSQL("create table "+TABLE_CLIENT_INFO+" (CLIENT_ID INTEGER, SURVEY_ID INTEGER)");
-        db.execSQL("create table "+TABLE_REGISTRATION+"(CLIENT_ID INTEGER, FIRST_NAME TEXT, LAST_NAME TEXT, PHONE_NUMBER TEXT)");
+        db.execSQL("create table "+TABLE_REGISTRATION+" (CLIENT_ID INTEGER, FIRST_NAME TEXT, LAST_NAME TEXT, PHONE_NUMBER TEXT)");
+        db.execSQL("create table "+TABLE_WEEK+" (CLIENT_ID INTEGER, SURVEY_ID INTEGER, WEEK TEXT)");
     }
 
     @Override
@@ -100,7 +102,40 @@ public class DataBaseHealper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_SURVEY_ANSWER);
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_CLIENT_INFO);
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_REGISTRATION);
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_WEEK);
         onCreate(db);
+    }
+    public void updateWeeklyInfo(String client_id,String survey_id,String week ){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        String Query = "SELECT * FROM " + TABLE_WEEK + " WHERE CLIENT_ID =? AND SURVEY_ID =?";
+        Cursor ifExist = db.rawQuery(Query,new String[] {client_id,survey_id}, null);
+        if(ifExist.getCount()>0){
+//            switch(week){
+//                case "1":
+//                    db.execSQL("UPDATE "+TABLE_WEEK+" SET WEEK_1= 1 WHERE CLIENT_ID = "+client_id+" AND SURVEY_ID = "+survey_id);
+//                    break;
+//                case "2":
+//                    db.execSQL("UPDATE "+TABLE_WEEK+" SET WEEK_2= 1 WHERE CLIENT_ID = "+client_id+" AND SURVEY_ID = "+survey_id);
+//                    break;
+//                case "3":
+//                    db.execSQL("UPDATE "+TABLE_WEEK+" SET WEEK_3= 1 WHERE CLIENT_ID = "+client_id+" AND SURVEY_ID = "+survey_id);
+//                    break;
+//                case "4":
+                    db.execSQL("UPDATE "+TABLE_WEEK+" SET WEEK = "+week+" WHERE CLIENT_ID = "+client_id+" AND SURVEY_ID = "+survey_id);
+                   // break;
+           // }
+        }else{
+            ContentValues contentValue = new ContentValues();
+            contentValue.put("CLIENT_ID", client_id);
+            contentValue.put("SURVEY_ID", survey_id);
+            contentValue.put("WEEK", "1");
+//            contentValue.put("WEEK_2", "0");
+//            contentValue.put("WEEK_3", "0");
+//            contentValue.put("WEEK_4", "0");
+            db.insert(TABLE_WEEK, null, contentValue);
+        }
+
     }
     public void addRegistrationDetails(String first,String last,String phone){
         SQLiteDatabase db = this.getWritableDatabase();

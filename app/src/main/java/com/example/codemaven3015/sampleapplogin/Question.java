@@ -20,6 +20,7 @@ import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -69,6 +70,8 @@ public class Question extends AppCompatActivity {
         final TextView helloTextView = (TextView) findViewById(R.id.action_text);
         gbl = (GlobalVariables)getApplicationContext();
         helloTextView.setText(getIntent().getStringExtra("SURVEY_NAME"));
+        final ImageView imageView = (ImageView)findViewById(R.id.imageButton);
+        imageView.setVisibility(View.GONE);
         sectionNameId = ("SECTION "+getIntent().getStringExtra("SECTION_NO")+": "+getIntent().getStringExtra("SECTION_NAME"));
         sectionName = (TextView)findViewById(R.id.textView3);
         clientId = (TextView)findViewById(R.id.textView2);
@@ -118,9 +121,10 @@ public class Question extends AppCompatActivity {
 
         LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(this.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.registration,null);
-        LinearLayout LL = (LinearLayout)findViewById(R.id.linearLayout);
+        LinearLayout LL = (LinearLayout) findViewById(R.id.Questions);
         LL.addView(view);
         cpp = (CountryCodePicker)view.findViewById(R.id.ccp);
+        //cpp.setDefaultCountryUsingNameCode("AF");
         register = (Button)view.findViewById(R.id.register);
         firstname = (EditText)view.findViewById(R.id.editTextName);
         lastname = (EditText)view.findViewById(R.id.editTextLastName);
@@ -296,6 +300,7 @@ public class Question extends AppCompatActivity {
                     obj.put("order",questionOrder);
                     gbl.addAnswerInJsonArray(obj);
                     db.updateAnswerInTable(gbl.getAnswer(),true,survey_ID,gbl.getClientId());
+                    db.updateWeeklyInfo(gbl.getClientId(),survey_ID,"1");
                     questionOrder = "last";
 
                     //showNextQuestion();

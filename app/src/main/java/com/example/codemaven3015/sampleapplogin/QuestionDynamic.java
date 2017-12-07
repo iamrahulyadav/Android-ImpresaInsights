@@ -27,13 +27,16 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.PhoneNumberUtils;
+import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,14 +49,11 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -65,12 +65,11 @@ import java.util.List;
 import java.util.Random;
 import java.util.regex.Pattern;
 
-import static android.R.attr.id;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public class QuestionDynamic extends AppCompatActivity {
-
+    public int pos=0;
     LinearLayout LLQuestion;
     int marginBottomPxl,marginBottomDp,imageSize;
     String radioselect = "",survey_ID;
@@ -350,7 +349,7 @@ public class QuestionDynamic extends AppCompatActivity {
                 }
             } else {
                 if (getIntent().getStringExtra("SURVEY_ID").equals("1")) {
-                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.dataLost), true);
+                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.dataLost), false);
 
 
                 } else {
@@ -1016,7 +1015,7 @@ public class QuestionDynamic extends AppCompatActivity {
             tvQuestion.setText(answer);
         }
         layoutParams.setMargins(0,0,0,marginBottomPxl);
-        switch(inputType){
+        switch("yearmonth"){
             case "email":
                 tvQuestion.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                 break;
@@ -1055,11 +1054,15 @@ public class QuestionDynamic extends AppCompatActivity {
                 tvQuestion.setMaxLines(3);
                 break;
             case "yearmonth":
-                tvQuestion.setInputType(InputType.TYPE_CLASS_NUMBER);
-                tvQuestion.setHint("Please enter total number of months");
-                //tvQuestion.setHint(getResources().getString(R.string.placeholderYearMonth));
-                int maxLengthYear = 3;
-                tvQuestion.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLengthYear)});
+                tvQuestion.setInputType(InputType.TYPE_NUMBER_VARIATION_NORMAL);
+                tvQuestion.setHint("Please select");
+                tvQuestion.setFocusable(false);
+                tvQuestion.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showYearMonth(v);
+                    }
+                });
                 break;
             default:
                 tvQuestion.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -1306,9 +1309,14 @@ public class QuestionDynamic extends AppCompatActivity {
                         break;
                     case "yearmonth":
                         tvQuestion.setInputType(InputType.TYPE_CLASS_NUMBER);
-                        tvQuestion.setHint("Please enter total number of months");
-                        int maxLengthYear = 3;
-                        tvQuestion.setFilters(new InputFilter[] {new InputFilter.LengthFilter(maxLengthYear)});
+                        tvQuestion.setHint("Please select");
+                        tvQuestion.setFocusable(false);
+                        tvQuestion.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                showYearMonth(v);
+                            }
+                        });
                         break;
                     default:
                         tvQuestion.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -1392,6 +1400,51 @@ public class QuestionDynamic extends AppCompatActivity {
         });
         dialog1.show();
 
+    }
+    public void showYearMonth(final View v){
+        final android.app.AlertDialog.Builder d = new android.app.AlertDialog.Builder(QuestionDynamic.this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.number_picker_dialog, null);
+        d.setTitle("");
+        d.setMessage(" ");
+        d.setView(dialogView);
+        final NumberPicker numberPicker = (NumberPicker) dialogView.findViewById(R.id.dialog_number_picker);
+        final NumberPicker numberPicker2 = (NumberPicker) dialogView.findViewById(R.id.numberPicker2);
+        numberPicker.setMaxValue(99);
+        numberPicker.setMinValue(0);
+        numberPicker.setWrapSelectorWheel(false);
+        numberPicker2.setMaxValue(12);
+        numberPicker2.setMinValue(0);
+        numberPicker2.setWrapSelectorWheel(false);
+        numberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker numberPicker, int i, int i1) {
+                Log.e("Check", "onValueChange: ");
+
+            }
+        });
+        numberPicker2.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker numberPicker, int i, int i1) {
+                Log.e("Check", "onValueChange: ");
+
+            }
+        });
+        d.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Log.e("Check", "onClick: " + numberPicker.getValue());
+
+                ((EditText) v).setText(numberPicker2.getValue()+" / "+numberPicker.getValue());
+            }
+        });
+        d.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+        android.app.AlertDialog alertDialog = d.create();
+        alertDialog.show();
     }
 
 }

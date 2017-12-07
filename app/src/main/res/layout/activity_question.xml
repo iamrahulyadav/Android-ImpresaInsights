@@ -7,10 +7,10 @@
     android:background="@drawable/bg"
     tools:context="com.example.codemaven3015.sampleapplogin.Question">
 
-    <LinearLayout
+    <RelativeLayout
+
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:orientation="vertical"
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"
@@ -20,7 +20,11 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/linearLayout">
-
+        <RelativeLayout
+            android:id="@+id/top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -49,99 +53,109 @@
                 android:textSize="25sp"
                 android:textStyle="bold" />
         </LinearLayout>
-
-        <LinearLayout
+        </RelativeLayout>
+        <ScrollView
+            android:id="@+id/scrollViewQuestions"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp"
-            android:paddingTop="30dp">
+            android:layout_height="match_parent"
+            android:layout_above="@+id/footerButtons"
+            android:layout_below="@+id/top"
+            android:layout_marginTop="10dp"
+            >
 
-            <TextView
-                android:id="@+id/textViewDetails"
+            <LinearLayout
+                android:id="@+id/Questions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
-                android:text="What is your first name?"
-                android:textColor="@color/darkgrey"
-                android:textSize="20dp" />
-            <TextView
-                android:id="@+id/textViewQuestionNumber1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
-                android:text="Question 1A."
-                android:textColor="@color/darkgrey"
-                android:textSize="20dp"
-                android:textStyle="bold" />
+                android:orientation="vertical"
+                android:scrollbars="vertical"
+                android:paddingLeft="30dp"
+                android:paddingRight="30dp"
+                android:paddingTop="30dp">
 
-            <TextView
-                android:id="@+id/textViewQuestion1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
-                android:text="What is your first name?"
-                android:textColor="@color/darkgrey"
-                android:textSize="20dp" />
-            <TextView
-                android:id="@+id/textViewQuestionInfo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
-                android:text="What is your first name?"
-                android:textColor="@color/blue"
-                android:textSize="16dp"
-                android:textStyle="italic"/>
-
-            <EditText
-                android:id="@+id/editTextName1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#ffffff"
-                android:ems="10"
-                android:hint="Please specify"
-                android:inputType="number"
-                android:paddingBottom="15dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="15dp"
-                android:layout_marginBottom="15dp"
-                android:textColor="@color/darkgrey"
-                android:textColorHint="#e6e7e9"
-                android:textSize="18dp" />
-            <RadioGroup
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/radioGroup"
-                android:orientation="vertical">
-                <RadioButton
-                    android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/textViewDetails"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/yes"
-                    android:text="Yes"/>
-                <RadioButton
-                    android:layout_width="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:text="What is your first name?"
+                    android:textColor="@color/darkgrey"
+                    android:textSize="20dp" />
+                <TextView
+                    android:id="@+id/textViewQuestionNumber1"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/no"
-                    android:text="No"/>
-            </RadioGroup>
+                    android:layout_marginBottom="15dp"
+                    android:text="Question 1A."
+                    android:textColor="@color/darkgrey"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
 
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/textViewQuestion1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:text="What is your first name?"
+                    android:textColor="@color/darkgrey"
+                    android:textSize="20dp" />
+                <TextView
+                    android:id="@+id/textViewQuestionInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:text="What is your first name?"
+                    android:textColor="@color/blue"
+                    android:textSize="16dp"
+                    android:textStyle="italic"/>
+
+                <EditText
+                    android:id="@+id/editTextName1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#ffffff"
+                    android:ems="10"
+                    android:hint="Please specify"
+                    android:inputType="number"
+                    android:paddingBottom="15dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="15dp"
+                    android:layout_marginBottom="15dp"
+                    android:textColor="@color/darkgrey"
+                    android:textColorHint="#e6e7e9"
+                    android:textSize="18dp" />
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/radioGroup"
+                    android:orientation="vertical">
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/yes"
+                        android:text="Yes"/>
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/no"
+                        android:text="No"/>
+                </RadioGroup>
+
+            </LinearLayout>
+
+        </ScrollView>
+
 
         <RelativeLayout
             android:id="@+id/footerButtons"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="65dp"
             android:layout_alignParentBottom="true"
-            android:orientation="horizontal"
-            tools:layout_constraintTop_creator="1"
-            tools:layout_constraintLeft_creator="1"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/linearLayout"
-            android:layout_marginLeft="0dp"
             android:layout_marginBottom="20dp"
             android:layout_gravity="bottom"
+            android:paddingTop="5dp"
+            android:orientation="horizontal"
             >
 
             <Button
@@ -198,6 +212,6 @@
                 android:textColor="#ffffff"
                 android:textSize="18sp" />
         </RelativeLayout>
-    </LinearLayout>
+    </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>

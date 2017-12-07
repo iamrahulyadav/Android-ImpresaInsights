@@ -4,8 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginRight="20dp"
-    android:layout_marginLeft="20dp">
+    >
 
     <TextView
         android:id="@+id/name"
@@ -14,8 +13,8 @@
         android:layout_marginBottom="5dp"
         android:textColor="@color/darkgrey"
         android:textSize="20dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginLeft="30dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
         android:text="First Name:"
         />
 
@@ -29,8 +28,8 @@
         android:paddingBottom="10dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginLeft="30dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
         android:paddingTop="10dp"
         android:layout_marginBottom="15dp"
         android:textColor="@color/darkgrey"
@@ -47,8 +46,8 @@
         android:textColor="@color/darkgrey"
         android:textSize="20dp"
         android:text="Last Name:"
-        android:layout_marginRight="30dp"
-        android:layout_marginLeft="30dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
          />
 
     <EditText
@@ -61,8 +60,8 @@
         android:paddingBottom="10dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginLeft="30dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
         android:paddingTop="10dp"
         android:layout_marginBottom="15dp"
         android:textColor="@color/darkgrey"
@@ -76,8 +75,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginLeft="30dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
         android:textColor="@color/darkgrey"
         android:textSize="20dp"
         android:text="Phone Number:"
@@ -90,8 +89,9 @@
         android:layout_height="wrap_content"
         app:ccp_showFullName="true"
         app:ccp_showPhoneCode="true"
-        android:layout_marginRight="30dp"
-        android:layout_marginLeft="30dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        app:ccp_defaultNameCode="AF"
         app:ccp_showNameCode="false"/>
 
 
@@ -105,8 +105,8 @@
         android:paddingBottom="10dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginLeft="30dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
         android:paddingTop="10dp"
         android:layout_marginBottom="15dp"
         android:textColor="@color/darkgrey"
@@ -119,9 +119,9 @@
         android:id="@+id/register"
         android:layout_height="55dp"
         android:layout_marginBottom="15dp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp"
-        android:layout_marginTop="0dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
         android:background="@color/blue"
         android:onClick="openSurveyList"
         android:text="Register"
