@@ -1015,7 +1015,7 @@ public class QuestionDynamic extends AppCompatActivity {
             tvQuestion.setText(answer);
         }
         layoutParams.setMargins(0,0,0,marginBottomPxl);
-        switch("yearmonth"){
+        switch(inputType){
             case "email":
                 tvQuestion.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                 break;
