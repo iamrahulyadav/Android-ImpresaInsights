@@ -204,7 +204,7 @@ public class DataBaseHealper extends SQLiteOpenHelper {
         return res;
 
     }
-    public void updateAnswerInTable( JSONArray answer,boolean isOldClient,String survey_id,String client_id){
+    public void updateAnswerInTable( JSONArray answer,boolean isOldClient,String survey_id,String client_id,boolean isDone){
         SQLiteDatabase db = this.getWritableDatabase();
         int clientId = 0;
         if(!isOldClient){
@@ -223,8 +223,14 @@ public class DataBaseHealper extends SQLiteOpenHelper {
                 contentValue.put("SURVEY_ID",survey_id);
                 if (isOldClient) {
                     contentValue.put("CLIENT_ID", client_id);
+                    if(!isDone){
+                        contentValue.put("FLAG", "2");
+                    }else {
+                        contentValue.put("FLAG", "0");
+                    }
                 } else {
                     contentValue.put("CLIENT_ID_TEMP", clientId);
+                    contentValue.put("FLAG", "0");
                 }
                 String ans = obj.getString("answer");
                 String radio = "";
@@ -246,7 +252,7 @@ public class DataBaseHealper extends SQLiteOpenHelper {
                 }else{
                     contentValue.put("TYPE",radio);
                 }
-                contentValue.put("FLAG", "0");
+                //contentValue.put("FLAG", "0");
                 db.insert(TABLE_SURVEY_ANSWER,null,contentValue);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -278,11 +284,22 @@ public class DataBaseHealper extends SQLiteOpenHelper {
         if(flag){
             Query = "SELECT * FROM " + TABLE_SURVEY_ANSWER + " WHERE CLIENT_ID_TEMP =?";
         }else{
-            Query = "SELECT * FROM " + TABLE_SURVEY_ANSWER + " WHERE CLIENT_ID =?";
+            Query = "SELECT * FROM " + TABLE_SURVEY_ANSWER + " WHERE CLIENT_ID =? ";
         }
         Cursor res = db.rawQuery(Query,new String[] {clientId}, null);
         //Cursor res = db.rawQuery("select * from "+TABLE_SURVEY_ANSWER+" WHERE FLAG = 0", null,);
         return res;
+    }
+    public boolean ifFlageisNottwo(String clientId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String Query = "";
+        Query = "SELECT * FROM " + TABLE_SURVEY_ANSWER + " WHERE CLIENT_ID =? AND FLAG = 2";
+        Cursor res = db.rawQuery(Query,new String[] {clientId}, null);
+        if(res.getCount()>0){
+            return false;
+        }else {
+            return true;
+        }
     }
     public Cursor ifSurveyDone(String clientId,String surveyId){
         SQLiteDatabase db = this.getWritableDatabase();

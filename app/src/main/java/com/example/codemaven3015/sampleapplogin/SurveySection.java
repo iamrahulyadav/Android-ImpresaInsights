@@ -14,11 +14,15 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 public class SurveySection extends AppCompatActivity {
     String surveyName, sectionTittle, sectionNo,surveyId,sectionId,sectionDesc;
     TextView sectionNumber,sectionName,sectionDesc1;
     DataBaseHealper db;
     GlobalVariables gbl;
+    boolean isDone = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +45,33 @@ public class SurveySection extends AppCompatActivity {
         surveyId = getIntent().getStringExtra("SURVEY_ID");
         sectionId = getIntent().getStringExtra("SECTION_ID");
         sectionDesc = getIntent().getStringExtra("SECTION_DESC");
+        isDone = getIntent().getBooleanExtra("isDONE",false);
         sectionNumber.setText("Section "+sectionNo + " :");
         sectionName.setText(sectionTittle);
         sectionDesc1.setText(sectionDesc);
+        if (savedInstanceState != null) {
+            Log.e("Saved",savedInstanceState.getString("ANSWER"));
+            try {
+                JSONArray jsonObject = new JSONArray(savedInstanceState.getString("ANSWER"));
+                gbl.setAnswerFromSavedInstance(jsonObject);
+                gbl.setSectionCount(savedInstanceState.getInt("SECTION_NO"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            //gbl.setAnswerFromSavedInstance();
+
+        }
+        Cursor section = db.getSectionList(getIntent().getStringExtra("SURVEY_ID"));
+        gbl.setsectionList(section);
         //sectionDesc1.setMovementMethod(new ScrollingMovementMethod());
 
+    }
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putString("ANSWER",gbl.getAnswer()+"");
+        savedInstanceState.putInt("SECTION_NO",gbl.getSectionCount());
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
     }
     @Override
     public void onBackPressed() {
@@ -82,6 +108,7 @@ public class SurveySection extends AppCompatActivity {
                 i.putExtra("SECTION_ID", sectionId);
                 i.putExtra("SECTION_NO", sectionNo);
                 i.putExtra("SECTION_DESC", sectionDesc);
+                i.putExtra("isDONE",isDone);
                 startActivity(i);
             //}
         }else{
@@ -98,21 +125,21 @@ public class SurveySection extends AppCompatActivity {
             //gbl.incrementSectionCount();
             if (!(gbl.getSectionCount() < section.getCount()) && gbl.getCounter() >= gbl.getCount()) {
                 if (getIntent().getStringExtra("SURVEY_ID").equals("1")) {
-                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.saveAndExit),true);
+                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.saveAndExit),true,isDone);
                 } else {
-                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.saveAndExit),true);
+                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.saveAndExit),true,isDone);
                 }
             } else {
                 if (getIntent().getStringExtra("SURVEY_ID").equals("1")) {
-                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.dataLost),false);
+                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.dataLost),false,isDone);
                 } else {
-                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.saveAndExit),true);
+                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.saveAndExit),true,isDone);
                 }
             }
         }
         //section.close();
     }
-    public void showMessageWithNoAndYes(String title,String message,final boolean flag){
+    public void showMessageWithNoAndYes(String title,String message,final boolean flag,final boolean isdone){
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         //builder.setCancelable(true);
         builder.setTitle(title);
@@ -122,10 +149,13 @@ public class SurveySection extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 if(flag){
                     if(gbl.getClientId().equals("new")){
-                        db.updateAnswerInTable(gbl.getAnswer(),false,surveyId,gbl.getClientId());
+                        db.updateAnswerInTable(gbl.getAnswer(),false,surveyId,gbl.getClientId(),isdone);
                     }else{
-                        db.updateAnswerInTable(gbl.getAnswer(),true,surveyId,gbl.getClientId());
+                        db.deleteAnswerIfUpdated(gbl.getClientId());
+                        db.updateAnswerInTable(gbl.getAnswer(),true,surveyId,gbl.getClientId(),isdone);
                     }
+                }else{
+                    db.deleteRegistrationDetails("1");
                 }
                 Intent i = new Intent(SurveySection.this , welcome.class);
                 i.putExtra("from","not_main");
@@ -168,11 +198,14 @@ public class SurveySection extends AppCompatActivity {
                         i.putExtra("SECTION_ID", section.getString(0));
                         i.putExtra("SECTION_NO", gbl.getSectionCount() + 1 + "");
                         i.putExtra("SECTION_DESC", section.getString(3));
+                        i.putExtra("isDONE",isDone);
                         startActivity(i);
                     }
                     //question.close();
                 }
             } else {
+                db.deleteRegistrationDetails("1");
+
                 Intent i = new Intent(SurveySection.this, welcome.class);
                 i.putExtra("from", "not_main");
                 startActivity(i);

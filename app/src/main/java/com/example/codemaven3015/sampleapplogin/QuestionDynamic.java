@@ -84,6 +84,7 @@ public class QuestionDynamic extends AppCompatActivity {
     int yearX,monthX,dayX;
     int date = 0;
     public static final int DILOG_ID=0;
+    public boolean isDone = false;
     //ProgressDialog progressDialog;
 
 
@@ -124,6 +125,7 @@ public class QuestionDynamic extends AppCompatActivity {
         }
         sectionNameId.setText("SECTION "+getIntent().getStringExtra("SECTION_NO")+": "+getIntent().getStringExtra("SECTION_NAME"));
         survey_ID = getIntent().getStringExtra("SURVEY_ID");
+        isDone = getIntent().getBooleanExtra("isDONE",false);
         sectionDescription.setVisibility(View.GONE);
         final Calendar cal = Calendar.getInstance();
         yearX=cal.get(Calendar.YEAR);
@@ -160,7 +162,36 @@ public class QuestionDynamic extends AppCompatActivity {
 
             }
         });
+        if (savedInstanceState != null) {
+            // Restore value of members from saved state
+            //mUser = savedInstanceState.getString(STATE_USER);
+            Cursor section = db.getSectionList(getIntent().getStringExtra("SURVEY_ID"));
+            gbl.setsectionList(section);
+            Cursor question = db.getQuestionList(getIntent().getStringExtra("SECTION_ID"));
+            gbl.setGlobalCursor(question);
+            //Log.e("Saved",savedInstanceState.getInt("QUESTION_NO"));
+            Log.e("Saved",savedInstanceState.getString("ANSWER"));
+            try {
+                JSONArray jsonObject = new JSONArray(savedInstanceState.getString("ANSWER"));
+                gbl.setAnswerFromSavedInstance(jsonObject);
+                gbl.setQuestionSavedCounter(savedInstanceState.getInt("QUESTION_NO"));
+                gbl.setSectionCount(savedInstanceState.getInt("SECTION_NO"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            //gbl.setAnswerFromSavedInstance();
+
+        }
         showQuestion();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putInt("QUESTION_NO",gbl.getCounter());
+        savedInstanceState.putString("ANSWER",gbl.getAnswer()+"");
+        savedInstanceState.putInt("SECTION_NO",gbl.getSectionCount());
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
@@ -318,6 +349,7 @@ public class QuestionDynamic extends AppCompatActivity {
     }
     public void onClickBackIfFirstQuestion() {
         Cursor section = gbl.getSectionList();
+
         if(section.getCount()>0) {
             section.moveToFirst();
             //gbl.incrementSectionCount();
@@ -330,6 +362,7 @@ public class QuestionDynamic extends AppCompatActivity {
                 i.putExtra("SECTION_ID", section.getString(0));
                 i.putExtra("SECTION_NO", gbl.getSectionCount() + 1 + "");
                 i.putExtra("SECTION_DESC", section.getString(3));
+                i.putExtra("isDONE",isDone);
                 startActivity(i);
             }
         }
@@ -343,22 +376,22 @@ public class QuestionDynamic extends AppCompatActivity {
             //gbl.incrementSectionCount();
             if (!(gbl.getSectionCount() < section.getCount()) && gbl.getCounter() >= gbl.getCount()) {
                 if (getIntent().getStringExtra("SURVEY_ID").equals("1")) {
-                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.saveAndExit), true);
+                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.saveAndExit), true,isDone);
                 } else {
-                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.saveAndExit), true);
+                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.saveAndExit), true,isDone);
                 }
             } else {
                 if (getIntent().getStringExtra("SURVEY_ID").equals("1")) {
-                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.dataLost), false);
+                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.dataLost), false,isDone);
 
 
                 } else {
-                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.saveAndExit), true);
+                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.saveAndExit), true,isDone);
                 }
             }
         }
     }
-    public void showMessageWithNoAndYes(String title, String message, final boolean flag){
+    public void showMessageWithNoAndYes(String title, String message, final boolean flag,final boolean isdone){
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(title);
         builder.setMessage(message);
@@ -367,11 +400,14 @@ public class QuestionDynamic extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 if(flag){
                     if(gbl.getClientId().equals("new")){
-                        db.updateAnswerInTable(gbl.getAnswer(),false,survey_ID,gbl.getClientId());
+                        db.updateAnswerInTable(gbl.getAnswer(),false,survey_ID,gbl.getClientId(),isdone);
                     }else{
-                        db.updateAnswerInTable(gbl.getAnswer(),true,survey_ID,gbl.getClientId());
+                        db.deleteAnswerIfUpdated(gbl.getClientId());
+                        db.updateAnswerInTable(gbl.getAnswer(),true,survey_ID,gbl.getClientId(),isdone);
                     }
 
+                }else{
+                    db.deleteRegistrationDetails("1");
                 }
                 Intent i = new Intent(QuestionDynamic.this , welcome.class);
                 i.putExtra("from","not_main");
@@ -420,8 +456,13 @@ public class QuestionDynamic extends AppCompatActivity {
                         if (child instanceof EditText) {
                             EditText edt = (EditText) child;
                             if (edt.getVisibility() == View.VISIBLE) {
-                                if (emptyFlag)
+                                if (emptyFlag) {
                                     emptyFlag = emptyFieldValidation(edt.getText().toString());
+                                    if(!emptyFieldValidation(edt.getText().toString())){
+                                        edt.setError("Field cannot be empty!!");
+                                    }
+                                }
+
                                 if (edt.getInputType() != InputType.TYPE_CLASS_TEXT) {
                                     if (edt.getInputType() == InputType.TYPE_CLASS_PHONE) {
                                         if (phoneFlag) {
@@ -466,13 +507,27 @@ public class QuestionDynamic extends AppCompatActivity {
                             if(checkedId>0){
                                 radioFlag = true;
                             }else{
+                                //((RadioGroup) child).set
                                 radioFlag = false;
                             }
+                            //boolean flag = true;
                             for(int k = 0;k<((RadioGroup) child).getChildCount();k++){
                                 View childOfRadio = ((RadioGroup) child).getChildAt(k);
+//                                if(flag){
+//                                    if(childOfRadio instanceof RadioButton){
+//                                        if(!radioFlag){
+//                                            ((RadioButton)childOfRadio).setError("Select one from the options!!");
+//                                            flag = false;
+//                                        }
+//                                    }
+//                                }
+
                                 if(childOfRadio instanceof EditText){
                                     if(childOfRadio.getVisibility()==View.VISIBLE){
                                         emptyFlag = emptyFieldValidation(((EditText) childOfRadio).getText().toString());
+                                        if(!emptyFieldValidation(((EditText) childOfRadio).getText().toString())){
+                                            ((EditText) childOfRadio).setError("Field cannot be empty!!");
+                                        }
                                         EditText edt = (EditText) childOfRadio;
                                         if (edt.getInputType() != InputType.TYPE_CLASS_TEXT) {
                                             if (edt.getInputType() == InputType.TYPE_CLASS_PHONE) {
@@ -569,10 +624,12 @@ public class QuestionDynamic extends AppCompatActivity {
                         i.putExtra("SECTION_ID", section.getString(0));
                         i.putExtra("SECTION_NO", gbl.getSectionCount() + 1 + "");
                         i.putExtra("SECTION_DESC", section.getString(3));
+                        i.putExtra("isDONE",isDone);
                         startActivity(i);
                     } else {
                         gbl.decrementSectionCount();
-                        showMessageWithNoAndYes(getResources().getString(R.string.tankYou), "Thank You "+gbl.getName()+getResources().getString(R.string.surveyCompleted), true);
+                        isDone = true;
+                        showMessageWithNoAndYes(getResources().getString(R.string.tankYou), "Thank You "+gbl.getName()+getResources().getString(R.string.surveyCompleted), true,isDone);
                     }
                 }
             }
@@ -662,12 +719,12 @@ public class QuestionDynamic extends AppCompatActivity {
                         EditText edt = (EditText) child1;
                         if (edt.getVisibility() == View.VISIBLE && child.getVisibility() != View.GONE){
                             ans = edt.getText().toString();
-                            if((edt.getInputType() == InputType.TYPE_CLASS_PHONE)){
-                                String firstLetter = ans.substring(0,1);
-                                if(!(firstLetter.equals("+"))){
-                                    ans = "+"+ans;
-                                }
-                            }
+//                            if((edt.getInputType() == InputType.TYPE_CLASS_PHONE)){
+//                                String firstLetter = ans.substring(0,1);
+//                                if(!(firstLetter.equals("+"))){
+//                                    ans = "+"+ans;
+//                                }
+//                            }
                         }
 
                     }
@@ -769,6 +826,8 @@ public class QuestionDynamic extends AppCompatActivity {
     }
     public void showQuestion(){
         Cursor question = gbl.getQuestionCursor();
+        gbl.resetquestioncounter();
+
         if(question.getCount()>0) {
             question.moveToFirst();
             Log.e("CHECKK ", "move to first" + question.getColumnCount());

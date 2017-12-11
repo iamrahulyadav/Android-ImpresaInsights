@@ -161,6 +161,7 @@ public class Question extends AppCompatActivity {
                 i.putExtra("SECTION_ID", getIntent().getStringExtra("SECTION_ID"));
                 i.putExtra("SECTION_NO", "1");
                 i.putExtra("SECTION_DESC", getIntent().getStringExtra("SECTION_DESC"));
+                i.putExtra("isDONE",false);
                 startActivity(i);
             }
         });
@@ -299,7 +300,7 @@ public class Question extends AppCompatActivity {
                     obj.put("question_no",editTextName1.getTag().toString());
                     obj.put("order",questionOrder);
                     gbl.addAnswerInJsonArray(obj);
-                    db.updateAnswerInTable(gbl.getAnswer(),true,survey_ID,gbl.getClientId());
+                    //db.updateAnswerInTable(gbl.getAnswer(),true,survey_ID,gbl.getClientId());
                     db.updateWeeklyInfo(gbl.getClientId(),survey_ID,"1");
                     questionOrder = "last";
 

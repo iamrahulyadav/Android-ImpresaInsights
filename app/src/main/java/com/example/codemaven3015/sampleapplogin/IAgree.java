@@ -51,6 +51,7 @@ public class IAgree extends AppCompatActivity {
                     i.putExtra("SECTION_ID", sectionId);
                     i.putExtra("SECTION_NO", "1");
                     i.putExtra("SECTION_DESC", sectionDesc);
+                    i.putExtra("isDONE",false);
                     startActivity(i);
                 }else{
                     Intent i = new Intent(IAgree.this, Question.class);

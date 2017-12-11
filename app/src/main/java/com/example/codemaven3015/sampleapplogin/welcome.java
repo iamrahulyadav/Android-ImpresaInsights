@@ -263,7 +263,9 @@ public class welcome extends AppCompatActivity {
             if(existingClient.getCount()>0) {
                 existingClient.moveToFirst();
                 do{
-                    answerAllUser.put(getAllDataWithAnswer(existingClient.getString(0),false));
+                    if(myDB.ifFlageisNottwo(existingClient.getString(0))) {
+                        answerAllUser.put(getAllDataWithAnswer(existingClient.getString(0), false));
+                    }
                 }while(existingClient.moveToNext());
             }
             newClient.close();

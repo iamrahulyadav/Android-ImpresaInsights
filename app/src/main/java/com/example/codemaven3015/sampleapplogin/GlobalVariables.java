@@ -89,6 +89,10 @@ public class GlobalVariables extends Application {
         }
         return "";
     }
+    public void setAnswerFromSavedInstance(JSONArray obj){
+        answer = new JSONArray();
+        answer = obj;
+    }
     public void addAnswerInJsonArray(JSONObject obj){
         answer.put(obj);
     }
@@ -110,6 +114,10 @@ public class GlobalVariables extends Application {
     public int getSectionCount(){
         return sectionCount;
     }
+    public void setSectionCount(int count){
+        sectionCount = count;
+    }
+
     public void setGlobalCursor(Cursor csr){
         Question = csr;
         questionCount = csr.getCount();
@@ -130,6 +138,9 @@ public class GlobalVariables extends Application {
         questionCounter++;
         Log.e("GLOBAL INCREMENT",questionCounter+"");
         return questionCounter;
+    }
+    public void setQuestionSavedCounter(int count){
+        questionCounter = count;
     }
     public int countDecrement(){
         questionCounter--;
