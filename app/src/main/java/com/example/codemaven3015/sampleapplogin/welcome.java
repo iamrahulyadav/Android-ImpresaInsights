@@ -15,7 +15,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.content.Intent;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -49,19 +52,30 @@ public class welcome extends AppCompatActivity {
     String status;
     int noOfServiceCall = 0;
     ProgressDialog dialog,dialog1;
+    Spinner projectSpinner;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
 
 
     public void openSurveyList(View v){
-        Intent i = new Intent(welcome.this , SurveyList.class);
-        gbl.setClientId("new");
-        startActivity(i);
+        String selectedText = sharedPreferences.getString("project","");
+        if(selectedText.equals("")){
+            showMessage("Info","Please select project!!");
+        }else {
+            Intent i = new Intent(welcome.this, SurveyList.class);
+            gbl.setClientId("new");
+            startActivity(i);
+        }
 
     }
     public void openEnterPID(View v){
-        Intent i = new Intent(welcome.this , EnterPID.class);
-        startActivity(i);
+        String selectedText = sharedPreferences.getString("project","");
+        if(selectedText.equals("")){
+            showMessage("Info","Please select project!!");
+        }else {
+            Intent i = new Intent(welcome.this, EnterPID.class);
+            startActivity(i);
+        }
 
     }
     @Override
@@ -79,6 +93,29 @@ public class welcome extends AppCompatActivity {
         editor = sharedPreferences.edit();
         final TextView helloTextView = (TextView) findViewById(R.id.action_text);
         helloTextView.setText("Welcome");
+        projectSpinner = (Spinner)findViewById(R.id.projectSpinner);
+        projectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(position ==0){
+                    showMessage("Info","Please select project");
+                    editor.putString("project","");
+                    //String projectcode =myDB.getProjectCodeByProjectTitle(projectSpinner.getSelectedItem().toString());
+                    editor.putString("project_id","");
+                    editor.apply();
+                }else{
+                    editor.putString("project",projectSpinner.getSelectedItem().toString());
+                    String projectcode =myDB.getProjectCodeByProjectTitle(projectSpinner.getSelectedItem().toString());
+                    editor.putString("project_id",projectcode);
+                    editor.apply();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         if((getIntent().getStringExtra("from").equals("main"))) {
             //getQuestionListFromAPI();
             try {
@@ -88,6 +125,8 @@ public class welcome extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        }else{
+            setProjectData();
         }
         //updateLanguageAndSurveyListDB();
 
@@ -180,7 +219,9 @@ public class welcome extends AppCompatActivity {
         }
         if(isCallServiceForServerData){
             getQuestionListFromAPI();
+            setProjectData();
         }else{
+            setProjectData();
             dialog.hide();
         }
     }
@@ -278,6 +319,7 @@ public class welcome extends AppCompatActivity {
         Cursor ans = myDB.getAnswerFromDB(clientid,flag);
         String phone = "";
         String name = "";
+        String projectCode = "";
         String client_id = "";
         String surveyID = "";
         JSONArray response = new JSONArray();
@@ -290,6 +332,7 @@ public class welcome extends AppCompatActivity {
             if(reg.getCount()>0){
                 reg.moveToFirst();
                 phone = reg.getString(3);
+
                 name = reg.getString(1)+" "+reg.getString(2);
                 myDB.deleteRegistrationDetails(clientid);
             }
@@ -297,6 +340,7 @@ public class welcome extends AppCompatActivity {
         if (ans.getCount() > 0) {
             ans.moveToFirst();
             do {
+                projectCode = ans.getString(8);
                 JSONObject obj = new JSONObject();
                 JSONObject imageObj = new JSONObject();
                 if (ans.getString(7).equals("image")) {
@@ -319,6 +363,7 @@ public class welcome extends AppCompatActivity {
                 }
             } while (ans.moveToNext());
             ans.close();
+            data.put("project_code",projectCode);
             data.put("phone", phone);
             data.put("name",name);
             data.put("client_id",client_id);
@@ -481,10 +526,13 @@ public class welcome extends AppCompatActivity {
         Log.e("Inside4",sectionList.toString());
         JSONArray groupList = jObj.getJSONArray("group_list");
         JSONArray questionList = jObj.getJSONArray("question_list");
+        JSONArray projectList = jObj.getJSONArray("project_list");
         myDB.insertDataSurveyList(surveyList);
         myDB.insertDataSectionList(sectionList);
         myDB.insertDataGroupList(groupList);
         myDB.insertDataQuestion(questionList);
+        myDB.insertDataProject(projectList);
+        setProjectData();
         showMessage("Info","Survey Table Updated");
         Log.e("Inside3",surveyList.toString());
 
@@ -504,7 +552,6 @@ public void getQuestionListFromAPI(){
                             Log.e("my app",jsonObject.toString());
                             String status = jsonObject.getString("status");
                             if(status.equals("Success")){
-                               //showMessage(status,jsonObject.getString("message"));
                                 questionDataFormating(jsonObject);
                             }else{
                                 showMessage(status,jsonObject.getString("message"));
@@ -550,7 +597,26 @@ public void getQuestionListFromAPI(){
     }
 
 }
+public void setProjectData(){
+    Cursor project = myDB.getProjectData();
+    ArrayList<String> options=new ArrayList<String>();
+    options.add("Select Project");
+    if(project.getCount()>0){
+        project.moveToFirst();
+        do{
+          options.add(project.getString(2));
+        }while(project.moveToNext());
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.spinner_item,options);
+        projectSpinner.setAdapter(adapter);
+        String selectedText = sharedPreferences.getString("project","");
+        if(selectedText.equals("")) {
+            projectSpinner.setSelection(options.indexOf("Select Project"));
+        }else {
+            projectSpinner.setSelection(options.indexOf(selectedText));
+        }
+    }
 
+}
 
     @Override
     public void onBackPressed() {

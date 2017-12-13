@@ -7,17 +7,6 @@
     android:background="@drawable/bg"
     tools:context="com.example.codemaven3015.sampleapplogin.welcome">
 
-    <ProgressBar
-        android:id="@+id/login_progress"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_centerInParent="true"
-        android:visibility="gone"/>
-
-
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -42,7 +31,7 @@
             android:id="@+id/textView4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="35dp"
             android:text="@string/welcome"
             android:textAlignment="center"
             android:textColor="@color/darkgrey"
@@ -63,20 +52,36 @@
             android:id="@+id/textView6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="40dp"
+            android:layout_marginBottom="30dp"
             android:text="@string/survey"
             android:textAlignment="center"
             android:textColor="@color/darkgrey"
             android:textSize="24sp" />
 
-        <Button
-            android:id="@+id/button2"
+        <Spinner
+            android:id="@+id/projectSpinner"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="55dp"
             android:layout_marginBottom="20dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="30dp"
+            android:dropDownWidth="match_parent"
+            android:popupBackground="@color/lidgtGrey"
+            android:spinnerMode="dialog"
+            android:textAlignment="center"
+            android:background="@color/blue"
+            android:theme="@style/SpinnerProject">
+
+        </Spinner>
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:background="@color/blue"
             android:text="@string/new_client"
             android:textColor="@color/white"
@@ -86,8 +91,7 @@
         <Button
             android:id="@+id/button3"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginBottom="20dp"
+            android:layout_height="55dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:background="@color/blue"
@@ -96,18 +100,5 @@
             android:textSize="20sp"
             android:onClick="openEnterPID"/>
 
-        <Button
-            android:id="@+id/button4"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginBottom="20dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:background="@color/blue"
-            android:text="@string/correction"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:onClick="openEnterPID"
-            android:visibility="gone"/>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

@@ -1,7 +1,9 @@
 package com.example.codemaven3015.sampleapplogin;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -23,6 +25,8 @@ public class SurveySection extends AppCompatActivity {
     DataBaseHealper db;
     GlobalVariables gbl;
     boolean isDone = false;
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +41,8 @@ public class SurveySection extends AppCompatActivity {
         imageView.setVisibility(View.GONE);
         sectionDesc1 = (TextView)findViewById(R.id.sectionDescription);
         db = new DataBaseHealper(this);
+        sharedPreferences = getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
         gbl = (GlobalVariables)getApplicationContext();
         sectionNumber = (TextView)findViewById(R.id.sectionNumber);
         sectionName = (TextView)findViewById(R.id.sectionName);
@@ -149,10 +155,10 @@ public class SurveySection extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 if(flag){
                     if(gbl.getClientId().equals("new")){
-                        db.updateAnswerInTable(gbl.getAnswer(),false,surveyId,gbl.getClientId(),isdone);
+                        db.updateAnswerInTable(gbl.getAnswer(),false,surveyId,gbl.getClientId(),isdone,sharedPreferences.getString("project_id", ""));
                     }else{
                         db.deleteAnswerIfUpdated(gbl.getClientId());
-                        db.updateAnswerInTable(gbl.getAnswer(),true,surveyId,gbl.getClientId(),isdone);
+                        db.updateAnswerInTable(gbl.getAnswer(),true,surveyId,gbl.getClientId(),isdone,sharedPreferences.getString("project_id", ""));
                     }
                 }else{
                     db.deleteRegistrationDetails("1");

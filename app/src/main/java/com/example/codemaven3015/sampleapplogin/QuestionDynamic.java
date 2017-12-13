@@ -4,8 +4,10 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -42,6 +44,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -53,6 +56,7 @@ import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -85,8 +89,8 @@ public class QuestionDynamic extends AppCompatActivity {
     int date = 0;
     public static final int DILOG_ID=0;
     public boolean isDone = false;
-    //ProgressDialog progressDialog;
-
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +102,8 @@ public class QuestionDynamic extends AppCompatActivity {
         final ImageView imageView = (ImageView)findViewById(R.id.imageButton);
         imageView.setVisibility(View.GONE);
         db = new DataBaseHealper(this);
+        sharedPreferences = getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
         sc= (ScrollView)findViewById(R.id.scrollViewQuestions);
         sc.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
         sc.setFocusable(true);
@@ -147,6 +153,7 @@ public class QuestionDynamic extends AppCompatActivity {
                                 child.setFocusable(false);
                                 child.setFocusableInTouchMode(false);
                                 child.setBackgroundColor(getResources().getColor(R.color.lidgtGrey));
+
                             }else {
                                 child.setFocusable(true);
                                 child.setFocusableInTouchMode(true);
@@ -174,7 +181,7 @@ public class QuestionDynamic extends AppCompatActivity {
             try {
                 JSONArray jsonObject = new JSONArray(savedInstanceState.getString("ANSWER"));
                 gbl.setAnswerFromSavedInstance(jsonObject);
-                gbl.setQuestionSavedCounter(savedInstanceState.getInt("QUESTION_NO"));
+                //gbl.setQuestionSavedCounter(savedInstanceState.getInt("QUESTION_NO"));
                 gbl.setSectionCount(savedInstanceState.getInt("SECTION_NO"));
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -324,6 +331,15 @@ public class QuestionDynamic extends AppCompatActivity {
         }else {
             Cursor group = db.getQuestionByGroupId(groupid);
             String desc = db.getGroupDesc(groupid);
+            String canSkip = db.can_SkipGroup(groupid);
+
+            if(canSkip.equals("1")){
+                checkboxOptional.setVisibility(View.VISIBLE);
+                checkboxOptional.setChecked(false);
+            }else{
+                checkboxOptional.setVisibility(View.GONE);
+                checkboxOptional.setChecked(false);
+            }
             if(!desc.equals("")){
                 sectionDescription.setVisibility(View.VISIBLE);
                 sectionDescription.setText(desc);
@@ -382,7 +398,7 @@ public class QuestionDynamic extends AppCompatActivity {
                 }
             } else {
                 if (getIntent().getStringExtra("SURVEY_ID").equals("1")) {
-                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.dataLost), false,isDone);
+                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.dataLost), true,true);
 
 
                 } else {
@@ -400,10 +416,10 @@ public class QuestionDynamic extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 if(flag){
                     if(gbl.getClientId().equals("new")){
-                        db.updateAnswerInTable(gbl.getAnswer(),false,survey_ID,gbl.getClientId(),isdone);
+                        db.updateAnswerInTable(gbl.getAnswer(),false,survey_ID,gbl.getClientId(),isdone,sharedPreferences.getString("project_id", ""));
                     }else{
                         db.deleteAnswerIfUpdated(gbl.getClientId());
-                        db.updateAnswerInTable(gbl.getAnswer(),true,survey_ID,gbl.getClientId(),isdone);
+                        db.updateAnswerInTable(gbl.getAnswer(),true,survey_ID,gbl.getClientId(),isdone,sharedPreferences.getString("project_id", ""));
                     }
 
                 }else{
@@ -864,6 +880,15 @@ public class QuestionDynamic extends AppCompatActivity {
                         deleteTextView();
                         Cursor group = db.getQuestionByGroupId(groupId);
                         String desc = db.getGroupDesc(groupId);
+                        String canSkip = db.can_SkipGroup(groupId);
+
+                        if(canSkip.equals("1")){
+                            checkboxOptional.setVisibility(View.VISIBLE);
+                            checkboxOptional.setChecked(false);
+                        }else{
+                            checkboxOptional.setVisibility(View.GONE);
+                            checkboxOptional.setChecked(false);
+                        }
                         if(!desc.equals("")){
                             sectionDescription.setVisibility(View.VISIBLE);
                             sectionDescription.setText(desc);
@@ -902,6 +927,15 @@ public class QuestionDynamic extends AppCompatActivity {
     public void setGroupData(String groupId){
         Cursor groupQuestion =db.getQuestionByGroupId(groupId);
         String desc = db.getGroupDesc(groupId);
+        String canSkip = db.can_SkipGroup(groupId);
+
+        if(canSkip.equals("1")){
+            checkboxOptional.setVisibility(View.VISIBLE);
+            checkboxOptional.setChecked(false);
+        }else{
+            checkboxOptional.setVisibility(View.GONE);
+            checkboxOptional.setChecked(false);
+        }
         if(!desc.equals("")){
             sectionDescription.setVisibility(View.VISIBLE);
             sectionDescription.setText(desc);
@@ -923,8 +957,7 @@ public class QuestionDynamic extends AppCompatActivity {
     public void createQuestionPage(String isGroup,String questionId,String type,String  questionText,String QuestionSectionSuggestion,String isOptional,boolean optionFlag,String questionOrder,JSONArray options){
         createTextQuestionNo(questionOrder);
         createTextViewQuestion(questionText);
-        checkboxOptional.setVisibility(View.GONE);
-        checkboxOptional.setChecked(false);
+
         //showMessage("FLAG"," "+optionFlag);
         if(!QuestionSectionSuggestion.isEmpty()){
             createTextViewQuestionInfo(QuestionSectionSuggestion);
@@ -971,6 +1004,12 @@ public class QuestionDynamic extends AppCompatActivity {
                 break;
             case("yearmonth"):
                 createEditTextViewEmail(questionId,isSkipFlag,"yearmonth");
+                break;
+            case("year"):
+                createEditTextViewEmail(questionId,isSkipFlag,"year");
+                break;
+            case("month"):
+                createEditTextViewEmail(questionId,isSkipFlag,"month");
                 break;
             default:
                 //showMessage("type","type erro");
@@ -1119,7 +1158,29 @@ public class QuestionDynamic extends AppCompatActivity {
                 tvQuestion.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        showYearMonth(v);
+                        showYearMonth(v,"yearmonth");
+                    }
+                });
+                break;
+            case "month":
+                tvQuestion.setInputType(InputType.TYPE_NUMBER_VARIATION_NORMAL);
+                tvQuestion.setHint("Please select");
+                tvQuestion.setFocusable(false);
+                tvQuestion.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showYearMonth(v,"month");
+                    }
+                });
+                break;
+            case "year":
+                tvQuestion.setInputType(InputType.TYPE_NUMBER_VARIATION_NORMAL);
+                tvQuestion.setHint("Please select");
+                tvQuestion.setFocusable(false);
+                tvQuestion.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showYearMonth(v,"year");
                     }
                 });
                 break;
@@ -1310,11 +1371,17 @@ public class QuestionDynamic extends AppCompatActivity {
             group.setLayoutParams(layoutParams);
             btn1.setText(child.getString("option_text"));
             btn1.setTag(child.getString("response_type"));
+            //btn1.setTag("list");
             if(radioValue.equals(child.getString("option_text"))){
                 btn1.setChecked(true);
             }
-
-            if(!btn1.getTag().equals("radio")){
+//            if(btn1.getTag().equals("list")){
+//                View spinner =  setSipnnerData();
+//                group.addView(btn1);
+//                group.addView(spinner);
+//                //btn1.setTag(spinner_id);
+//            }else
+                if(!btn1.getTag().equals("radio")){
                 tvQuestion = new EditText(this);
                 tvQuestion.setHint(getResources().getString(R.string.placeholder));
                 tvQuestion.setBackgroundColor(getResources().getColor(R.color.white));
@@ -1367,13 +1434,35 @@ public class QuestionDynamic extends AppCompatActivity {
                         tvQuestion.setMaxLines(3);
                         break;
                     case "yearmonth":
-                        tvQuestion.setInputType(InputType.TYPE_CLASS_NUMBER);
+                        tvQuestion.setInputType(InputType.TYPE_NUMBER_VARIATION_NORMAL);
                         tvQuestion.setHint("Please select");
                         tvQuestion.setFocusable(false);
                         tvQuestion.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                showYearMonth(v);
+                                showYearMonth(v,"yearmonth");
+                            }
+                        });
+                        break;
+                    case "month":
+                        tvQuestion.setInputType(InputType.TYPE_NUMBER_VARIATION_NORMAL);
+                        tvQuestion.setHint("Please select");
+                        tvQuestion.setFocusable(false);
+                        tvQuestion.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                showYearMonth(v,"month");
+                            }
+                        });
+                        break;
+                    case "year":
+                        tvQuestion.setInputType(InputType.TYPE_NUMBER_VARIATION_NORMAL);
+                        tvQuestion.setHint("Please select");
+                        tvQuestion.setFocusable(false);
+                        tvQuestion.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                showYearMonth(v,"year");
                             }
                         });
                         break;
@@ -1404,7 +1493,9 @@ public class QuestionDynamic extends AppCompatActivity {
                 RadioButton rb= (RadioButton) findViewById(checkedId);
                 radioselect = rb.getText().toString();
                 //gbl.setRadioInputTextCheckToZero();
-                if(!rb.getTag().equals("radio")){
+                if(rb.getTag().equals("list")){
+
+                }else if(!rb.getTag().equals("radio")){
                     int i = (Integer)rb.getTag();
                     View v = (View) findViewById(i);
                     if(v instanceof EditText) {
@@ -1460,7 +1551,7 @@ public class QuestionDynamic extends AppCompatActivity {
         dialog1.show();
 
     }
-    public void showYearMonth(final View v){
+    public void showYearMonth(final View v,String type){
         final android.app.AlertDialog.Builder d = new android.app.AlertDialog.Builder(QuestionDynamic.this);
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.number_picker_dialog, null);
@@ -1469,11 +1560,30 @@ public class QuestionDynamic extends AppCompatActivity {
         d.setView(dialogView);
         final NumberPicker numberPicker = (NumberPicker) dialogView.findViewById(R.id.dialog_number_picker);
         final NumberPicker numberPicker2 = (NumberPicker) dialogView.findViewById(R.id.numberPicker2);
-        numberPicker.setMaxValue(99);
-        numberPicker.setMinValue(0);
+        switch (type){
+            case "year":
+                numberPicker.setVisibility(View.GONE);
+                numberPicker2.setMaxValue(2018);
+                numberPicker2.setMinValue(1900);
+                break;
+            case "month":
+                numberPicker.setVisibility(View.VISIBLE);
+                numberPicker.setMaxValue(12);
+                numberPicker.setMinValue(0);
+                numberPicker2.setMaxValue(2018);
+                numberPicker2.setMinValue(1900);
+                break;
+            case "yearmonth":
+                numberPicker.setVisibility(View.VISIBLE);
+                numberPicker.setMaxValue(12);
+                numberPicker.setMinValue(0);
+                numberPicker2.setMaxValue(99);
+                numberPicker2.setMinValue(0);
+                break;
+        }
+
         numberPicker.setWrapSelectorWheel(false);
-        numberPicker2.setMaxValue(12);
-        numberPicker2.setMinValue(0);
+
         numberPicker2.setWrapSelectorWheel(false);
         numberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
@@ -1493,8 +1603,14 @@ public class QuestionDynamic extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 Log.e("Check", "onClick: " + numberPicker.getValue());
+                String text = "";
+                if(numberPicker.getVisibility() == View.VISIBLE){
+                    text = numberPicker2.getValue()+" / "+numberPicker.getValue();
+                }else {
+                    text = numberPicker2.getValue()+"";
+                }
 
-                ((EditText) v).setText(numberPicker2.getValue()+" / "+numberPicker.getValue());
+                ((EditText) v).setText(text);
             }
         });
         d.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -1505,5 +1621,4 @@ public class QuestionDynamic extends AppCompatActivity {
         android.app.AlertDialog alertDialog = d.create();
         alertDialog.show();
     }
-
 }

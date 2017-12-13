@@ -20,7 +20,8 @@ android:gravity="center_horizontal"
             android:textSize="18sp"
             android:layout_weight="1"
             android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"/>
+            android:layout_marginRight="10dp"
+            android:textColor="@color/blue"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -28,7 +29,8 @@ android:gravity="center_horizontal"
             android:textSize="18sp"
             android:layout_weight="1"
             android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"/>
+            android:layout_marginRight="10dp"
+            android:textColor="@color/blue"/>
         </LinearLayout>
 
 <LinearLayout
@@ -40,18 +42,20 @@ android:gravity="center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:background="#B399e2f4"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
+        android:divider="@color/blue"
+        android:theme="@style/NumberPickerText"
         />
 
     <NumberPicker
         android:id="@+id/dialog_number_picker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#B399e2f4"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
+        android:divider="@color/blue"
+        android:theme="@style/NumberPickerText"
         android:layout_weight="1"/>
 </LinearLayout>
 </LinearLayout>

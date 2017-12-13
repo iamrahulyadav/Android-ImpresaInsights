@@ -2,6 +2,7 @@ package com.example.codemaven3015.sampleapplogin;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -28,6 +29,7 @@ public class DataBaseHealper extends SQLiteOpenHelper {
     public static final String TABLE_CLIENT_INFO = "Client_Info_Table";
     public static final String TABLE_REGISTRATION = "New_Client_Registration";
     public static final String TABLE_WEEK = "Weekly_Money_Market_Update";
+    public static final String TABLE_PROJECT = "Project_Table";
     //public static final String TABLE_GROWTH_ORITENTAION_SURVEY_ANSWER = "Survey_Answer_Table";
 
     public static final String SurveySectionCOL1 = "SECTION_ID";
@@ -81,13 +83,14 @@ public class DataBaseHealper extends SQLiteOpenHelper {
         db.execSQL("create table "+ TABLE_SURVEY+" (SURVEY_ID INTEGER, SURVEY_NAME TEXT, SURVEY_DETAILS TEXT )");
         db.execSQL("create table "+ TABLE_LAUNGUAGE+" (ID INTEGER PRIMARY KEY AUTOINCREMENT, LAUNGUAGE_ID TEXT, LAUNGUAGE_NAME TEXT)");
         db.execSQL("create table "+ TABLE_SURVEY_SECTION+" (SECTION_ID INTEGER, SURVEY_ID INTEGER, SECTION_TITLE TEXT, SECTION_DESC TEXT, SECTION_SUGGESTION TEXT)");
-        db.execSQL("create table "+ TABLE_SECTION_GROUP+" (GROUP_ID INTEGER, SECTION_ID INTEGER, SURVEY_ID INTEGER, GROUP_TITLE TEXT, GROUP_DESC TEXT, GROUP_SUGGESTION)");
+        db.execSQL("create table "+ TABLE_SECTION_GROUP+" (GROUP_ID INTEGER, SECTION_ID INTEGER, SURVEY_ID INTEGER, GROUP_TITLE TEXT, GROUP_DESC TEXT, GROUP_SUGGESTION TEXT ,FLAG TEXT)");
         db.execSQL("create table "+ TABLE_SURVEY_QUESTION+" (QUESTION_ID INTEGER, SECTION_ID INTEGER, GROUP_ID INTEGER, SURVEY_ID INTEGER, QUESTION_TYPE TEXT, QUESTION_TEXT TEXT, QUESTION_SECTION_SUGGESTION TEXT,IS_OPTIONAL INTEGER, QUESTION_OPTION TEXT, QUESTION_ORDER TEXT, QUESTION_NO INTEGER)");
         //db.execSQL("create table "+ TABLE_SURVEY_QUESTION_OPTION+" (OPTION_ID INTEGER, QUESTION_ID INTEGER, OPTION_DESC TEXT)");
-        db.execSQL("create table "+ TABLE_SURVEY_ANSWER+" (ANSWER_ID INTEGER PRIMARY KEY AUTOINCREMENT, QUESTION_ID INTEGER, CLIENT_ID INTEGER, CLIENT_ID_TEMP INTEGER,ANSWER_TEXT TEXT, FLAG INTEGER,SURVEY_ID INTEGER,TYPE TEXT)");
+        db.execSQL("create table "+ TABLE_SURVEY_ANSWER+" (ANSWER_ID INTEGER PRIMARY KEY AUTOINCREMENT, QUESTION_ID INTEGER, CLIENT_ID INTEGER, CLIENT_ID_TEMP INTEGER,ANSWER_TEXT TEXT, FLAG INTEGER,SURVEY_ID INTEGER,TYPE TEXT,PROJECT_CODE TEXT)");
         db.execSQL("create table "+TABLE_CLIENT_INFO+" (CLIENT_ID INTEGER, SURVEY_ID INTEGER)");
         db.execSQL("create table "+TABLE_REGISTRATION+" (CLIENT_ID INTEGER, FIRST_NAME TEXT, LAST_NAME TEXT, PHONE_NUMBER TEXT)");
         db.execSQL("create table "+TABLE_WEEK+" (CLIENT_ID INTEGER, SURVEY_ID INTEGER, WEEK TEXT)");
+        db.execSQL("create table "+TABLE_PROJECT+" (PROJECT_ID INTEGER, PROJECT_CODE TEXT, PROJECT_TITLE TEXT)");
     }
 
     @Override
@@ -103,6 +106,7 @@ public class DataBaseHealper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_CLIENT_INFO);
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_REGISTRATION);
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_WEEK);
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_PROJECT);
         onCreate(db);
     }
     public void updateWeeklyInfo(String client_id,String survey_id,String week ){
@@ -204,7 +208,7 @@ public class DataBaseHealper extends SQLiteOpenHelper {
         return res;
 
     }
-    public void updateAnswerInTable( JSONArray answer,boolean isOldClient,String survey_id,String client_id,boolean isDone){
+    public void updateAnswerInTable( JSONArray answer,boolean isOldClient,String survey_id,String client_id,boolean isDone,String project){
         SQLiteDatabase db = this.getWritableDatabase();
         int clientId = 0;
         if(!isOldClient){
@@ -253,6 +257,7 @@ public class DataBaseHealper extends SQLiteOpenHelper {
                     contentValue.put("TYPE",radio);
                 }
                 //contentValue.put("FLAG", "0");
+                contentValue.put("PROJECT_CODE",project);
                 db.insert(TABLE_SURVEY_ANSWER,null,contentValue);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -392,8 +397,41 @@ public class DataBaseHealper extends SQLiteOpenHelper {
             contentValue.put("GROUP_TITLE",json_data.getString("group_title"));
             contentValue.put("GROUP_DESC",json_data.getString("group_description"));
             contentValue.put("GROUP_SUGGESTION",json_data.getString("group_suggestion"));
+            contentValue.put("FLAG",json_data.getString("can_skip"));
             db.insert(TABLE_SECTION_GROUP,null,contentValue );
         }
+    }
+    public void insertDataProject(JSONArray jArray) throws JSONException {
+        SQLiteDatabase db = this.getWritableDatabase();
+        if(!ifSurveyListIsEmpty()){db.delete(TABLE_PROJECT, null, null);}
+
+        for(int i = 0; i < jArray.length(); i++){
+            ContentValues contentValue = new ContentValues();
+            JSONObject json_data = jArray.getJSONObject(i);
+            contentValue.put("PROJECT_ID",json_data.getString("id"));
+            contentValue.put("PROJECT_CODE",json_data.getString("project_code"));
+            contentValue.put("PROJECT_TITLE",json_data.getString("project_title"));
+
+            db.insert(TABLE_PROJECT,null,contentValue );
+        }
+    }
+    public Cursor getProjectData(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String Query = "SELECT * FROM " + TABLE_PROJECT ;
+        Cursor cursor = db.rawQuery(Query, null);
+        return cursor;
+    }
+    public String getProjectCodeByProjectTitle(String title){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String Query = "SELECT * FROM " + TABLE_PROJECT +" WHERE PROJECT_TITLE =?";
+        Cursor cursor = db.rawQuery(Query,new String[] {title}, null);
+        cursor.moveToFirst();
+        if(cursor.getCount()>0){
+            return cursor.getString(1);
+        }else{
+            return "";
+        }
+
     }
     public void insertDataQuestion(JSONArray jArray) throws JSONException {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -504,6 +542,18 @@ public class DataBaseHealper extends SQLiteOpenHelper {
         if(cursor.getCount()>0) {
             cursor.moveToFirst();
             return cursor.getString(4);
+        }else{
+            return "";
+        }
+    }
+    public String can_SkipGroup(String groupid){
+        Cursor cursor;
+        SQLiteDatabase db = this.getWritableDatabase();
+        String Query = "SELECT * FROM " + TABLE_SECTION_GROUP + " WHERE GROUP_ID =? ";
+        cursor = db.rawQuery(Query,new String[] {groupid}, null);
+        if(cursor.getCount()>0) {
+            cursor.moveToFirst();
+            return cursor.getString(6);
         }else{
             return "";
         }
