@@ -73,7 +73,6 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public class QuestionDynamic extends AppCompatActivity {
-    public int pos=0;
     LinearLayout LLQuestion;
     int marginBottomPxl,marginBottomDp,imageSize;
     String radioselect = "",survey_ID;
@@ -91,6 +90,9 @@ public class QuestionDynamic extends AppCompatActivity {
     public boolean isDone = false;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
+    boolean isList = false;
+    int groupId = 0;
+    //JSONArray optionNext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,8 +148,10 @@ public class QuestionDynamic extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     int nViews = LLQuestion.getChildCount();
+                //String questionId = "";
                     for (int i = 0;i<nViews;i++){
                         View child = LLQuestion.getChildAt(i);
+
                        if (child instanceof EditText || child instanceof RadioGroup ){
                             if(isChecked) {
                                 child.setFocusable(false);
@@ -333,13 +337,6 @@ public class QuestionDynamic extends AppCompatActivity {
             String desc = db.getGroupDesc(groupid);
             String canSkip = db.can_SkipGroup(groupid);
 
-            if(canSkip.equals("1")){
-                checkboxOptional.setVisibility(View.VISIBLE);
-                checkboxOptional.setChecked(false);
-            }else{
-                checkboxOptional.setVisibility(View.GONE);
-                checkboxOptional.setChecked(false);
-            }
             if(!desc.equals("")){
                 sectionDescription.setVisibility(View.VISIBLE);
                 sectionDescription.setText(desc);
@@ -353,6 +350,18 @@ public class QuestionDynamic extends AppCompatActivity {
             deleteTextView();
             for(int i = 1;i<=groupQuestionNumbers;i++){
                 setQuestionData(gbl.getCounter(),"group");
+            }
+            if(canSkip.equals("1")){
+                checkboxOptional.setVisibility(View.VISIBLE);
+                if(gbl.ifexistGroup(groupid)){
+                    checkboxOptional.setChecked(true);
+                }else{
+                    checkboxOptional.setChecked(false);
+                }
+
+            }else{
+                checkboxOptional.setVisibility(View.INVISIBLE);
+                checkboxOptional.setChecked(false);
             }
             if(checkboxOptional.getVisibility()==View.VISIBLE){
                 deleteAllCheckBoxChild();
@@ -442,7 +451,7 @@ public class QuestionDynamic extends AppCompatActivity {
         });
         dialog1.show();
     }
-    public void onClickNext(View view) {
+    public void onClickNext(View view) throws JSONException {
         //showMessage("info","Next question");
         //progressDialog.show();
         view.setEnabled(false);
@@ -456,6 +465,7 @@ public class QuestionDynamic extends AppCompatActivity {
         Boolean splCharFlag = true;
         Boolean dateFlag = true;
         Boolean numericFlag = true;
+        Boolean compareFlag = true;
         if(!((checkboxOptional.getVisibility() == View.VISIBLE) && (checkboxOptional.isChecked()))) {
             for (int i = 0; i < nViews; i++) {
                 View child = LLQuestion.getChildAt(i);
@@ -471,6 +481,17 @@ public class QuestionDynamic extends AppCompatActivity {
                     if (child.getVisibility() == View.VISIBLE) {
                         if (child instanceof EditText) {
                             EditText edt = (EditText) child;
+                            String CompareQuestionId= ((List<String>)edt.getTag()).get(2).toString();
+                            if(!CompareQuestionId.equals("")) {
+                                String compareValue = getAnswerIfsaved(CompareQuestionId).getString("answer");
+                                if(!compareValue.equals("__123__")){
+                                    int comparevalueWith = Integer.parseInt(compareValue);
+                                    int compareValueTo = Integer.parseInt(edt.getText().toString());
+                                    if(comparevalueWith < compareValueTo){
+                                        compareFlag = false;
+                                    }
+                                }
+                            }
                             if (edt.getVisibility() == View.VISIBLE) {
                                 if (emptyFlag) {
                                     emptyFlag = emptyFieldValidation(edt.getText().toString());
@@ -485,7 +506,7 @@ public class QuestionDynamic extends AppCompatActivity {
 
                                             phoneFlag = phoneValidation(edt.getText().toString());
                                             if(!phoneValidation(edt.getText().toString())){
-                                                edt.setError("Please enter valid  phone number!!");
+                                                edt.setError("Phone number must be 10 digits long!!");
                                             }
                                         }
 
@@ -552,7 +573,7 @@ public class QuestionDynamic extends AppCompatActivity {
                                                     phoneFlag = phoneValidation(edt.getText().toString());
                                                 }
                                                 if(!phoneValidation(edt.getText().toString())){
-                                                    edt.setError("Please enter valid phone number!!");
+                                                    edt.setError("Phone number must be 10 digits long!!");
                                                 }
 
                                             } else if (edt.getInputType() == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS) {
@@ -606,9 +627,11 @@ public class QuestionDynamic extends AppCompatActivity {
             showMessage(getResources().getString(R.string.info),"Please enter valid value");
         }else if(!dateFlag){
             showMessage(getResources().getString(R.string.info),"Please enter valid number of months");
+        }else if(!compareFlag){
+            showMessage("Info","Profit cannot be greater than sales. Please verify the amount is correct");
         }
-        if (emptyFlag && phoneFlag && emailFlag && radioFlag && imageFlag && splCharFlag && dateFlag && numericFlag) {
-            SaveAnswerInJsonArray();
+        if (emptyFlag && phoneFlag && emailFlag && radioFlag && imageFlag && splCharFlag && dateFlag && numericFlag && compareFlag) {
+            String questionPreviousId = SaveAnswerInJsonArray();
             if (gbl.getCounter() < gbl.getCount()) {
                 //setAnswerJsonArray();
                 Cursor question = gbl.getQuestionCursor();
@@ -621,6 +644,17 @@ public class QuestionDynamic extends AppCompatActivity {
                     setQuestionData(gbl.getCounter(),"notGroup");
                 }else{
                     deleteTextView();
+                    String previousGroupId = db.getGroupIdbyQuestionId(questionPreviousId);
+                    if(checkboxOptional.isChecked() && checkboxOptional.getVisibility()==View.VISIBLE){
+
+                        if(!gbl.ifexistGroup(previousGroupId)) {
+                            gbl.setGroup(previousGroupId);
+                        }
+                    }else{
+                        if(gbl.ifexistGroup(previousGroupId)){
+                            gbl.removeGroup(previousGroupId);
+                        }
+                    }
                     setGroupData(groupId);
                     if(checkboxOptional.getVisibility()==View.VISIBLE){
                         deleteAllCheckBoxChild();
@@ -671,15 +705,21 @@ public class QuestionDynamic extends AppCompatActivity {
 
     }
 
-    public void SaveAnswerInJsonArray(){
+    public String SaveAnswerInJsonArray(){
+        String questionId = "";
         int nViews = LLQuestion.getChildCount();
+        boolean isSkiped = false;
+
         for (int i = 0; i < nViews; i++) {
             View child = LLQuestion.getChildAt(i);
             if (child instanceof EditText) {
                 EditText edt = (EditText) child;
                 String ans = "";
-                if(!(checkboxOptional.getVisibility() == View.VISIBLE) && !(checkboxOptional.isChecked())){
+                isSkiped = false;
+                if(!(checkboxOptional.getVisibility() == View.VISIBLE) || ((checkboxOptional.getVisibility() == View.VISIBLE) && !(checkboxOptional.isChecked()))){
                     ans = edt.getText().toString();
+                }else{
+                    isSkiped = true;
                 }
                 if(child.getVisibility() == View.GONE){
                     ans = "";
@@ -692,7 +732,7 @@ public class QuestionDynamic extends AppCompatActivity {
 //                }
 
                 JSONObject obj = new JSONObject();
-                String questionId= ((List<String>)edt.getTag()).get(0).toString();
+                questionId= ((List<String>)edt.getTag()).get(0).toString();
                 String ifRadio = ((List<String>)edt.getTag()).get(1).toString();
 
                     try {
@@ -700,7 +740,7 @@ public class QuestionDynamic extends AppCompatActivity {
                         Log.e("POSITION",position+"");
                         if(ifRadio.equals("not_radio")) {
                             if (position >= 0) {
-                                gbl.updateAtAnswer(position, ans, questionId, "",true);
+                                gbl.updateAtAnswer(position, ans, questionId, "",true,isSkiped);
                             } else {
                                 obj.put("question_no", questionId);
                                 obj.put("answer", ans);
@@ -710,7 +750,7 @@ public class QuestionDynamic extends AppCompatActivity {
                             }
                         }else{
                             if (position >= 0) {
-                                gbl.updateAtAnswer(position,ans, questionId, "radio",true);
+                                gbl.updateAtAnswer(position,ans, questionId, "radio",true,isSkiped);
                             } else {
                                 obj.put("question_no", questionId);
                                 obj.put("answer", ans);
@@ -731,32 +771,30 @@ public class QuestionDynamic extends AppCompatActivity {
                 int childCount = rbg.getChildCount();
                 for(int j =0;j<childCount;j++) {
                     View child1 = rbg.getChildAt(j);
+                    isSkiped = false;
                     if (child1 instanceof EditText) {
                         EditText edt = (EditText) child1;
                         if (edt.getVisibility() == View.VISIBLE && child.getVisibility() != View.GONE){
                             ans = edt.getText().toString();
-//                            if((edt.getInputType() == InputType.TYPE_CLASS_PHONE)){
-//                                String firstLetter = ans.substring(0,1);
-//                                if(!(firstLetter.equals("+"))){
-//                                    ans = "+"+ans;
-//                                }
-//                            }
+                        }else {
+                            isSkiped = true;
                         }
 
                     }
 
                 }
                 String selectedtext = "";
-                if(!(checkboxOptional.getVisibility() == View.VISIBLE) && !(checkboxOptional.isChecked())) {
+                if(!(checkboxOptional.getVisibility() == View.VISIBLE) || ((checkboxOptional.getVisibility() == View.VISIBLE) && !(checkboxOptional.isChecked()))){
                     int id = rbg.getCheckedRadioButtonId();
                     RadioButton r = (RadioButton) findViewById(id);
-
+                    if(!(r == null))
                     selectedtext = r.getText().toString();
                 }
                 JSONObject obj = new JSONObject();
                 int position = ifAnswerExist(rbg.getTag().toString());
+                questionId =rbg.getTag().toString();
                 if(position>=0){
-                    gbl.updateAtAnswer(position,ans ,rbg.getTag().toString(),selectedtext,true);
+                    gbl.updateAtAnswer(position,ans ,rbg.getTag().toString(),selectedtext,true,isSkiped);
                 }else{
                     try {
                         obj.put("question_no",rbg.getTag());
@@ -785,8 +823,9 @@ public class QuestionDynamic extends AppCompatActivity {
                 //Log.e("IMAGE",encodedImageString);
                 int position = ifAnswerExist(imageView.getTag().toString());
                 JSONObject obj = new JSONObject();
+                questionId = imageView.getTag().toString();
                 if(position >= 0){
-                    gbl.updateAtAnswer(position,encodedImageString,imageView.getTag().toString(),"image",true);
+                    gbl.updateAtAnswer(position,encodedImageString,imageView.getTag().toString(),"image",true,isSkiped);
                 }else{
                     try {
                         obj.put("question_no",imageView.getTag());
@@ -800,8 +839,10 @@ public class QuestionDynamic extends AppCompatActivity {
                 }
 
             }
+
         }
 
+        return questionId;
     }
 
     @Override
@@ -811,7 +852,7 @@ public class QuestionDynamic extends AppCompatActivity {
     public void setQuestionData(int onQuestion, String  isGroup){
         sc.fullScroll(View.FOCUS_UP);
         Cursor question = gbl.getQuestionCursor();
-        String questionId, questionType, questionText,questionOrder,QuestionSectionSuggestion,isOptional;
+        String questionId, questionType, questionText,questionOrder,QuestionSectionSuggestion,isOptional,compare_with = "";
         JSONArray options = null;
         boolean optionFlag = false;
         question.moveToPosition(onQuestion);
@@ -822,6 +863,8 @@ public class QuestionDynamic extends AppCompatActivity {
         QuestionSectionSuggestion = question.getString(6);
         questionOrder =question.getString(9);
         isOptional = question.getString(7);
+        compare_with = question.getString(11);
+
         if(question.getString(8).equals("")){
             optionFlag = false;
         }else {
@@ -834,7 +877,7 @@ public class QuestionDynamic extends AppCompatActivity {
 
         }
         Log.e("Question Id", questionId);
-        createQuestionPage(isGroup,questionId,questionType,questionText,QuestionSectionSuggestion,isOptional,optionFlag,questionOrder,options);
+        createQuestionPage(isGroup,questionId,questionType,questionText,QuestionSectionSuggestion,isOptional,optionFlag,questionOrder,options,compare_with);
 
         gbl.countIncrement();
 
@@ -882,13 +925,7 @@ public class QuestionDynamic extends AppCompatActivity {
                         String desc = db.getGroupDesc(groupId);
                         String canSkip = db.can_SkipGroup(groupId);
 
-                        if(canSkip.equals("1")){
-                            checkboxOptional.setVisibility(View.VISIBLE);
-                            checkboxOptional.setChecked(false);
-                        }else{
-                            checkboxOptional.setVisibility(View.GONE);
-                            checkboxOptional.setChecked(false);
-                        }
+
                         if(!desc.equals("")){
                             sectionDescription.setVisibility(View.VISIBLE);
                             sectionDescription.setText(desc);
@@ -902,6 +939,17 @@ public class QuestionDynamic extends AppCompatActivity {
                         deleteTextView();
                         for(int i = 1;i<=groupQuestionNumbers;i++){
                             setQuestionData(gbl.getCounter(),"group");
+                        }
+                        if(canSkip.equals("1")){
+                            checkboxOptional.setVisibility(View.VISIBLE);
+                            if(gbl.ifexistGroup(groupId)){
+                                checkboxOptional.setChecked(true);
+                            }else{
+                                checkboxOptional.setChecked(false);
+                            }
+                        }else{
+                            checkboxOptional.setVisibility(View.INVISIBLE);
+                            checkboxOptional.setChecked(false);
                         }
                         if(checkboxOptional.getVisibility()==View.VISIBLE){
                             deleteAllCheckBoxChild();
@@ -929,13 +977,7 @@ public class QuestionDynamic extends AppCompatActivity {
         String desc = db.getGroupDesc(groupId);
         String canSkip = db.can_SkipGroup(groupId);
 
-        if(canSkip.equals("1")){
-            checkboxOptional.setVisibility(View.VISIBLE);
-            checkboxOptional.setChecked(false);
-        }else{
-            checkboxOptional.setVisibility(View.GONE);
-            checkboxOptional.setChecked(false);
-        }
+
         if(!desc.equals("")){
             sectionDescription.setVisibility(View.VISIBLE);
             sectionDescription.setText(desc);
@@ -952,9 +994,20 @@ public class QuestionDynamic extends AppCompatActivity {
 
              }
          }
+        if(canSkip.equals("1")){
+            checkboxOptional.setVisibility(View.VISIBLE);
+            if(gbl.ifexistGroup(groupId)){
+                checkboxOptional.setChecked(true);
+            }else{
+                checkboxOptional.setChecked(false);
+            }
+        }else{
+            checkboxOptional.setVisibility(View.INVISIBLE);
+            checkboxOptional.setChecked(false);
+        }
         //groupQuestion.close();
     }
-    public void createQuestionPage(String isGroup,String questionId,String type,String  questionText,String QuestionSectionSuggestion,String isOptional,boolean optionFlag,String questionOrder,JSONArray options){
+    public void createQuestionPage(String isGroup,String questionId,String type,String  questionText,String QuestionSectionSuggestion,String isOptional,boolean optionFlag,String questionOrder,JSONArray options,String compare_with){
         createTextQuestionNo(questionOrder);
         createTextViewQuestion(questionText);
 
@@ -973,19 +1026,19 @@ public class QuestionDynamic extends AppCompatActivity {
         }
         switch(type){
             case ("text"):
-                createEditTextViewEmail(questionId,isSkipFlag,"text");
+                createEditTextViewEmail(questionId,isSkipFlag,"text",compare_with);
                 break;
             case("textarea"):
-                createEditTextViewEmail(questionId,isSkipFlag,"textarea");
+                createEditTextViewEmail(questionId,isSkipFlag,"textarea",compare_with);
                 break;
             case("phone"):
-                createEditTextViewEmail(questionId,isSkipFlag,"phone");
+                createEditTextViewEmail(questionId,isSkipFlag,"phone",compare_with);
                 break;
             case("email"):
-                createEditTextViewEmail(questionId,isSkipFlag,"email");
+                createEditTextViewEmail(questionId,isSkipFlag,"email",compare_with);
                 break;
             case("date"):
-                createEditTextViewEmail(questionId,isSkipFlag,"date");
+                createEditTextViewEmail(questionId,isSkipFlag,"date",compare_with);
                 break;
             case("radio"):
                 if(optionFlag) {
@@ -1000,16 +1053,20 @@ public class QuestionDynamic extends AppCompatActivity {
                 createImageView(questionId);
                 break;
             case("numeric"):
-                createEditTextViewEmail(questionId,isSkipFlag,"numeric");
+                createEditTextViewEmail(questionId,isSkipFlag,"numeric",compare_with);
                 break;
             case("yearmonth"):
-                createEditTextViewEmail(questionId,isSkipFlag,"yearmonth");
+                createEditTextViewEmail(questionId,isSkipFlag,"yearmonth",compare_with);
                 break;
             case("year"):
-                createEditTextViewEmail(questionId,isSkipFlag,"year");
+                createEditTextViewEmail(questionId,isSkipFlag,"year",compare_with);
                 break;
             case("month"):
-                createEditTextViewEmail(questionId,isSkipFlag,"month");
+                createEditTextViewEmail(questionId,isSkipFlag,"month",compare_with);
+                break;
+            case("list"):
+                //question_id = questionId;
+                createGroup(questionId);
                 break;
             default:
                 //showMessage("type","type erro");
@@ -1085,7 +1142,7 @@ public class QuestionDynamic extends AppCompatActivity {
 
     }
 
-    public void createEditTextViewEmail(String questionId ,boolean isSkipFlag,String inputType){
+    public void createEditTextViewEmail(String questionId ,boolean isSkipFlag,String inputType,String compare_with){
         JSONObject obj = new JSONObject();
         obj = getAnswerIfsaved(questionId);
         String answer = "";
@@ -1189,8 +1246,17 @@ public class QuestionDynamic extends AppCompatActivity {
                 break;
         }
         List<String> data = new ArrayList<String>();
+        String qCompareWith = "";
+        if(!compare_with.equals("")){
+            Cursor csr =db.getQuestionByQuestionOrder(compare_with,getIntent().getStringExtra("SECTION_NO"));
+            csr.moveToFirst();
+            if(csr.getCount()>0){
+                qCompareWith = csr.getString(0);
+            }
+        }
         data.add(questionId);
         data.add("not_radio");
+        data.add(qCompareWith);
         tvQuestion.setTag(data);
         tvQuestion.setPadding(marginBottomPxl,marginBottomPxl,marginBottomPxl,marginBottomPxl);
         tvQuestion.setLayoutParams(layoutParams);
@@ -1336,7 +1402,7 @@ public class QuestionDynamic extends AppCompatActivity {
         }
         return thumb ;
     }
-    public void createRadioButtonGroup(String questionId,JSONArray options,boolean isSkipFlag) throws JSONException {
+    public void createRadioButtonGroup(String questionId,final JSONArray options,boolean isSkipFlag) throws JSONException {
         JSONObject obj = new JSONObject();
         obj = getAnswerIfsaved(questionId);
         String answer = "";
@@ -1371,17 +1437,24 @@ public class QuestionDynamic extends AppCompatActivity {
             group.setLayoutParams(layoutParams);
             btn1.setText(child.getString("option_text"));
             btn1.setTag(child.getString("response_type"));
-            //btn1.setTag("list");
             if(radioValue.equals(child.getString("option_text"))){
                 btn1.setChecked(true);
             }
-//            if(btn1.getTag().equals("list")){
-//                View spinner =  setSipnnerData();
-//                group.addView(btn1);
-//                group.addView(spinner);
-//                //btn1.setTag(spinner_id);
-//            }else
-                if(!btn1.getTag().equals("radio")){
+            isList = false;
+            if(btn1.getTag().equals("list")){
+                isList = true;
+//                //optionNext = new JSONArray();
+//                //optionNext = options;
+//                group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+//                    @Override
+//                    public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+//                        RadioButton rb= (RadioButton) findViewById(checkedId);
+//                        radioselect = rb.getText().toString();
+//
+//
+//                    }
+//                });
+            }else if(!btn1.getTag().equals("radio")){
                 tvQuestion = new EditText(this);
                 tvQuestion.setHint(getResources().getString(R.string.placeholder));
                 tvQuestion.setBackgroundColor(getResources().getColor(R.color.white));
@@ -1494,7 +1567,18 @@ public class QuestionDynamic extends AppCompatActivity {
                 radioselect = rb.getText().toString();
                 //gbl.setRadioInputTextCheckToZero();
                 if(rb.getTag().equals("list")){
+                    for(int i=0;i<options.length();i++) {
+                        JSONObject child = new JSONObject();
+                        try {
+                            child = options.getJSONObject(i);
+                            if(child.getString("option_text").equals(radioselect)){
+                                setNextQuestionOptions(child.getJSONArray("option_array"),groupId);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
 
+                    }
                 }else if(!rb.getTag().equals("radio")){
                     int i = (Integer)rb.getTag();
                     View v = (View) findViewById(i);
@@ -1518,7 +1602,41 @@ public class QuestionDynamic extends AppCompatActivity {
             }
         });
     }
+    public void createGroup(String questionid ){
+        JSONObject obj = new JSONObject();
+       //Log.e("Options",options.toString());
+        RadioGroup group = new RadioGroup(this);
+        group.setOrientation(RadioGroup.VERTICAL);
+        group.setTag(questionid);
+        Random r = new Random();
+        groupId = r.nextInt(9999999);
+        group.setId(groupId);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
+        layoutParams.setMargins(marginBottomPxl,marginBottomPxl,marginBottomPxl,marginBottomPxl);
+        LLQuestion.addView(group);
 
+    }
+    public void setNextQuestionOptions(JSONArray options,int group_Id) throws JSONException {
+        //question_id;
+        RadioGroup group = (RadioGroup)findViewById(group_Id);
+        group.removeAllViews();
+        for(int i=0;i<options.length();i++) {
+            RadioButton btn1 = new RadioButton(this);
+            JSONObject child = new JSONObject();
+            child = options.getJSONObject(i);
+            //btn1.setId(r.nextInt(10000));
+            //Log.e("OPTIONS OBJECT", child.toString());
+            btn1.setTextColor(getResources().getColor(R.color.darkgrey));
+            btn1.setTextSize(16);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
+            layoutParams.setMargins(marginBottomPxl,marginBottomPxl,marginBottomPxl,marginBottomPxl);
+            group.setLayoutParams(layoutParams);
+            btn1.setText(child.getString("option_text"));
+            group.addView(btn1);
+        }
+
+
+    }
     public void deleteTextView(){
         int nViews = LLQuestion.getChildCount();
         for (int i = 0; i < nViews; i++) {
@@ -1526,7 +1644,7 @@ public class QuestionDynamic extends AppCompatActivity {
             if (child instanceof RadioGroup) {
                 RadioGroup rbg = (RadioGroup)child;
                 //rbg.clearCheck();
-                rbg.removeAllViews();
+                 rbg.removeAllViews();
 
             }
         }
@@ -1560,21 +1678,25 @@ public class QuestionDynamic extends AppCompatActivity {
         d.setView(dialogView);
         final NumberPicker numberPicker = (NumberPicker) dialogView.findViewById(R.id.dialog_number_picker);
         final NumberPicker numberPicker2 = (NumberPicker) dialogView.findViewById(R.id.numberPicker2);
+        final TextView textView2 = (TextView)dialogView.findViewById(R.id.textView2);
         switch (type){
             case "year":
                 numberPicker.setVisibility(View.GONE);
+                textView2.setVisibility(View.GONE);
                 numberPicker2.setMaxValue(2018);
                 numberPicker2.setMinValue(1900);
                 break;
             case "month":
                 numberPicker.setVisibility(View.VISIBLE);
+                textView2.setVisibility(View.VISIBLE);
                 numberPicker.setMaxValue(12);
-                numberPicker.setMinValue(0);
+                numberPicker.setMinValue(1);
                 numberPicker2.setMaxValue(2018);
                 numberPicker2.setMinValue(1900);
                 break;
             case "yearmonth":
                 numberPicker.setVisibility(View.VISIBLE);
+                textView2.setVisibility(View.VISIBLE);
                 numberPicker.setMaxValue(12);
                 numberPicker.setMinValue(0);
                 numberPicker2.setMaxValue(99);

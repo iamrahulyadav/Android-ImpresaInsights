@@ -25,7 +25,7 @@
     <string name="saveAndExit">Are you sure you want to Save and Exit?</string>
     <string name="dataLost">Are you sure you want to exit? All the data will be lost</string>
     <string name="emptyField">Field cannot be empty!!</string>
-    <string name="validNumber">Please enter valid  phone number!!</string>
+    <string name="validNumber">Phone number must be 10 digits long!!</string>
     <string name="validEmail">Please enter valid email!!</string>
     <string name="validRadio">Select one from the options!!</string>
     <string name="validImage">Select photo from the gallery!!</string>

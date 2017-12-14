@@ -84,7 +84,7 @@ public class DataBaseHealper extends SQLiteOpenHelper {
         db.execSQL("create table "+ TABLE_LAUNGUAGE+" (ID INTEGER PRIMARY KEY AUTOINCREMENT, LAUNGUAGE_ID TEXT, LAUNGUAGE_NAME TEXT)");
         db.execSQL("create table "+ TABLE_SURVEY_SECTION+" (SECTION_ID INTEGER, SURVEY_ID INTEGER, SECTION_TITLE TEXT, SECTION_DESC TEXT, SECTION_SUGGESTION TEXT)");
         db.execSQL("create table "+ TABLE_SECTION_GROUP+" (GROUP_ID INTEGER, SECTION_ID INTEGER, SURVEY_ID INTEGER, GROUP_TITLE TEXT, GROUP_DESC TEXT, GROUP_SUGGESTION TEXT ,FLAG TEXT)");
-        db.execSQL("create table "+ TABLE_SURVEY_QUESTION+" (QUESTION_ID INTEGER, SECTION_ID INTEGER, GROUP_ID INTEGER, SURVEY_ID INTEGER, QUESTION_TYPE TEXT, QUESTION_TEXT TEXT, QUESTION_SECTION_SUGGESTION TEXT,IS_OPTIONAL INTEGER, QUESTION_OPTION TEXT, QUESTION_ORDER TEXT, QUESTION_NO INTEGER)");
+        db.execSQL("create table "+ TABLE_SURVEY_QUESTION+" (QUESTION_ID INTEGER, SECTION_ID INTEGER, GROUP_ID INTEGER, SURVEY_ID INTEGER, QUESTION_TYPE TEXT, QUESTION_TEXT TEXT, QUESTION_SECTION_SUGGESTION TEXT,IS_OPTIONAL INTEGER, QUESTION_OPTION TEXT, QUESTION_ORDER TEXT, QUESTION_NO INTEGER,COMPARE_WITH TEXT)");
         //db.execSQL("create table "+ TABLE_SURVEY_QUESTION_OPTION+" (OPTION_ID INTEGER, QUESTION_ID INTEGER, OPTION_DESC TEXT)");
         db.execSQL("create table "+ TABLE_SURVEY_ANSWER+" (ANSWER_ID INTEGER PRIMARY KEY AUTOINCREMENT, QUESTION_ID INTEGER, CLIENT_ID INTEGER, CLIENT_ID_TEMP INTEGER,ANSWER_TEXT TEXT, FLAG INTEGER,SURVEY_ID INTEGER,TYPE TEXT,PROJECT_CODE TEXT)");
         db.execSQL("create table "+TABLE_CLIENT_INFO+" (CLIENT_ID INTEGER, SURVEY_ID INTEGER)");
@@ -452,6 +452,7 @@ public class DataBaseHealper extends SQLiteOpenHelper {
             contentValue.put("QUESTION_OPTION",json_data.getString("question_options"));
             contentValue.put("QUESTION_ORDER",json_data.getString("question_order"));
             contentValue.put("QUESTION_NO",json_data.getString("question_no"));
+            contentValue.put("COMPARE_WITH",json_data.getString("compare_with"));
 
             db.insert(TABLE_SURVEY_QUESTION,null,contentValue );
         }
@@ -514,6 +515,18 @@ public class DataBaseHealper extends SQLiteOpenHelper {
         csr = db.rawQuery(Query,new String[] {groupId}, null);
         return csr;
 
+    }
+    public String getGroupIdbyQuestionId(String questionId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor csr;
+        String Query = "SELECT * FROM " + TABLE_SURVEY_QUESTION + " WHERE QUESTION_ID = ?";
+        csr = db.rawQuery(Query,new String[] {questionId}, null);
+        csr.moveToFirst();
+        if(csr.getCount()>0){
+            return csr.getString(2);
+        }else{
+            return "";
+        }
     }
     public Cursor getQuestionByQuestionOrder(String question_order,String section_id){
         Cursor csr;

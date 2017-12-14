@@ -340,7 +340,7 @@ public class Question extends AppCompatActivity {
         obj.put("order",questionOrder);
         int position = ifAnswerExist(editTextName1.getTag().toString());
         if(position >0){
-            gbl.updateAtAnswer(position,editTextName1.getText().toString(),editTextName1.getTag().toString(),questionOrder,false);
+            gbl.updateAtAnswer(position,editTextName1.getText().toString(),editTextName1.getTag().toString(),questionOrder,false,false);
         }else {
             gbl.addAnswerInJsonArray(obj);
         }

@@ -14,21 +14,23 @@ android:gravity="center_horizontal"
         android:orientation="horizontal"
         android:layout_marginBottom="20dp">
         <TextView
+            android:id="@+id/textView1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Select Years"
-            android:textSize="18sp"
+            android:text="Year"
+            android:textSize="20sp"
             android:layout_weight="1"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="30dp"
             android:layout_marginRight="10dp"
             android:textColor="@color/blue"/>
         <TextView
+            android:id="@+id/textView2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Select Months"
-            android:textSize="18sp"
+            android:text="Month"
+            android:textSize="20sp"
             android:layout_weight="1"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="30dp"
             android:layout_marginRight="10dp"
             android:textColor="@color/blue"/>
         </LinearLayout>

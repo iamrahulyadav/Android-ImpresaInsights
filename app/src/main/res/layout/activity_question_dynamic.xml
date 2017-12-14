@@ -102,7 +102,7 @@
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="0dp"
             android:gravity="bottom"
-            android:paddingTop="15dp"
+            android:paddingTop="0dp"
             android:orientation="horizontal">
             <LinearLayout
                 android:layout_width="match_parent"
@@ -113,7 +113,7 @@
                     android:id="@+id/checkboxOptional"
                     android:layout_width="match_parent"
                     android:layout_height="25dp"
-                    android:visibility="gone"
+                    android:visibility="invisible"
                     android:layout_marginLeft="200dp"
                     android:text="Refuse"
                     android:textColor="@color/darkgrey"
@@ -121,14 +121,14 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
+                android:layout_height="50dp"
                 android:layout_alignParentBottom="true"
                 android:orientation="horizontal">
             <Button
                 android:id="@+id/button_back"
                 android:layout_width="90dp"
 
-                android:layout_height="55dp"
+                android:layout_height="50dp"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_marginLeft="25dp"
@@ -160,7 +160,7 @@
             <Button
                 android:id="@+id/button_next"
                 android:layout_width="90dp"
-                android:layout_height="55dp"
+                android:layout_height="50dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_marginEnd="25dp"

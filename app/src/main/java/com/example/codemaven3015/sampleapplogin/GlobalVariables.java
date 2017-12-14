@@ -8,6 +8,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 /**
  * Created by CodeMaven3015 on 11/6/2017.
  */
@@ -21,6 +23,7 @@ public class GlobalVariables extends Application {
     private int questionCounter = 0;
     private String name = "";
     private String clientId = "new";
+    private ArrayList<String> groupList = new ArrayList<String>();
     private JSONArray answer = new JSONArray() ;
 //    public void setRadioInputTextCheck(int i){
 //        radioInputTextCheck = i;
@@ -31,6 +34,15 @@ public class GlobalVariables extends Application {
 //    public int getRadioInputTextCheck(){
 //        return radioInputTextCheck;
 //    }
+    public void setGroup(String  groupid){
+        groupList.add(groupid);
+    }
+    public boolean ifexistGroup(String groupId){
+        return groupList.contains(groupId);
+    }
+    public void removeGroup(String groupId){
+        groupList.remove(groupId);
+    }
     public void setName(String setname){
         name = setname;
     }
@@ -43,6 +55,7 @@ public class GlobalVariables extends Application {
         name = "";
        //radioInputTextCheck=0;
         answer = new JSONArray();
+        groupList = new ArrayList<String>();
         //Question = null;
     }
     public void resetquestioncounter(){
@@ -55,11 +68,11 @@ public class GlobalVariables extends Application {
     public String getClientId(){
         return clientId;
     }
-    public void updateAtAnswer(int i,String ans,String queId,String radio,boolean flag){
+    public void updateAtAnswer(int i,String ans,String queId,String radio,boolean flag,boolean isskiped){
         JSONObject obj = new JSONObject();
 
         try {
-            if(ans.equals("")){
+            if(ans.equals("") &&(!isskiped)){
                 ans = answer.getJSONObject(i).getString("answer");
             }
             obj.put("answer",ans);
