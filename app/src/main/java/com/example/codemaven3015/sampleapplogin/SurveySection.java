@@ -9,6 +9,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
@@ -54,7 +55,11 @@ public class SurveySection extends AppCompatActivity {
         isDone = getIntent().getBooleanExtra("isDONE",false);
         sectionNumber.setText("Section "+sectionNo + " :");
         sectionName.setText(sectionTittle);
-        sectionDesc1.setText(sectionDesc);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            sectionDesc1.setText(Html.fromHtml(sectionDesc,Html.FROM_HTML_MODE_LEGACY));
+        } else {
+            sectionDesc1.setText(Html.fromHtml(sectionDesc));
+        }
         if (savedInstanceState != null) {
             Log.e("Saved",savedInstanceState.getString("ANSWER"));
             try {

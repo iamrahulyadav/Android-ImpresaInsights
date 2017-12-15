@@ -144,11 +144,13 @@ public class Question extends AppCompatActivity {
                     lastname.setError("Please enter valid name");
                     return;
                 }
-                if(!specialCharValidation(phoneNo) || !emptyFieldValidation(phoneNo)){
-                    if(!(phoneNo.length()==10)) {
-                        phone.setError("Please enter valid name");
-                        return;
-                    }
+                if( !emptyFieldValidation(phoneNo)){
+                    phone.setError("Please enter valid phone number!!");
+                    return;
+                }
+                if(!(phoneNo.length()==10)) {
+                    phone.setError("Phone number must be 10 digits long!!");
+                    return;
                 }
                 phoneNo = cpp.getSelectedCountryCodeWithPlus()+phoneNo;
                 //showMessage("",phoneNo);
@@ -167,7 +169,7 @@ public class Question extends AppCompatActivity {
         });
     }
     public boolean specialCharValidation(String s){
-        Pattern regex = Pattern.compile("[$&+:;=\\\\?@#|/<>^*()%!-]");
+        Pattern regex = Pattern.compile("[$&+:;=\\\\?@#|/<>^*()%!-1234567890,'{}]");
 
         if (regex.matcher(s).find()) {
             return false;

@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -25,6 +26,8 @@ public class IAgree extends AppCompatActivity {
     TextView textViewSurveyName;
     TextView textView_desc;
     GlobalVariables gbl;
+    RadioGroup radioIagreeActivity;
+    TextView textViewtitle;
 
 
     public void OnBack(View v) {
@@ -81,9 +84,10 @@ public class IAgree extends AppCompatActivity {
         gbl = (GlobalVariables)getApplicationContext();
         gbl.resetAllGlobalVariable();
         setContentView(R.layout.activity_iagree);
-        textViewSurveyName = (TextView)findViewById(R.id.textViewSurveyName
-        );
+        textViewSurveyName = (TextView)findViewById(R.id.textViewSurveyName);
+        radioIagreeActivity = (RadioGroup)findViewById(R.id.radioIagreeActivity);
         textView_desc = (TextView)findViewById(R.id.textView_desc);
+        textViewtitle = (TextView)findViewById(R.id.textView4);
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.action_bar);
         //Toolbar parent= (Toolbar)(R.layout.action_bar).getParent();
@@ -113,7 +117,18 @@ public class IAgree extends AppCompatActivity {
         if(surveyDetails.length >0 ) {
             helloTextView.setText(surveyDetails[1]);
             textViewSurveyName.setText(surveyDetails[1]);
-            textView_desc.setText(surveyDetails[2]);
+            if(!(SurveyId.equals("4"))){
+                textView_desc.setText(surveyDetails[2]);
+                textViewtitle.setVisibility(View.VISIBLE);
+                radioIagreeActivity.setVisibility(View.VISIBLE);
+            }else{
+                textView_desc.setText(surveyDetails[2]);
+               radioIagreeActivity.setVisibility(View.INVISIBLE);
+                textViewtitle.setVisibility(View.GONE);
+                Iagree = 1;
+                //textView_desc = ;
+            }
+
         }else{
             helloTextView.setText("Survey");
         }

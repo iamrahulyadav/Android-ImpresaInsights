@@ -90,8 +90,9 @@ public class QuestionDynamic extends AppCompatActivity {
     public boolean isDone = false;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
-    boolean isList = false;
+    public boolean isList = false;
     int groupId = 0;
+    public JSONArray optionsOption = null;
     //JSONArray optionNext;
 
     @Override
@@ -273,6 +274,8 @@ public class QuestionDynamic extends AppCompatActivity {
         }
     }
     public void onclickBack(View view){
+        isList = false;
+        optionsOption = null;
         view.setEnabled(false);
         view.setClickable(false);
         Cursor questionBack = gbl.getQuestionCursor();
@@ -290,7 +293,7 @@ public class QuestionDynamic extends AppCompatActivity {
         Log.e("BACK",gbl.getCounter()+"");
         if(groupid.equals("0")){
             gbl.countDecrement();
-            if(gbl.getCounter() < 1){
+            if(gbl.getCounter() < 0){
                 onClickBackIfFirstQuestion();
                 gbl.countIncrement();
                 gbl.countIncrement();
@@ -407,7 +410,7 @@ public class QuestionDynamic extends AppCompatActivity {
                 }
             } else {
                 if (getIntent().getStringExtra("SURVEY_ID").equals("1")) {
-                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.dataLost), true,true);
+                    showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.dataLost), false,isDone);
 
 
                 } else {
@@ -454,6 +457,8 @@ public class QuestionDynamic extends AppCompatActivity {
     public void onClickNext(View view) throws JSONException {
         //showMessage("info","Next question");
         //progressDialog.show();
+        isList = false;
+        optionsOption = null;
         view.setEnabled(false);
         view.setClickable(false);
         int nViews = LLQuestion.getChildCount();
@@ -1043,7 +1048,11 @@ public class QuestionDynamic extends AppCompatActivity {
             case("radio"):
                 if(optionFlag) {
                     try {
-                        createRadioButtonGroup(questionId,options,isSkipFlag);
+                        if(isList){
+                            createGroup(questionId);
+                        }else{
+                            createRadioButtonGroup(questionId,options,isSkipFlag);
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -1063,10 +1072,6 @@ public class QuestionDynamic extends AppCompatActivity {
                 break;
             case("month"):
                 createEditTextViewEmail(questionId,isSkipFlag,"month",compare_with);
-                break;
-            case("list"):
-                //question_id = questionId;
-                createGroup(questionId);
                 break;
             default:
                 //showMessage("type","type erro");
@@ -1396,7 +1401,7 @@ public class QuestionDynamic extends AppCompatActivity {
             ContentResolver cr = getContentResolver();
             InputStream in = cr.openInputStream(uri);
             BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize=7;
+            options.inSampleSize=4;
             thumb = BitmapFactory.decodeStream(in,null,options);
         } catch (FileNotFoundException e) {
         }
@@ -1426,6 +1431,8 @@ public class QuestionDynamic extends AppCompatActivity {
         group.setId(r.nextInt(9999999));
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
         layoutParams.setMargins(marginBottomPxl,marginBottomPxl,marginBottomPxl,marginBottomPxl);
+        isList = false;
+        optionsOption = null;
         for(int i=0;i<options.length();i++) {
             RadioButton btn1 = new RadioButton(this);
             JSONObject child = new JSONObject();
@@ -1437,24 +1444,10 @@ public class QuestionDynamic extends AppCompatActivity {
             group.setLayoutParams(layoutParams);
             btn1.setText(child.getString("option_text"));
             btn1.setTag(child.getString("response_type"));
-            if(radioValue.equals(child.getString("option_text"))){
+            if(radioValue.equals(child.getString("option_text"))) {
                 btn1.setChecked(true);
             }
-            isList = false;
-            if(btn1.getTag().equals("list")){
-                isList = true;
-//                //optionNext = new JSONArray();
-//                //optionNext = options;
-//                group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-//                    @Override
-//                    public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-//                        RadioButton rb= (RadioButton) findViewById(checkedId);
-//                        radioselect = rb.getText().toString();
-//
-//
-//                    }
-//                });
-            }else if(!btn1.getTag().equals("radio")){
+            if(!btn1.getTag().equals("radio") && !( btn1.getTag().equals("radiolist"))){
                 tvQuestion = new EditText(this);
                 tvQuestion.setHint(getResources().getString(R.string.placeholder));
                 tvQuestion.setBackgroundColor(getResources().getColor(R.color.white));
@@ -1555,24 +1548,46 @@ public class QuestionDynamic extends AppCompatActivity {
                 }
                 group.addView(tvQuestion);
             }else{
+                if((child.getString("response_type")).equals("radiolist")){
+                    isList = true;
+
+                }
+
+                if(radioValue.equals(child.getString("option_text"))){
+                    //btn1.setChecked(true);
+                    if(isList) {
+                        optionsOption = new JSONArray();
+                        optionsOption =child.getJSONArray("sub_option");
+                    }
+                }
                 group.addView(btn1);
             }
         }
         //radioselect = "";
+
+
         LLQuestion.addView(group);
         group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
                 RadioButton rb= (RadioButton) findViewById(checkedId);
                 radioselect = rb.getText().toString();
+//                if(survey_ID.equals("4")){
+//                    //String ans = getAnswerIfsaved(questionPreviousId).getString("answer");
+//                    if(!(radioselect.equalsIgnoreCase("yes"))){
+//                        gbl.countIncrement();
+//                    }
+//                }
                 //gbl.setRadioInputTextCheckToZero();
-                if(rb.getTag().equals("list")){
+                if(rb.getTag().equals("radiolist")){
                     for(int i=0;i<options.length();i++) {
                         JSONObject child = new JSONObject();
                         try {
                             child = options.getJSONObject(i);
                             if(child.getString("option_text").equals(radioselect)){
-                                setNextQuestionOptions(child.getJSONArray("option_array"),groupId);
+                                setNextQuestionOptions(child.getJSONArray("sub_option"),groupId);
+                                //setNextQuestionOptions(options,groupId);
+                                break;
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -1602,7 +1617,7 @@ public class QuestionDynamic extends AppCompatActivity {
             }
         });
     }
-    public void createGroup(String questionid ){
+    public void createGroup(String questionid ) throws JSONException {
         JSONObject obj = new JSONObject();
        //Log.e("Options",options.toString());
         RadioGroup group = new RadioGroup(this);
@@ -1614,12 +1629,38 @@ public class QuestionDynamic extends AppCompatActivity {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
         layoutParams.setMargins(marginBottomPxl,marginBottomPxl,marginBottomPxl,marginBottomPxl);
         LLQuestion.addView(group);
+        if(!(optionsOption == null)){
+            setNextQuestionOptions(optionsOption,groupId);
+        }
+        group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+                RadioButton rb= (RadioButton) findViewById(checkedId);
+                radioselect = rb.getText().toString();
+            }
+        });
 
     }
     public void setNextQuestionOptions(JSONArray options,int group_Id) throws JSONException {
         //question_id;
         RadioGroup group = (RadioGroup)findViewById(group_Id);
         group.removeAllViews();
+        JSONObject obj = new JSONObject();
+        obj = getAnswerIfsaved(group.getTag().toString());
+        String answer = "";
+        String radioValue = "";
+
+        try {
+            answer = obj.getString("answer");
+            radioValue = obj.getString("radio");
+            if(answer.equals("__123__")){
+                answer = "";
+                radioValue = "";
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         for(int i=0;i<options.length();i++) {
             RadioButton btn1 = new RadioButton(this);
             JSONObject child = new JSONObject();
@@ -1632,7 +1673,10 @@ public class QuestionDynamic extends AppCompatActivity {
             layoutParams.setMargins(marginBottomPxl,marginBottomPxl,marginBottomPxl,marginBottomPxl);
             group.setLayoutParams(layoutParams);
             btn1.setText(child.getString("option_text"));
-            group.addView(btn1);
+            if(radioValue.equals(child.getString("option_text"))) {
+                btn1.setChecked(true);
+            }
+            group.addView( btn1);
         }
 
 

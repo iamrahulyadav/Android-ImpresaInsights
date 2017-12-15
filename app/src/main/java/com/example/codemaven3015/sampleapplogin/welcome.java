@@ -118,6 +118,7 @@ public class welcome extends AppCompatActivity {
         });
         if((getIntent().getStringExtra("from").equals("main"))) {
             //getQuestionListFromAPI();
+            setProjectData();
             try {
                 getTimeStampFromApi();
                 updateClientSurveyDB();
@@ -210,6 +211,7 @@ public class welcome extends AppCompatActivity {
                 editor.apply();
 
             }else{
+                //make it false
                 isCallServiceForServerData = false;
             }
         }else{
@@ -549,7 +551,7 @@ public void getQuestionListFromAPI(){
                         dialog.hide();
                         try {
                             JSONObject jsonObject = new JSONObject(response);
-                            Log.e("my app",jsonObject.toString());
+                            Log.e("my app1",jsonObject.toString());
                             String status = jsonObject.getString("status");
                             if(status.equals("Success")){
                                 questionDataFormating(jsonObject);
