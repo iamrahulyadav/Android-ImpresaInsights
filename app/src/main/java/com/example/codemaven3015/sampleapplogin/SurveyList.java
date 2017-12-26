@@ -106,6 +106,8 @@ public class SurveyList extends AppCompatActivity {
                 while (res.moveToNext()) {
                     Button btn = new Button(this);
                     final String str = res.getString(0);
+                    if(str.equals("2")||str.equals("3"))
+                        continue;
                     btn.setText(res.getString(1));
                     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(MATCH_PARENT, heightButtonPxl);
                     layoutParams.height = heightButtonPxl;

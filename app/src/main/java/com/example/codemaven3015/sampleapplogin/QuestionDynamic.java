@@ -1660,11 +1660,10 @@ public class QuestionDynamic extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+        //String child[] = null;
         for(int i=0;i<options.length();i++) {
             RadioButton btn1 = new RadioButton(this);
-            JSONObject child = new JSONObject();
-            child = options.getJSONObject(i);
+            //child[i] = options.getString(i);
             //btn1.setId(r.nextInt(10000));
             //Log.e("OPTIONS OBJECT", child.toString());
             btn1.setTextColor(getResources().getColor(R.color.darkgrey));
@@ -1672,10 +1671,10 @@ public class QuestionDynamic extends AppCompatActivity {
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
             layoutParams.setMargins(marginBottomPxl,marginBottomPxl,marginBottomPxl,marginBottomPxl);
             group.setLayoutParams(layoutParams);
-            btn1.setText(child.getString("option_text"));
-            if(radioValue.equals(child.getString("option_text"))) {
-                btn1.setChecked(true);
-            }
+            btn1.setText(options.getString(i));
+//            if(radioValue.equals(options.getString(i))) {
+//                btn1.setChecked(true);
+//            }
             group.addView( btn1);
         }
 
