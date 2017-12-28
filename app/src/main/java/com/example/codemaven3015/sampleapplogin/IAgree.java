@@ -99,6 +99,7 @@ public class IAgree extends AppCompatActivity {
         if(!gbl.getClientId().equals("new")){
             Cursor ifSurveyDone = db.ifSurveyDone(gbl.getClientId(),SurveyId);
             if(ifSurveyDone.getCount()>0){
+
                 ifSurveyDone.moveToFirst();
                 do{
                     JSONObject obj = new JSONObject();

@@ -25,15 +25,7 @@ public class GlobalVariables extends Application {
     private String clientId = "new";
     private ArrayList<String> groupList = new ArrayList<String>();
     private JSONArray answer = new JSONArray() ;
-//    public void setRadioInputTextCheck(int i){
-//        radioInputTextCheck = i;
-//    }
-//    public void setRadioInputTextCheckToZero(){
-//        radioInputTextCheck = 0;
-//    }
-//    public int getRadioInputTextCheck(){
-//        return radioInputTextCheck;
-//    }
+
     public void setGroup(String  groupid){
         groupList.add(groupid);
     }

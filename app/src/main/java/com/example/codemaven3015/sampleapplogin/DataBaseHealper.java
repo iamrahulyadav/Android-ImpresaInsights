@@ -312,6 +312,7 @@ public class DataBaseHealper extends SQLiteOpenHelper {
         Cursor res = db.rawQuery(Query,new String[] {clientId,surveyId}, null);
         return res;
     }
+
     public Cursor selectNewDistictClient(){
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor res = db.rawQuery("select DISTINCT CLIENT_ID_TEMP from "+TABLE_SURVEY_ANSWER+" WHERE FLAG = 0 AND CLIENT_ID_TEMP IS NOT NULL", null);

@@ -14,6 +14,7 @@ import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -28,6 +29,7 @@ public class SurveySection extends AppCompatActivity {
     boolean isDone = false;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
+    Button button_back;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +56,7 @@ public class SurveySection extends AppCompatActivity {
         sectionDesc = getIntent().getStringExtra("SECTION_DESC");
         isDone = getIntent().getBooleanExtra("isDONE",false);
         sectionNumber.setText("Section "+sectionNo + " :");
+        button_back = (Button)findViewById(R.id.button_back);
         sectionName.setText(sectionTittle);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             sectionDesc1.setText(Html.fromHtml(sectionDesc,Html.FROM_HTML_MODE_LEGACY));
@@ -74,6 +77,9 @@ public class SurveySection extends AppCompatActivity {
         }
         Cursor section = db.getSectionList(getIntent().getStringExtra("SURVEY_ID"));
         gbl.setsectionList(section);
+        if(surveyId.equals("5")){
+            abilitySurveyDetails();
+        }
         //sectionDesc1.setMovementMethod(new ScrollingMovementMethod());
 
     }
@@ -111,7 +117,13 @@ public class SurveySection extends AppCompatActivity {
 //                i.putExtra("SECTION_DESC", sectionDesc);
 //                startActivity(i);
 //            }else {
-                Intent i = new Intent(SurveySection.this, QuestionDynamic.class);
+                Intent i;
+            if(surveyId.equals("5")){
+                i = new Intent(SurveySection.this, TimerSurvey.class);
+            }else{
+                i = new Intent(SurveySection.this, QuestionDynamic.class);
+            }
+
                 i.putExtra("SURVEY_NAME", surveyName);
                 i.putExtra("FIRST", "first");
                 i.putExtra("SURVEY_ID", surveyId);
@@ -127,6 +139,10 @@ public class SurveySection extends AppCompatActivity {
         }
         //question.close();
 
+    }
+    public void abilitySurveyDetails(){
+        button_back.setClickable(false);
+        button_back.setBackgroundColor(getResources().getColor(R.color.fadeRed));
     }
     public void onClickSaveAndExit(View view){
         Log.e("SAVE",gbl.getAnswer().toString());
@@ -201,7 +217,12 @@ public class SurveySection extends AppCompatActivity {
                     if (question.getCount() > 0) {
                         question.moveToFirst();
 
-                        Intent i = new Intent(SurveySection.this, QuestionDynamic.class);
+                        Intent i ;
+                        if(surveyId.equals("5")){
+                            i = new Intent(SurveySection.this, TimerSurvey.class);
+                        }else{
+                            i = new Intent(SurveySection.this, QuestionDynamic.class);
+                        }
                         i.putExtra("SURVEY_NAME", surveyName);
                         i.putExtra("SURVEY_ID", surveyId);
                         i.putExtra("FIRST","notFirst");

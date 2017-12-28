@@ -7,6 +7,8 @@
     <color name="blueFocus">#CC09abd2</color>
     <color name="darkgrey">#434345</color>
     <color name="colorAccent">#fe6868</color>
+    <color name="fadeRed">#66fe6868</color>
     <color name="lidgtGrey">#dddada</color>
     <color name="alertBackGround">#f7f7f7</color>
+    <color name="transparent">#00ffffff</color>
 </resources>

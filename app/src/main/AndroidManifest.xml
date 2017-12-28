@@ -6,7 +6,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature android:name="android.hardware.camera2" />
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
@@ -14,13 +16,13 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:largeHeap="true"
         android:theme="@style/AppTheme">
         <activity
-            android:alwaysRetainTaskState="true"
             android:name=".MainActivity"
+            android:alwaysRetainTaskState="true"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -30,38 +32,46 @@
             </intent-filter>
         </activity>
         <activity
-            android:alwaysRetainTaskState="true"
             android:name=".welcome"
-            android:screenOrientation="portrait"
-            android:label="Welcome" />
-        <activity android:name=".SurveyList"
-            android:screenOrientation="portrait"
-            android:alwaysRetainTaskState="true"/>
-        <activity
             android:alwaysRetainTaskState="true"
+            android:label="Welcome"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SurveyList"
+            android:alwaysRetainTaskState="true"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".language"
+            android:alwaysRetainTaskState="true"
             android:label="@string/title_activity_language"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".SelectLanguage"
-            android:screenOrientation="portrait"
-            android:alwaysRetainTaskState="true"/>
-        <activity android:name=".IAgree"
-            android:screenOrientation="portrait"
-            android:alwaysRetainTaskState="true"/>
-        <activity android:name=".Question"
-            android:screenOrientation="portrait"
-            android:alwaysRetainTaskState="true"/>
-        <activity android:name=".EnterPID"
-            android:screenOrientation="portrait"
-            android:alwaysRetainTaskState="true"/>
-        <activity android:name=".SurveySection"
-            android:screenOrientation="portrait"
-            android:alwaysRetainTaskState="true"/>
-        <activity android:name=".QuestionDynamic"
-            android:screenOrientation="portrait"
+        <activity
+            android:name=".SelectLanguage"
             android:alwaysRetainTaskState="true"
-            android:windowSoftInputMode="adjustPan"></activity>
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".IAgree"
+            android:alwaysRetainTaskState="true"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Question"
+            android:alwaysRetainTaskState="true"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".EnterPID"
+            android:alwaysRetainTaskState="true"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SurveySection"
+            android:alwaysRetainTaskState="true"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".QuestionDynamic"
+            android:alwaysRetainTaskState="true"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".TimerSurvey"></activity>
     </application>
 
 </manifest>
