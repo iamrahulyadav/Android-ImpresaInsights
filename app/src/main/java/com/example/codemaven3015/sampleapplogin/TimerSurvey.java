@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.CountDownTimer;
 import android.support.v7.app.ActionBar;
@@ -46,6 +47,9 @@ public class TimerSurvey extends AppCompatActivity {
     String selectedImage = "";
     boolean isAptitude = false;
     boolean isComplete = false;
+    String jumpto = "";
+    boolean jumptoFlag = false;
+    boolean question6a = false;
     ImageView questionImage ,answerImage1 ,answerImage2 ,answerImage3 ,answerImage4 ,answerImage5, answerImage6,answerImage7,answerImage8;
 
     @Override
@@ -78,6 +82,10 @@ public class TimerSurvey extends AppCompatActivity {
         answerImage6 = (ImageView)findViewById(R.id.answerImage6);
         answerImage7 = (ImageView)findViewById(R.id.answerImage7);
         answerImage8 = (ImageView)findViewById(R.id.answerImage8);
+        textViewQuestionNumber1.setTag("notDone");
+        Drawable progressDrawable = progressBar.getProgressDrawable().mutate();
+        progressDrawable.setColorFilter(Color.RED, android.graphics.PorterDuff.Mode.SRC_IN);
+        progressBar.setProgressDrawable(progressDrawable);
         clientId.setText(gbl.getClientId());
         int marginBottomDp = 10;
         float scale = getResources().getDisplayMetrics().density;
@@ -85,6 +93,10 @@ public class TimerSurvey extends AppCompatActivity {
         sizeOfImage = (int) (100 * scale + 0.5f);
 
         setQuestion();
+    }
+    @Override
+    public void onBackPressed() {
+        // Do Here what ever you want do on back press;
     }
     public void onSaveandExit(View view){
         //if(isComplete)
@@ -136,6 +148,16 @@ public class TimerSurvey extends AppCompatActivity {
                     obj.put("answer", answer);
                     obj.put("radio", "");
                     gbl.addAnswerInJsonArray(obj);
+
+                    if(!jumpto.equals("")){
+                        if(answer.toLowerCase().equals("no")){
+                            jumptoFlag = true;
+                        }else {
+                            jumptoFlag = false;
+                        }
+                    }else {
+                        jumptoFlag = false;
+                    }
                 }else{
                     showMessage("Error","Please select one option");
                     return;
@@ -183,8 +205,15 @@ public class TimerSurvey extends AppCompatActivity {
             //question.moveToFirst();
             if (question.getCount() > 0) {
                 if (gbl.getCounter() < question.getCount()) {
-                    question.moveToPosition(gbl.getCounter());
 
+                    question.moveToPosition(gbl.getCounter());
+                    if(jumptoFlag){
+                        while(!question.getString(9).equals(jumpto)){
+                            gbl.countIncrement();
+                            question.moveToPosition(gbl.getCounter());
+                        }
+                    }
+                    jumptoFlag = false;
                     String questionId, questionOrder, QuestionSectionSuggestion, questionText, timer, isMessage, type,imageText;
                     JSONArray options = null;
                     questionId = question.getString(0);
@@ -225,7 +254,7 @@ public class TimerSurvey extends AppCompatActivity {
                             i.putExtra("SECTION_ID", section.getString(0));
                             i.putExtra("SECTION_NO", gbl.getSectionCount() + 1 + "");
                             i.putExtra("SECTION_DESC", section.getString(3));
-                            i.putExtra("isDONE", true);
+                            i.putExtra("isDONE", false);
                             startActivity(i);
                         } else {
                             gbl.decrementSectionCount();//isDone = true;
@@ -247,6 +276,10 @@ public class TimerSurvey extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 db.deleteAnswerIfUpdated(gbl.getClientId());
+                if(!isdone){
+                    editor.putString(gbl.getClientId(),getIntent().getStringExtra("SECTION_ID"));
+                    editor.apply();
+                }
                 db.updateAnswerInTable(gbl.getAnswer(),true,getIntent().getStringExtra("SURVEY_ID"),gbl.getClientId(),isdone,sharedPreferences.getString("project_id", ""));
                 Intent i = new Intent(TimerSurvey.this , welcome.class);
                 i.putExtra("from","not_main");
@@ -267,6 +300,26 @@ public class TimerSurvey extends AppCompatActivity {
     }
     public void setQuestionData(String questionId,String questionOrder,String QuestionSectionSuggestion,String questionText,String timer,String isMessage,String type,JSONArray options,String imageText) throws JSONException {
         //textViewQuestionInfo.setVisibility(View.VISIBLE);
+        if(!question6a) {
+            if (questionOrder.toLowerCase().equals("6a")) {
+                question6a = true;
+            }else{
+                question6a = false;
+            }
+        }
+                if (question6a) {
+                    if(textViewQuestionNumber1.getVisibility() == View.VISIBLE) {
+                        textViewQuestion1.setVisibility(View.VISIBLE);
+                        textViewQuestion1.setText("Tell the respondent to concentrate and do her best to remember ALL of the digits in each number that is displayed.  Before you begin, make sure that the respondent can clearly see the screen.  After the first number is displayed and the respondent reads it aloud, then the survey will wait 10 SECONDS with the number visible on the screen.  Then the survey will proceed to the next page where the number is no longer visible.  Ask the respondent to recall the digits. YOU should type the respondent’s answer into the entry field then move to the next question. ");
+                        textViewQuestionNumber1.setVisibility(View.GONE);
+                        textViewQuestionNumber1.setTag("done");
+                        radioGroup.setVisibility(View.GONE);
+                        gbl.countDecrement();
+                        question6a = false;
+                        return;
+                    }
+                }
+        question6a = false;
         textViewQuestion1.setVisibility(View.VISIBLE);
         textViewQuestionNumber1.setVisibility(View.VISIBLE);
         textViewQuestionNumber1.setText(questionOrder);
@@ -299,6 +352,7 @@ public class TimerSurvey extends AppCompatActivity {
         }
         switch (type){
             case "text":
+
                 JSONObject obj = new JSONObject();
                 obj.put("question_no", questionId);
                 obj.put("answer", "");
@@ -316,6 +370,11 @@ public class TimerSurvey extends AppCompatActivity {
             case "radio":
                 progressBar.setVisibility(View.GONE);
                 radioGroup.setVisibility(View.VISIBLE);
+                jumpto = imageText;
+                if(!imageText.equals("")){
+                    //setImage(imageText);
+                    jumpto = imageText;
+                }
                 try {
                     setRadioButtons(options);
                 } catch (JSONException e) {
@@ -428,6 +487,7 @@ public class TimerSurvey extends AppCompatActivity {
 
             public void onFinish() {
                 countDownTimer.cancel();
+                progressBar.setVisibility(View.GONE);
                 if(isAptitude){
                     isAptitude = false;
                     textViewQuestion1.setVisibility(View.GONE);

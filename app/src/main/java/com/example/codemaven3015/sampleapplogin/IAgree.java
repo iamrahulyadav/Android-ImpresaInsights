@@ -1,8 +1,11 @@
 package com.example.codemaven3015.sampleapplogin;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.media.ResourceBusyException;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +31,8 @@ public class IAgree extends AppCompatActivity {
     GlobalVariables gbl;
     RadioGroup radioIagreeActivity;
     TextView textViewtitle;
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
 
 
     public void OnBack(View v) {
@@ -40,9 +45,27 @@ public class IAgree extends AppCompatActivity {
             Cursor res = getSectionList();
             gbl.setsectionList(res);
             //gbl.incrementSectionCount();
+            int count = 1;
             if(res.getCount()>0) {
                 String sectionName, sectionId ;
                 res.moveToFirst();
+                String lastSection = sharedPreferences.getString(gbl.getClientId(),"");
+                if(SurveyId.equals("5") && !(lastSection.equals(""))){
+                    try {
+                        editor.remove(gbl.getClientId());
+                        editor.apply();
+                    }catch (NullPointerException e){
+
+                    }
+                    //section.moveToFirst();
+                    if(res.getCount()>0){
+                        while(!res.getString(0).equals(lastSection)){
+                            count++;
+                            gbl.incrementSectionCount();
+                            res.moveToNext();
+                        }
+                    }
+                }
                 sectionName = res.getString(2);
                 sectionId = res.getString(0);
                 String sectionDesc = res.getString(3);
@@ -52,7 +75,7 @@ public class IAgree extends AppCompatActivity {
                     i.putExtra("SURVEY_ID", SurveyId);
                     i.putExtra("SECTION_NAME", sectionName);
                     i.putExtra("SECTION_ID", sectionId);
-                    i.putExtra("SECTION_NO", "1");
+                    i.putExtra("SECTION_NO", count+"");
                     i.putExtra("SECTION_DESC", sectionDesc);
                     i.putExtra("isDONE",false);
                     startActivity(i);
@@ -63,7 +86,7 @@ public class IAgree extends AppCompatActivity {
                     i.putExtra("SURVEY_ID", SurveyId);
                     i.putExtra("SECTION_NAME", sectionName);
                     i.putExtra("SECTION_ID", sectionId);
-                    i.putExtra("SECTION_NO", "1");
+                    i.putExtra("SECTION_NO", count+"");
                     i.putExtra("SECTION_DESC", sectionDesc);
                     startActivity(i);
                 }
@@ -90,6 +113,7 @@ public class IAgree extends AppCompatActivity {
         textViewtitle = (TextView)findViewById(R.id.textView4);
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.action_bar);
+        sharedPreferences = getSharedPreferences("userInfo", Context.MODE_PRIVATE);
         //Toolbar parent= (Toolbar)(R.layout.action_bar).getParent();
         final TextView helloTextView = (TextView) findViewById(R.id.action_text);
         final ImageView imageView = (ImageView)findViewById(R.id.imageButton);
@@ -118,16 +142,16 @@ public class IAgree extends AppCompatActivity {
         if(surveyDetails.length >0 ) {
             helloTextView.setText(surveyDetails[1]);
             textViewSurveyName.setText(surveyDetails[1]);
-            if(!(SurveyId.equals("4"))){
-                textView_desc.setText(surveyDetails[2]);
-                textViewtitle.setVisibility(View.VISIBLE);
-                radioIagreeActivity.setVisibility(View.VISIBLE);
-            }else{
+            if((SurveyId.equals("4"))||(SurveyId.equals("5"))){
                 textView_desc.setText(surveyDetails[2]);
                radioIagreeActivity.setVisibility(View.INVISIBLE);
                 textViewtitle.setVisibility(View.GONE);
                 Iagree = 1;
                 //textView_desc = ;
+            }else {
+                textView_desc.setText(surveyDetails[2]);
+                textViewtitle.setVisibility(View.VISIBLE);
+                radioIagreeActivity.setVisibility(View.VISIBLE);
             }
 
         }else{
