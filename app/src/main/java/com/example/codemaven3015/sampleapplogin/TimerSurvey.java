@@ -346,6 +346,10 @@ public class TimerSurvey extends AppCompatActivity {
         isAptitude = false;
         imageLayout.setVisibility(View.GONE);
         radioGroup.setVisibility(View.GONE);
+        int seconds =0;
+        if(!timer.equals("")){
+            seconds = Integer.parseInt(timer);
+        }
         String sectionName = getIntent().getStringExtra("SECTION_NAME").trim();
         if(sectionName.toLowerCase().equals("aptitude")) {
             type = "aptitude";
@@ -360,10 +364,6 @@ public class TimerSurvey extends AppCompatActivity {
                 gbl.addAnswerInJsonArray(obj);
 
                 progressBar.setVisibility(View.VISIBLE);
-                int seconds =0;
-                if(!timer.equals("")){
-                    seconds = Integer.parseInt(timer);
-                }
                 setTimer(seconds);
 
                 break;

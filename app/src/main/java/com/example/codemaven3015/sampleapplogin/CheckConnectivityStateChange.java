@@ -3,6 +3,7 @@ package com.example.codemaven3015.sampleapplogin;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -41,7 +42,7 @@ public class CheckConnectivityStateChange extends BroadcastReceiver {
                             Toast.makeText(context, "Internet available", Toast.LENGTH_SHORT).show();
                             isConnected = true;
                         }
-                        onClickButtonNotification("Internet available, Please Upload the answers");
+                        onClickButtonNotification("Internet is available, Please Upload the answers");
                         return true;
                     }
                 }
@@ -54,12 +55,20 @@ public class CheckConnectivityStateChange extends BroadcastReceiver {
         return false;
     }
     public void onClickButtonNotification(String Message){
-        PendingIntent pi = PendingIntent.getActivity(context, 0, new Intent(context, MainActivity.class), 0);
+
+        PendingIntent pi = PendingIntent.getActivity(context, 0, new Intent(context, MainActivity.class),PendingIntent.FLAG_UPDATE_CURRENT);
+//        Intent intent = new Intent(context, MainActivity.class);
+//        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+//        stackBuilder.addParentStack(context.getClass());
+//        stackBuilder.addNextIntent(intent);
+//        PendingIntent pi = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT
+//                | PendingIntent.FLAG_ONE_SHOT);
+
         NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(context)
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),R.mipmap.ic_launcher))
-                .setContentTitle("Notification from survey app")
+                .setContentTitle("IMPRESA INSIGHTS")
                 .setContentText(Message)
                 .setContentIntent(pi)
                 ;

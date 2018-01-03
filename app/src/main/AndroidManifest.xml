@@ -24,7 +24,8 @@
             android:name=".MainActivity"
             android:alwaysRetainTaskState="true"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -33,9 +34,10 @@
         </activity>
         <activity
             android:name=".welcome"
-            android:alwaysRetainTaskState="true"
             android:label="Welcome"
-            android:screenOrientation="portrait" />
+            android:alwaysRetainTaskState="true"
+            android:screenOrientation="portrait"
+            android:exported="true"/>
         <activity
             android:name=".SurveyList"
             android:alwaysRetainTaskState="true"
@@ -71,7 +73,9 @@
             android:alwaysRetainTaskState="true"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan" />
-        <activity android:name=".TimerSurvey"></activity>
+        <activity android:name=".TimerSurvey"
+            android:alwaysRetainTaskState="true"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

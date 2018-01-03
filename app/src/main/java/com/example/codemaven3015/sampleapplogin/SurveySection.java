@@ -191,7 +191,6 @@ public class SurveySection extends AppCompatActivity {
         });
         builder.setNegativeButton(R.string.no, null);
 
-        //builder.show();
         AlertDialog dialog1 = builder.create();
         dialog1.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
