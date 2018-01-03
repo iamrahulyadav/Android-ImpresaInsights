@@ -58,6 +58,7 @@ public class SurveySection extends AppCompatActivity {
         sectionNumber.setText("Section "+sectionNo + " :");
         button_back = (Button)findViewById(R.id.button_back);
         sectionName.setText(sectionTittle);
+        gbl.setClientId(getIntent().getStringExtra("CLIENT"));
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             sectionDesc1.setText(Html.fromHtml(sectionDesc,Html.FROM_HTML_MODE_LEGACY));
         } else {
@@ -123,7 +124,7 @@ public class SurveySection extends AppCompatActivity {
             }else{
                 i = new Intent(SurveySection.this, QuestionDynamic.class);
             }
-
+                i.putExtra("CLIENT",getIntent().getStringExtra("CLIENT"));
                 i.putExtra("SURVEY_NAME", surveyName);
                 i.putExtra("FIRST", "first");
                 i.putExtra("SURVEY_ID", surveyId);
@@ -222,6 +223,7 @@ public class SurveySection extends AppCompatActivity {
                         }else{
                             i = new Intent(SurveySection.this, QuestionDynamic.class);
                         }
+                        i.putExtra("CLIENT",getIntent().getStringExtra("CLIENT"));
                         i.putExtra("SURVEY_NAME", surveyName);
                         i.putExtra("SURVEY_ID", surveyId);
                         i.putExtra("FIRST","notFirst");

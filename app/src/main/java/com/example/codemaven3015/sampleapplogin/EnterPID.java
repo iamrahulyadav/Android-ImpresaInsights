@@ -20,6 +20,7 @@ public class EnterPID extends AppCompatActivity {
         if(db.ifClientExist(client_id)){
             gbl.setClientId(client_id);
             Intent i = new Intent(EnterPID.this, SurveyList.class);
+            i.putExtra("CLIENT",client_id);
             startActivity(i);
         }else{
             showMessage("INFO","Wrong Client Id");

@@ -64,6 +64,7 @@ public class welcome extends AppCompatActivity {
         }else {
             Intent i = new Intent(welcome.this, SurveyList.class);
             gbl.setClientId("new");
+            i.putExtra("CLIENT","new");
             startActivity(i);
         }
 

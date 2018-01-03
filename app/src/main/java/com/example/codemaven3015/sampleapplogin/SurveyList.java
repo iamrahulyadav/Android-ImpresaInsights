@@ -37,7 +37,6 @@ public class SurveyList extends AppCompatActivity {
     RequestQueue requestQueueLogin;
     isNetworkAvaliable nb;
     ProgressBar mProgressView;
-    String fromWhere;
     GlobalVariables gbl;
 
     @Override
@@ -56,6 +55,7 @@ public class SurveyList extends AppCompatActivity {
        // mProgressView.setVisibility(View.VISIBLE);
         //getSurveyListFromAPI();
         //fromWhere = getIntent().getStringExtra("CLIENT");
+        gbl.setClientId(getIntent().getStringExtra("CLIENT"));
         populateButtons();
 
     }
@@ -159,6 +159,7 @@ public class SurveyList extends AppCompatActivity {
                                         }else {
                                             Intent intent = new Intent(SurveyList.this, SelectLanguage.class);
                                             intent.putExtra("SURVEY_ID", str);
+                                            intent.putExtra("CLIENT",gbl.getClientId());
                                             startActivity(intent);
                                         }
                                     }

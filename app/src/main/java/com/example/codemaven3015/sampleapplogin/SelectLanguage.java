@@ -16,6 +16,7 @@ public class SelectLanguage extends AppCompatActivity {
     public void openIAgree(View v){
         Intent intent = new Intent(SelectLanguage.this , IAgree.class);
         intent.putExtra("SURVEY_ID", SurveyId);
+        intent.putExtra("CLIENT",getIntent().getStringExtra("CLIENT"));
         startActivity(intent);
 
     }

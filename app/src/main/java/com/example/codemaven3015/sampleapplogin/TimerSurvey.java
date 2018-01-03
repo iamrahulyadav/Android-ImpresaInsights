@@ -50,6 +50,7 @@ public class TimerSurvey extends AppCompatActivity {
     String jumpto = "";
     boolean jumptoFlag = false;
     boolean question6a = false;
+    Cursor question;
     ImageView questionImage ,answerImage1 ,answerImage2 ,answerImage3 ,answerImage4 ,answerImage5, answerImage6,answerImage7,answerImage8;
 
     @Override
@@ -86,25 +87,64 @@ public class TimerSurvey extends AppCompatActivity {
         Drawable progressDrawable = progressBar.getProgressDrawable().mutate();
         progressDrawable.setColorFilter(Color.RED, android.graphics.PorterDuff.Mode.SRC_IN);
         progressBar.setProgressDrawable(progressDrawable);
+        gbl.setClientId(getIntent().getStringExtra("CLIENT"));
         clientId.setText(gbl.getClientId());
         int marginBottomDp = 10;
         float scale = getResources().getDisplayMetrics().density;
         marginBottomPxl = (int) (marginBottomDp * scale + 0.5f);
         sizeOfImage = (int) (100 * scale + 0.5f);
-
+        question = db.getQuestionList(getIntent().getStringExtra("SECTION_ID"));
+        question.moveToFirst();
+        if (savedInstanceState != null) {
+            // Restore value of members from saved state
+            Log.e("Saved", savedInstanceState.getString("ANSWER"));
+            try {
+                JSONArray jsonObject = new JSONArray(savedInstanceState.getString("ANSWER"));
+                gbl.setAnswerFromSavedInstance(jsonObject);
+                //gbl.setQuestionSavedCounter(savedInstanceState.getInt("QUESTION_NO"));
+                gbl.setSectionCount(savedInstanceState.getInt("SECTION_NO"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
         setQuestion();
+
     }
     @Override
     public void onBackPressed() {
         // Do Here what ever you want do on back press;
     }
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putInt("QUESTION_NO",gbl.getCounter());
+        savedInstanceState.putString("ANSWER",gbl.getAnswer()+"");
+        savedInstanceState.putInt("SECTION_NO",gbl.getSectionCount());
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
+    }
+    @Override
+    protected void onResume() {
+        question = db.getQuestionList(getIntent().getStringExtra("SECTION_ID"));
+        question.moveToFirst();
+        super.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        question.close();
+    }
+
     public void onSaveandExit(View view){
         //if(isComplete)
         showMessageWithNoAndYes(getResources().getString(R.string.info), getResources().getString(R.string.saveAndExit), isComplete);
 
     }
     public void nextQuestion(View view) throws JSONException {
-        countDownTimer.cancel();
+        try {
+            countDownTimer.cancel();
+        }catch(NullPointerException e){
+       }
         progressBar.setVisibility(View.GONE);
         if(isImage){
             isImage = false;
@@ -201,7 +241,8 @@ public class TimerSurvey extends AppCompatActivity {
             showmessageQuestion();
             message = false;
         } else {
-            Cursor question = gbl.getQuestionCursor();
+            //Cursor question = gbl.getQuestionCursor();
+
             //question.moveToFirst();
             if (question.getCount() > 0) {
                 if (gbl.getCounter() < question.getCount()) {
@@ -241,7 +282,8 @@ public class TimerSurvey extends AppCompatActivity {
                         }
                     }
                 } else {
-                    Cursor section = gbl.getSectionList();
+                    //Cursor section = gbl.getSectionList();
+                    Cursor section = db.getSectionList(getIntent().getStringExtra("SURVEY_ID"));
                     if (section.getCount() > 0) {
                         section.moveToFirst();
                         gbl.incrementSectionCount();
@@ -254,6 +296,7 @@ public class TimerSurvey extends AppCompatActivity {
                             i.putExtra("SECTION_ID", section.getString(0));
                             i.putExtra("SECTION_NO", gbl.getSectionCount() + 1 + "");
                             i.putExtra("SECTION_DESC", section.getString(3));
+                            i.putExtra("CLIENT",getIntent().getStringExtra("CLIENT"));
                             i.putExtra("isDONE", false);
                             startActivity(i);
                         } else {

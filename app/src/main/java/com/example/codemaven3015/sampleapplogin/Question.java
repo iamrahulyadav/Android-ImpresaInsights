@@ -74,6 +74,7 @@ public class Question extends AppCompatActivity {
         imageView.setVisibility(View.GONE);
         sectionNameId = ("SECTION "+getIntent().getStringExtra("SECTION_NO")+": "+getIntent().getStringExtra("SECTION_NAME"));
         sectionName = (TextView)findViewById(R.id.textView3);
+        gbl.setClientId(getIntent().getStringExtra("CLIENT"));
         clientId = (TextView)findViewById(R.id.textView2);
         survey_ID = getIntent().getStringExtra("SURVEY_ID");
         db = new DataBaseHealper(this);
@@ -164,6 +165,7 @@ public class Question extends AppCompatActivity {
                 i.putExtra("SECTION_NO", "1");
                 i.putExtra("SECTION_DESC", getIntent().getStringExtra("SECTION_DESC"));
                 i.putExtra("isDONE",false);
+                i.putExtra("CLIENT",getIntent().getStringExtra("CLIENT"));
                 startActivity(i);
             }
         });

@@ -77,6 +77,7 @@ public class IAgree extends AppCompatActivity {
                     i.putExtra("SECTION_ID", sectionId);
                     i.putExtra("SECTION_NO", count+"");
                     i.putExtra("SECTION_DESC", sectionDesc);
+                    i.putExtra("CLIENT",getIntent().getStringExtra("CLIENT"));
                     i.putExtra("isDONE",false);
                     startActivity(i);
                 }else{
@@ -88,6 +89,7 @@ public class IAgree extends AppCompatActivity {
                     i.putExtra("SECTION_ID", sectionId);
                     i.putExtra("SECTION_NO", count+"");
                     i.putExtra("SECTION_DESC", sectionDesc);
+                    i.putExtra("CLIENT",getIntent().getStringExtra("CLIENT"));
                     startActivity(i);
                 }
             }else{
@@ -120,6 +122,7 @@ public class IAgree extends AppCompatActivity {
         imageView.setVisibility(View.GONE);
         SurveyId = getIntent().getStringExtra("SURVEY_ID");
         surveyDetails = db.getSurveyDetails(SurveyId);
+        gbl.setClientId(getIntent().getStringExtra("CLIENT"));
         if(!gbl.getClientId().equals("new")){
             Cursor ifSurveyDone = db.ifSurveyDone(gbl.getClientId(),SurveyId);
             if(ifSurveyDone.getCount()>0){

@@ -93,6 +93,7 @@ public class QuestionDynamic extends AppCompatActivity {
     public boolean isList = false;
     int groupId = 0;
     public JSONArray optionsOption = null;
+    Cursor question, section;
     //JSONArray optionNext;
 
     @Override
@@ -122,6 +123,7 @@ public class QuestionDynamic extends AppCompatActivity {
         checkboxOptional = (CheckBox)findViewById(R.id.checkboxOptional) ;
         gbl = (GlobalVariables)getApplicationContext();
         clientId = (TextView)findViewById(R.id.clientId) ;
+        gbl.setClientId(getIntent().getStringExtra("CLIENT"));
         sectionNameId = (TextView)findViewById(R.id.sectionNameId);
         sectionDescription = (TextView)findViewById(R.id.sectionDescription);
         helloTextView.setText(getIntent().getStringExtra("SURVEY_NAME"));
@@ -176,12 +178,12 @@ public class QuestionDynamic extends AppCompatActivity {
         });
         if (savedInstanceState != null) {
             // Restore value of members from saved state
-            //mUser = savedInstanceState.getString(STATE_USER);
-            Cursor section = db.getSectionList(getIntent().getStringExtra("SURVEY_ID"));
-            gbl.setsectionList(section);
-            Cursor question = db.getQuestionList(getIntent().getStringExtra("SECTION_ID"));
-            gbl.setGlobalCursor(question);
-            //Log.e("Saved",savedInstanceState.getInt("QUESTION_NO"));
+//            //mUser = savedInstanceState.getString(STATE_USER);
+//            Cursor section = db.getSectionList(getIntent().getStringExtra("SURVEY_ID"));
+//            gbl.setsectionList(section);
+//            Cursor question = db.getQuestionList(getIntent().getStringExtra("SECTION_ID"));
+//            gbl.setGlobalCursor(question);
+//            //Log.e("Saved",savedInstanceState.getInt("QUESTION_NO"));
             Log.e("Saved",savedInstanceState.getString("ANSWER"));
             try {
                 JSONArray jsonObject = new JSONArray(savedInstanceState.getString("ANSWER"));
@@ -194,6 +196,8 @@ public class QuestionDynamic extends AppCompatActivity {
             //gbl.setAnswerFromSavedInstance();
 
         }
+        question = db.getQuestionList(getIntent().getStringExtra("SECTION_ID"));
+        section = db.getSectionList(getIntent().getStringExtra("SURVEY_ID"));
         showQuestion();
     }
 
@@ -278,7 +282,7 @@ public class QuestionDynamic extends AppCompatActivity {
         optionsOption = null;
         view.setEnabled(false);
         view.setClickable(false);
-        Cursor questionBack = gbl.getQuestionCursor();
+        //Cursor questionBack = gbl.getQuestionCursor();
         int questionCount = gbl.getCounter();
         Log.e("BACK",gbl.getCounter()+"");
         if(gbl.getCounter() < 1){
@@ -288,8 +292,8 @@ public class QuestionDynamic extends AppCompatActivity {
             return;
         }
         gbl.countDecrement();
-        questionBack.moveToPosition(gbl.getCounter());
-        String groupid = questionBack.getString(questionBack.getColumnIndex("GROUP_ID"));
+        question.moveToPosition(gbl.getCounter());
+        String groupid = question.getString(question.getColumnIndex("GROUP_ID"));
         Log.e("BACK",gbl.getCounter()+"");
         if(groupid.equals("0")){
             gbl.countDecrement();
@@ -330,8 +334,8 @@ public class QuestionDynamic extends AppCompatActivity {
             //group.close();
 
         }
-        questionBack.moveToPosition(gbl.getCounter());
-        groupid = questionBack.getString(questionBack.getColumnIndex("GROUP_ID"));
+        question.moveToPosition(gbl.getCounter());
+        groupid = question.getString(question.getColumnIndex("GROUP_ID"));
         if(groupid.equals("0")){
             deleteTextView();
             setQuestionData(gbl.getCounter(),"notGroup");
@@ -376,7 +380,7 @@ public class QuestionDynamic extends AppCompatActivity {
         view.setClickable(true);
     }
     public void onClickBackIfFirstQuestion() {
-        Cursor section = gbl.getSectionList();
+        //Cursor section = gbl.getSectionList();
 
         if(section.getCount()>0) {
             section.moveToFirst();
@@ -391,6 +395,7 @@ public class QuestionDynamic extends AppCompatActivity {
                 i.putExtra("SECTION_NO", gbl.getSectionCount() + 1 + "");
                 i.putExtra("SECTION_DESC", section.getString(3));
                 i.putExtra("isDONE",isDone);
+                i.putExtra("CLIENT",getIntent().getStringExtra("CLIENT"));
                 startActivity(i);
             }
         }
@@ -398,7 +403,7 @@ public class QuestionDynamic extends AppCompatActivity {
     }
     public void onClickSaveAndExit(View view){
         Log.e("SAVE",gbl.getAnswer().toString());
-        Cursor section = gbl.getSectionList();
+        //Cursor section = gbl.getSectionList();
         if(section.getCount()>0) {
             section.moveToFirst();
             //gbl.incrementSectionCount();
@@ -639,7 +644,7 @@ public class QuestionDynamic extends AppCompatActivity {
             String questionPreviousId = SaveAnswerInJsonArray();
             if (gbl.getCounter() < gbl.getCount()) {
                 //setAnswerJsonArray();
-                Cursor question = gbl.getQuestionCursor();
+                //Cursor question = gbl.getQuestionCursor();
                 //deleteTextView();
                 question.moveToPosition(gbl.getCounter());
                 String groupId = question.getString(question.getColumnIndex("GROUP_ID"));
@@ -666,7 +671,8 @@ public class QuestionDynamic extends AppCompatActivity {
                     }
                 }
             } else {
-                Cursor section = gbl.getSectionList();
+                //Cursor section = gbl.getSectionList();
+                //Cursor section = db.getSectionList(getIntent().getStringExtra("SURVEY_ID"));
                 if(section.getCount()>0) {
                     section.moveToFirst();
                     gbl.incrementSectionCount();
@@ -680,6 +686,7 @@ public class QuestionDynamic extends AppCompatActivity {
                         i.putExtra("SECTION_NO", gbl.getSectionCount() + 1 + "");
                         i.putExtra("SECTION_DESC", section.getString(3));
                         i.putExtra("isDONE",isDone);
+                        i.putExtra("CLIENT",getIntent().getStringExtra("CLIENT"));
                         startActivity(i);
                     } else {
                         gbl.decrementSectionCount();
@@ -856,7 +863,7 @@ public class QuestionDynamic extends AppCompatActivity {
     }
     public void setQuestionData(int onQuestion, String  isGroup){
         sc.fullScroll(View.FOCUS_UP);
-        Cursor question = gbl.getQuestionCursor();
+        //Cursor question = gbl.getQuestionCursor();
         String questionId, questionType, questionText,questionOrder,QuestionSectionSuggestion,isOptional,compare_with = "";
         JSONArray options = null;
         boolean optionFlag = false;
@@ -889,7 +896,7 @@ public class QuestionDynamic extends AppCompatActivity {
 
     }
     public void showQuestion(){
-        Cursor question = gbl.getQuestionCursor();
+        //Cursor question = gbl.getQuestionCursor();
         gbl.resetquestioncounter();
 
         if(question.getCount()>0) {

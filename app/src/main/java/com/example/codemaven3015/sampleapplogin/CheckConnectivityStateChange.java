@@ -21,13 +21,18 @@ public class CheckConnectivityStateChange extends BroadcastReceiver {
     private static final String LOG_TAG = "NetworkChangeReceiver";
     private boolean isConnected = false;
     Context context;
+
+
     public CheckConnectivityStateChange(Context context ) {
         this.context = context;
     }
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.e(LOG_TAG, "Received notification about network status");
-        isNetworkAvailable(context);
+        DataBaseHealper myDB = new DataBaseHealper(context);
+        if(myDB.checkAnswerToupdate()) {
+            isNetworkAvailable(context);
+        }
     }
 
     private boolean isNetworkAvailable(Context context) {
