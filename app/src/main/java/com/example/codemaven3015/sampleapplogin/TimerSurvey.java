@@ -248,14 +248,18 @@ public class TimerSurvey extends AppCompatActivity {
                 if (gbl.getCounter() < question.getCount()) {
 
                     question.moveToPosition(gbl.getCounter());
-                    if(jumptoFlag){
+                    if(jumptoFlag && (!jumpto.equals(""))){
                         while(!question.getString(9).equals(jumpto)){
-                            gbl.countIncrement();
-                            question.moveToPosition(gbl.getCounter());
+                            if(gbl.getCounter()<=question.getCount()) {
+                                gbl.countIncrement();
+                                question.moveToPosition(gbl.getCounter());
+                            }else {
+                                break;
+                            }
                         }
                     }
                     jumptoFlag = false;
-                    String questionId, questionOrder, QuestionSectionSuggestion, questionText, timer, isMessage, type,imageText;
+                    String compare,questionId, questionOrder, QuestionSectionSuggestion, questionText, timer, isMessage, type,imageText;
                     JSONArray options = null;
                     questionId = question.getString(0);
                     type = question.getString(4);
@@ -263,7 +267,9 @@ public class TimerSurvey extends AppCompatActivity {
                     QuestionSectionSuggestion = question.getString(6);
                     questionOrder = question.getString(9);
                     isMessage = question.getString(7);
-                    imageText = question.getString(11);
+                    imageText = "q"+questionOrder.trim();
+                    compare = question.getString(11);
+                    timer = question.getString(12);
                     try {
                         options = new JSONArray(question.getString(8));
                     } catch (JSONException e) {
@@ -276,7 +282,7 @@ public class TimerSurvey extends AppCompatActivity {
                         return;
                     }else {
                         try {
-                            setQuestionData(questionId, questionOrder, QuestionSectionSuggestion, questionText, "7", isMessage, type, options, imageText);
+                            setQuestionData(compare, questionId, questionOrder, QuestionSectionSuggestion, questionText, timer, isMessage, type, options, imageText);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -341,7 +347,7 @@ public class TimerSurvey extends AppCompatActivity {
         });
         dialog1.show();
     }
-    public void setQuestionData(String questionId,String questionOrder,String QuestionSectionSuggestion,String questionText,String timer,String isMessage,String type,JSONArray options,String imageText) throws JSONException {
+    public void setQuestionData(String compare, String questionId,String questionOrder,String QuestionSectionSuggestion,String questionText,String timer,String isMessage,String type,JSONArray options,String imageText) throws JSONException {
         //textViewQuestionInfo.setVisibility(View.VISIBLE);
         if(!question6a) {
             if (questionOrder.toLowerCase().equals("6a")) {
@@ -353,7 +359,7 @@ public class TimerSurvey extends AppCompatActivity {
                 if (question6a) {
                     if(textViewQuestionNumber1.getVisibility() == View.VISIBLE) {
                         textViewQuestion1.setVisibility(View.VISIBLE);
-                        textViewQuestion1.setText("Tell the respondent to concentrate and do her best to remember ALL of the digits in each number that is displayed.  Before you begin, make sure that the respondent can clearly see the screen.  After the first number is displayed and the respondent reads it aloud, then the survey will wait 10 SECONDS with the number visible on the screen.  Then the survey will proceed to the next page where the number is no longer visible.  Ask the respondent to recall the digits. YOU should type the respondent’s answer into the entry field then move to the next question. ");
+                        textViewQuestion1.setText(getResources().getString(R.string.recallNumber));
                         textViewQuestionNumber1.setVisibility(View.GONE);
                         textViewQuestionNumber1.setTag("done");
                         radioGroup.setVisibility(View.GONE);
@@ -393,12 +399,12 @@ public class TimerSurvey extends AppCompatActivity {
         if(!timer.equals("")){
             seconds = Integer.parseInt(timer);
         }
-        String sectionName = getIntent().getStringExtra("SECTION_NAME").trim();
-        if(sectionName.toLowerCase().equals("aptitude")) {
+        //String sectionName = getIntent().getStringExtra("SECTION_NAME").trim();
+        if(type.equals("radio") && seconds>0 ) {
             type = "aptitude";
         }
         switch (type){
-            case "text":
+            case "readonly":
 
                 JSONObject obj = new JSONObject();
                 obj.put("question_no", questionId);
@@ -407,16 +413,20 @@ public class TimerSurvey extends AppCompatActivity {
                 gbl.addAnswerInJsonArray(obj);
 
                 progressBar.setVisibility(View.VISIBLE);
-                setTimer(seconds);
+                if(seconds>0) {
+                    setTimer(seconds);
+                }
 
                 break;
             case "radio":
                 progressBar.setVisibility(View.GONE);
                 radioGroup.setVisibility(View.VISIBLE);
-                jumpto = imageText;
-                if(!imageText.equals("")){
+                //jumpto = compare;
+                if(!compare.equals("")){
                     //setImage(imageText);
-                    jumpto = imageText;
+                    jumpto = compare;
+                }else{
+                    jumpto = "";
                 }
                 try {
                     setRadioButtons(options);
@@ -424,14 +434,16 @@ public class TimerSurvey extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 break;
-            case "image":
+            case "picquestion":
                 isImage = true;
                 imageLayout.setVisibility(View.VISIBLE);
                 if(!imageText.equals("")){
                     setImage(imageText);
                 }
                 progressBar.setVisibility(View.VISIBLE);
-                setTimer(30);
+                if(seconds>0) {
+                    setTimer(seconds);
+                }
                 break;
             case "aptitude":
                 isAptitude = true;
@@ -441,7 +453,9 @@ public class TimerSurvey extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 progressBar.setVisibility(View.VISIBLE);
-                setTimer(70);
+                if(seconds>0) {
+                    setTimer(seconds);
+                }
                 break;
         }
     }
@@ -458,27 +472,27 @@ public class TimerSurvey extends AppCompatActivity {
         Drawable image ;
         try {
             questionImage.setImageDrawable(getResources().getDrawable(getResources().getIdentifier("@drawable/" + imageName, "drawable", getPackageName())));
-            answerImage1.setImageDrawable(getResources().getDrawable(getResources().getIdentifier("@drawable/" + imageName + "1", "drawable", getPackageName())));
-            answerImage2.setImageDrawable(getResources().getDrawable(getResources().getIdentifier("@drawable/" + imageName + "2", "drawable", getPackageName())));
-            answerImage3.setImageDrawable(getResources().getDrawable(getResources().getIdentifier("@drawable/" + imageName + "3", "drawable", getPackageName())));
-            answerImage5.setImageDrawable(getResources().getDrawable(getResources().getIdentifier("@drawable/" + imageName + "5", "drawable", getPackageName())));
-            answerImage6.setImageDrawable(getResources().getDrawable(getResources().getIdentifier("@drawable/" + imageName + "6", "drawable", getPackageName())));
-            answerImage7.setImageDrawable(getResources().getDrawable(getResources().getIdentifier("@drawable/" + imageName + "7", "drawable", getPackageName())));
+            answerImage1.setImageDrawable(getResources().getDrawable(getResources().getIdentifier("@drawable/" + imageName + "o1", "drawable", getPackageName())));
+            answerImage2.setImageDrawable(getResources().getDrawable(getResources().getIdentifier("@drawable/" + imageName + "o2", "drawable", getPackageName())));
+            answerImage3.setImageDrawable(getResources().getDrawable(getResources().getIdentifier("@drawable/" + imageName + "o3", "drawable", getPackageName())));
+            answerImage5.setImageDrawable(getResources().getDrawable(getResources().getIdentifier("@drawable/" + imageName + "o5", "drawable", getPackageName())));
+            answerImage6.setImageDrawable(getResources().getDrawable(getResources().getIdentifier("@drawable/" + imageName + "o6", "drawable", getPackageName())));
+            answerImage4.setImageDrawable(getResources().getDrawable(getResources().getIdentifier("@drawable/" + imageName + "o4", "drawable", getPackageName())));
         }catch (Resources.NotFoundException e){
         }
         try{
-            image = (getResources().getDrawable(getResources().getIdentifier("@drawable/"+imageName+"4", "drawable", getPackageName())));
-            answerImage4.setVisibility(View.VISIBLE);
-            answerImage4.setImageDrawable(image);
+            image = (getResources().getDrawable(getResources().getIdentifier("@drawable/"+imageName+"o7", "drawable", getPackageName())));
+            answerImage7.setVisibility(View.VISIBLE);
+            answerImage7.setImageDrawable(image);
         }catch(Resources.NotFoundException e){
-            answerImage4.setVisibility(View.GONE);
+            answerImage7.setVisibility(View.INVISIBLE);
             }
         try{
-            image = (getResources().getDrawable(getResources().getIdentifier("@drawable/"+imageName+"8", "drawable", getPackageName())));
+            image = (getResources().getDrawable(getResources().getIdentifier("@drawable/"+imageName+"o8", "drawable", getPackageName())));
             answerImage8.setVisibility(View.VISIBLE);
             answerImage8.setImageDrawable(image);
         }catch(Resources.NotFoundException e){
-            answerImage8.setVisibility(View.GONE);
+            answerImage8.setVisibility(View.INVISIBLE);
         }
         selectedImage = "";
         setimageBackGroundTransparent();

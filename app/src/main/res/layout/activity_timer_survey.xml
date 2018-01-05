@@ -127,8 +127,7 @@
                         android:layout_gravity="center"
                         android:adjustViewBounds="false"
                         android:cropToPadding="false"
-                        android:src="@drawable/dotimage"
-                        app:srcCompat="@drawable/dotimage" />
+                        />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -141,7 +140,6 @@
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
                             android:layout_weight="1"
-                            android:src="@drawable/dotimage1"
                             android:onClick="imageClick"
                             android:tag="1"/>
 
@@ -151,7 +149,6 @@
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
                             android:layout_weight="1"
-                            android:src="@drawable/dotimage2"
                             android:onClick="imageClick"
                             android:tag="2"/>
 
@@ -161,25 +158,24 @@
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
                             android:layout_weight="1"
-                            android:src="@drawable/dotimage3"
                             android:onClick="imageClick"
                             android:tag="3"/>
 
-                        <ImageView
-                            android:id="@+id/answerImage4"
-                            android:layout_width="60dp"
-                            android:layout_height="match_parent"
-                            android:layout_gravity="center"
-                            android:layout_weight="1"
-                            android:src="@drawable/dotimage3"
-                            android:tag="4"
-                            android:onClick="imageClick"/>
+
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
                         android:orientation="horizontal">
+                        <ImageView
+                            android:id="@+id/answerImage4"
+                            android:layout_width="60dp"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:tag="4"
+                            android:onClick="imageClick"/>
 
                         <ImageView
                             android:id="@+id/answerImage5"
@@ -187,7 +183,6 @@
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
                             android:layout_weight="1"
-                            android:src="@drawable/dotimage5"
                             android:tag="5"
                             android:onClick="imageClick"/>
 
@@ -198,8 +193,12 @@
                             android:layout_gravity="center"
                             android:layout_weight="1"
                             android:tag="6"
-                            android:src="@drawable/dotimage6"
                             android:onClick="imageClick"/>
+                        </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        android:orientation="horizontal">
 
                         <ImageView
                             android:id="@+id/answerImage7"
@@ -208,7 +207,6 @@
                             android:layout_gravity="center"
                             android:layout_weight="1"
                             android:tag="7"
-                            android:src="@drawable/dotimage7"
                             android:onClick="imageClick"/>
 
                         <ImageView
@@ -218,8 +216,15 @@
                             android:layout_gravity="center"
                             android:layout_weight="1"
                             android:tag="8"
-                            android:src="@drawable/dotimage7"
                             android:onClick="imageClick"/>
+                        <ImageView
+                            android:id="@+id/answerImage9"
+                            android:visibility="invisible"
+                            android:layout_width="60dp"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            />
                     </LinearLayout>
                 </LinearLayout>
 

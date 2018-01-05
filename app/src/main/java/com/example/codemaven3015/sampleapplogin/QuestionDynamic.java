@@ -202,6 +202,12 @@ public class QuestionDynamic extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        question.close();
+        section.close();
+    }
+    @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putInt("QUESTION_NO",gbl.getCounter());
         savedInstanceState.putString("ANSWER",gbl.getAnswer()+"");

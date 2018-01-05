@@ -30,6 +30,7 @@ public class SurveySection extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
     Button button_back;
+    Cursor section;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,13 +77,18 @@ public class SurveySection extends AppCompatActivity {
             //gbl.setAnswerFromSavedInstance();
 
         }
-        Cursor section = db.getSectionList(getIntent().getStringExtra("SURVEY_ID"));
+        section = db.getSectionList(getIntent().getStringExtra("SURVEY_ID"));
         gbl.setsectionList(section);
         if(surveyId.equals("5")){
             abilitySurveyDetails();
         }
         //sectionDesc1.setMovementMethod(new ScrollingMovementMethod());
 
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        section.close();
     }
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -147,7 +153,7 @@ public class SurveySection extends AppCompatActivity {
     }
     public void onClickSaveAndExit(View view){
         Log.e("SAVE",gbl.getAnswer().toString());
-        Cursor section = gbl.getSectionList();
+        //Cursor section = gbl.getSectionList();
         if(section.getCount()>0) {
             section.moveToFirst();
             //gbl.incrementSectionCount();
@@ -203,7 +209,7 @@ public class SurveySection extends AppCompatActivity {
         dialog1.show();
     }
     public void OnBackClick(View view){
-        Cursor section = gbl.getSectionList();
+        //Cursor section = gbl.getSectionList();
         gbl.decrementSectionCount();
         if(section.moveToFirst()) {
             section.moveToPosition(gbl.getSectionCount());

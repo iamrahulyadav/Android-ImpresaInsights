@@ -39,6 +39,7 @@
     <string name="newClientMessage">If you are a new Client ,Please register yourself through Recruitment Survey.</string>
     <string name="surveyTaken">Survey already taken.</string>
     <string name="emptySurveyTable">Please Logout and login to update survey data.</string>
+    <string name="recallNumber">Tell the respondent to concentrate and do her best to remember ALL of the digits in each number that is displayed.  Before you begin, make sure that the respondent can clearly see the screen.  After the first number is displayed and the respondent reads it aloud, then the survey will wait 10 SECONDS with the number visible on the screen.  Then the survey will proceed to the next page where the number is no longer visible.  Ask the respondent to recall the digits. YOU should type the respondent’s answer into the entry field then move to the next question. </string>
     <string name="large_text">
         "\nHello, my name is surveyor test, and Iwork with Innovations for Poverty Action(IPA) on a"
         "project to learn more about small business owners in your area. Through this project we "
