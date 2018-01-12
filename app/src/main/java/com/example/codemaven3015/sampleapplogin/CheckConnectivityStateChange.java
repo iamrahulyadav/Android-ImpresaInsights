@@ -44,7 +44,7 @@ public class CheckConnectivityStateChange extends BroadcastReceiver {
                     if (info[i].getState() == NetworkInfo.State.CONNECTED) {
                         if (!isConnected) {
                             Log.e(LOG_TAG, "Now you are connected to Internet!");
-                            Toast.makeText(context, "Internet available", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(context, "Internet available", Toast.LENGTH_SHORT).show();
                             isConnected = true;
                         }
                         onClickButtonNotification("Internet is available, Please Upload the answers");

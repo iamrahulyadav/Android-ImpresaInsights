@@ -145,7 +145,7 @@ public class IAgree extends AppCompatActivity {
         if(surveyDetails.length >0 ) {
             helloTextView.setText(surveyDetails[1]);
             textViewSurveyName.setText(surveyDetails[1]);
-            if((SurveyId.equals("4"))||(SurveyId.equals("5"))){
+            if((SurveyId.equals("4"))||(SurveyId.equals("5"))||(SurveyId.equals("7"))){
                 textView_desc.setText(surveyDetails[2]);
                radioIagreeActivity.setVisibility(View.INVISIBLE);
                 textViewtitle.setVisibility(View.GONE);

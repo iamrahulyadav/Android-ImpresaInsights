@@ -43,12 +43,6 @@
             android:alwaysRetainTaskState="true"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".language"
-            android:alwaysRetainTaskState="true"
-            android:label="@string/title_activity_language"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".SelectLanguage"
             android:alwaysRetainTaskState="true"
             android:screenOrientation="portrait" />

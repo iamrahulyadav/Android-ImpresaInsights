@@ -52,11 +52,25 @@
             android:id="@+id/textView6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
+            android:layout_marginBottom="50dp"
             android:text="@string/survey"
             android:textAlignment="center"
             android:textColor="@color/darkgrey"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            />
+        <Button
+
+            android:id="@+id/buttonUpdateAnswer"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="#CCfe6868"
+            android:text="UPLOAD ANSWERS"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
 
         <Spinner
             android:id="@+id/projectSpinner"
@@ -65,7 +79,6 @@
             android:layout_marginBottom="20dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:layout_marginTop="30dp"
             android:dropDownWidth="match_parent"
             android:popupBackground="@color/lidgtGrey"
             android:spinnerMode="dialog"

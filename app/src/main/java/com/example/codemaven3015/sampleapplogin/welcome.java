@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -55,6 +56,7 @@ public class welcome extends AppCompatActivity {
     Spinner projectSpinner;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
+    Button uploadAnswer;
 
 
     public void openSurveyList(View v){
@@ -95,6 +97,7 @@ public class welcome extends AppCompatActivity {
         final TextView helloTextView = (TextView) findViewById(R.id.action_text);
         helloTextView.setText("Welcome");
         projectSpinner = (Spinner)findViewById(R.id.projectSpinner);
+        uploadAnswer = (Button)findViewById(R.id.buttonUpdateAnswer);
         projectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -131,6 +134,22 @@ public class welcome extends AppCompatActivity {
             setProjectData();
         }
         //updateLanguageAndSurveyListDB();
+        if(myDB.checkAnswerToupdate() && nb.isConnected()){
+            uploadAnswer.setVisibility(View.VISIBLE);
+            uploadAnswer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try{
+                        uploadAnswerFromDB();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }else {
+            uploadAnswer.setVisibility(View.GONE);
+        }
 
     }
     public void updateClientSurveyDB(){
@@ -420,6 +439,7 @@ public class welcome extends AppCompatActivity {
                                 if(status.equals("Success")){
                                     deleteUpgatedEntriesInAnswerTable(clientIdToPass);
                                     updateClientDB(jsonObject.getJSONObject("data"),survey_id);
+                                    uploadAnswer.setVisibility(View.GONE);
                                     //showMessage(status,jsonObject.getString("message"));
                                     //questionDataFormating(jsonObject);
                                 }else{
@@ -455,7 +475,7 @@ public class welcome extends AppCompatActivity {
                         JSONObject obj = new JSONObject();
                         try {
                             obj=image.getJSONObject(i);
-                            params.put(obj.getString("questionId"),obj.getString("image"));
+                            params.put("Q_"+obj.getString("questionId").trim(),obj.getString("image"));
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Log.e("Exception",e.getMessage());

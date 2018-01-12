@@ -103,9 +103,23 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     dialog.hide();
-                    showMessage(getResources().getString(R.string.info),"Check your Network Connection");
-
-                }
+                        boolean isExist = db.CheckIsDataAlreadyInDBorNotLogin(usernameString);
+                        if (isExist) {
+                            boolean isMatched = db.passwordMatchDBLogin(usernameString, passwordString);
+                            if (isMatched) {
+                                //Toast.makeText(MainActivity.this, "Login Success", Toast.LENGTH_LONG).show();
+                                onLoginSucess();
+                                //showProgress(false);
+                            } else {
+                                showMessage(getResources().getString(R.string.Error),getResources().getString(R.string.wrong_password));
+                                //showProgress(false);
+                            }
+                        } else {
+                            showMessage(getResources().getString(R.string.Error),"Check your network connection");
+                            //showProgress(false);
+                        }
+                    }
+                    //showMessage(getResources().getString(R.string.info),"Check your Network Connection");
             }) {
 
                 @Override
@@ -122,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             };
-            int socketTimeout = 10000;//30 seconds - change to what you want
+            int socketTimeout = 8000;//30 seconds - change to what you want
             RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
             jsonObjRequest.setRetryPolicy(policy);
 

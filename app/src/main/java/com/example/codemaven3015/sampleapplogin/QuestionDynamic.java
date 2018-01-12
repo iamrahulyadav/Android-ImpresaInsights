@@ -1266,7 +1266,7 @@ public class QuestionDynamic extends AppCompatActivity {
         List<String> data = new ArrayList<String>();
         String qCompareWith = "";
         if(!compare_with.equals("")){
-            Cursor csr =db.getQuestionByQuestionOrder(compare_with,getIntent().getStringExtra("SECTION_NO"));
+            Cursor csr =db.getQuestionByQuestionOrder(compare_with,getIntent().getStringExtra("SECTION_ID"));
             csr.moveToFirst();
             if(csr.getCount()>0){
                 qCompareWith = csr.getString(0);

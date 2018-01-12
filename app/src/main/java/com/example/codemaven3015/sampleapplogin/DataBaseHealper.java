@@ -179,7 +179,7 @@ public class DataBaseHealper extends SQLiteOpenHelper {
         }
         for(int i = 0;i<data.length();i++){
             ContentValues contentValue = new ContentValues();
-            contentValue.put("CLIENT_ID", data.getJSONObject(i).getString("participant_id"));
+            contentValue.put("CLIENT_ID", data.getJSONObject(i).getString("participant_code"));
             contentValue.put("SURVEY_ID", data.getJSONObject(i).getString("survey_type"));
             db.insert(TABLE_CLIENT_INFO, null, contentValue);
         }
