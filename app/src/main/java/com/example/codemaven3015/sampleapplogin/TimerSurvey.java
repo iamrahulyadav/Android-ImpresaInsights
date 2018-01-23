@@ -51,6 +51,7 @@ public class TimerSurvey extends AppCompatActivity {
     boolean jumptoFlag = false;
     boolean question6a = false;
     Cursor question;
+    Cursor section ;
     ImageView questionImage ,answerImage1 ,answerImage2 ,answerImage3 ,answerImage4 ,answerImage5, answerImage6,answerImage7,answerImage8;
 
     @Override
@@ -94,6 +95,7 @@ public class TimerSurvey extends AppCompatActivity {
         marginBottomPxl = (int) (marginBottomDp * scale + 0.5f);
         sizeOfImage = (int) (100 * scale + 0.5f);
         question = db.getQuestionList(getIntent().getStringExtra("SECTION_ID"));
+        section = db.getSectionList(getIntent().getStringExtra("SURVEY_ID"));
         question.moveToFirst();
         if (savedInstanceState != null) {
             // Restore value of members from saved state
@@ -126,14 +128,18 @@ public class TimerSurvey extends AppCompatActivity {
     protected void onResume() {
         question = db.getQuestionList(getIntent().getStringExtra("SECTION_ID"));
         question.moveToFirst();
+        section = db.getSectionList(getIntent().getStringExtra("SURVEY_ID"));
+        section.moveToFirst();
         super.onResume();
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
         question.close();
+        section.close();
+        super.onPause();
     }
+
 
     public void onSaveandExit(View view){
         //if(isComplete)
@@ -289,7 +295,7 @@ public class TimerSurvey extends AppCompatActivity {
                     }
                 } else {
                     //Cursor section = gbl.getSectionList();
-                    Cursor section = db.getSectionList(getIntent().getStringExtra("SURVEY_ID"));
+                    //Cursor section = db.getSectionList(getIntent().getStringExtra("SURVEY_ID"));
                     if (section.getCount() > 0) {
                         section.moveToFirst();
                         gbl.incrementSectionCount();

@@ -86,6 +86,13 @@ public class SurveySection extends AppCompatActivity {
 
     }
     @Override
+    protected void onPause() {
+        //question.close();
+        section.close();
+        super.onPause();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         section.close();

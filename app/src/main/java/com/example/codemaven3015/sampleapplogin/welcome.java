@@ -34,9 +34,6 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -89,7 +86,7 @@ public class welcome extends AppCompatActivity {
         nb = new isNetworkAvaliable(this);
         tableUpdate = new TableUpdate(this);
         requestQueueLogin = Volley.newRequestQueue(this);
-        gbl = (GlobalVariables)getApplicationContext();
+          gbl = (GlobalVariables)getApplicationContext();
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.action_bar);
         sharedPreferences = getSharedPreferences("userInfo", Context.MODE_PRIVATE);
@@ -442,6 +439,10 @@ public class welcome extends AppCompatActivity {
                                     uploadAnswer.setVisibility(View.GONE);
                                     //showMessage(status,jsonObject.getString("message"));
                                     //questionDataFormating(jsonObject);
+                                }else if(status.equals("phoneexist")){
+                                    showMessage("Info",jsonObject.getString("phone")+" "+jsonObject.getString("message"));
+                                    deleteUpgatedEntriesInAnswerTable(clientIdToPass);
+                                    uploadAnswer.setVisibility(View.GONE);
                                 }else{
                                     showMessage(status,jsonObject.getString("message"));
                                 }

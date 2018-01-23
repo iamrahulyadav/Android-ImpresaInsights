@@ -200,13 +200,21 @@ public class QuestionDynamic extends AppCompatActivity {
         section = db.getSectionList(getIntent().getStringExtra("SURVEY_ID"));
         showQuestion();
     }
-
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onResume() {
+        question = db.getQuestionList(getIntent().getStringExtra("SECTION_ID"));
+        question.moveToFirst();
+        section = db.getSectionList(getIntent().getStringExtra("SURVEY_ID"));
+        section.moveToFirst();
+        super.onResume();
+    }
+    @Override
+    protected void onPause() {
         question.close();
         section.close();
+        super.onPause();
     }
+
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putInt("QUESTION_NO",gbl.getCounter());
