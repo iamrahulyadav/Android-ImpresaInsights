@@ -25,7 +25,8 @@ public class GlobalVariables extends Application {
     private String clientId = "new";
     private ArrayList<String> groupList = new ArrayList<String>();
     private JSONArray answer = new JSONArray() ;
-
+    public ArrayList<String> popular_product_answer = new ArrayList<String>();
+    public int value_3d = 0,value_4d = 0,value_5d = 0;
     public void setGroup(String  groupid){
         groupList.add(groupid);
     }
@@ -48,6 +49,10 @@ public class GlobalVariables extends Application {
        //radioInputTextCheck=0;
         answer = new JSONArray();
         groupList = new ArrayList<String>();
+        popular_product_answer = new ArrayList<String>();
+        value_3d = 0;
+        value_4d = 0;
+        value_5d = 0;
         //Question = null;
     }
     public void resetquestioncounter(){

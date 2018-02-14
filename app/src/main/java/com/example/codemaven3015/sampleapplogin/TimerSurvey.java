@@ -330,7 +330,7 @@ public class TimerSurvey extends AppCompatActivity {
         builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                db.deleteAnswerIfUpdated(gbl.getClientId());
+                db.deleteAnswerIfUpdated(gbl.getClientId(),getIntent().getStringExtra("SURVEY_ID"));
                 if(!isdone){
                     editor.putString(gbl.getClientId(),getIntent().getStringExtra("SECTION_ID"));
                     editor.apply();

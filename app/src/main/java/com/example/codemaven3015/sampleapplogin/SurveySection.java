@@ -23,7 +23,7 @@ import org.json.JSONException;
 
 public class SurveySection extends AppCompatActivity {
     String surveyName, sectionTittle, sectionNo,surveyId,sectionId,sectionDesc;
-    TextView sectionNumber,sectionName,sectionDesc1;
+    TextView sectionNumber,sectionName,sectionDesc1,textView10;
     DataBaseHealper db;
     GlobalVariables gbl;
     boolean isDone = false;
@@ -48,6 +48,7 @@ public class SurveySection extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("userInfo", Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
         gbl = (GlobalVariables)getApplicationContext();
+        textView10 = (TextView)findViewById(R.id.textView10);
         sectionNumber = (TextView)findViewById(R.id.sectionNumber);
         sectionName = (TextView)findViewById(R.id.sectionName);
         sectionTittle = getIntent().getStringExtra("SECTION_NAME");
@@ -57,8 +58,16 @@ public class SurveySection extends AppCompatActivity {
         sectionDesc = getIntent().getStringExtra("SECTION_DESC");
         isDone = getIntent().getBooleanExtra("isDONE",false);
         sectionNumber.setText("Section "+sectionNo + " :");
+        if(surveyId.equals("8")){
+            if(gbl.popular_product_answer.size()>2) {
+                sectionTittle = sectionTittle.replace("#1", gbl.popular_product_answer.get(0));
+                sectionTittle = sectionTittle.replace("#2", gbl.popular_product_answer.get(1));
+                sectionTittle = sectionTittle.replace("#3", gbl.popular_product_answer.get(2));
+            }
+        }
         button_back = (Button)findViewById(R.id.button_back);
         sectionName.setText(sectionTittle);
+        textView10.setText(surveyName);
         gbl.setClientId(getIntent().getStringExtra("CLIENT"));
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             sectionDesc1.setText(Html.fromHtml(sectionDesc,Html.FROM_HTML_MODE_LEGACY));
@@ -90,6 +99,12 @@ public class SurveySection extends AppCompatActivity {
         //question.close();
         section.close();
         super.onPause();
+    }
+    @Override
+    protected void onResume() {
+        section = db.getSectionList(getIntent().getStringExtra("SURVEY_ID"));
+        //section.moveToFirst();
+        super.onResume();
     }
 
     @Override
@@ -151,7 +166,7 @@ public class SurveySection extends AppCompatActivity {
         }else{
             showMessage("Info","No Question");
         }
-        //question.close();
+        //ques tion.close();
 
     }
     public void abilitySurveyDetails(){
@@ -192,7 +207,7 @@ public class SurveySection extends AppCompatActivity {
                     if(gbl.getClientId().equals("new")){
                         db.updateAnswerInTable(gbl.getAnswer(),false,surveyId,gbl.getClientId(),isdone,sharedPreferences.getString("project_id", ""));
                     }else{
-                        db.deleteAnswerIfUpdated(gbl.getClientId());
+                        db.deleteAnswerIfUpdated(gbl.getClientId(),surveyId);
                         db.updateAnswerInTable(gbl.getAnswer(),true,surveyId,gbl.getClientId(),isdone,sharedPreferences.getString("project_id", ""));
                     }
                 }else{
@@ -236,10 +251,14 @@ public class SurveySection extends AppCompatActivity {
                         }else{
                             i = new Intent(SurveySection.this, QuestionDynamic.class);
                         }
+                        String first = "notFirst";
+                        if(surveyId.equals("11")){
+                            first = "first";
+                        }
                         i.putExtra("CLIENT",getIntent().getStringExtra("CLIENT"));
                         i.putExtra("SURVEY_NAME", surveyName);
                         i.putExtra("SURVEY_ID", surveyId);
-                        i.putExtra("FIRST","notFirst");
+                        i.putExtra("FIRST",first);
                         i.putExtra("SECTION_NAME", section.getString(2));
                         i.putExtra("SECTION_ID", section.getString(0));
                         i.putExtra("SECTION_NO", gbl.getSectionCount() + 1 + "");

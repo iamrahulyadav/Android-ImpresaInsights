@@ -30,9 +30,6 @@ import android.widget.TextView;
 
 import com.hbb20.CountryCodePicker;
 
-import net.objecthunter.exp4j.Expression;
-import net.objecthunter.exp4j.ExpressionBuilder;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

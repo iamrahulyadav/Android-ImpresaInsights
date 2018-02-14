@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:background="@drawable/bg"
-    tools:context="com.example.codemaven3015.sampleapplogin.QuestionDynamic">
+    tools:openDrawer="start">
 
     <RelativeLayout
         android:layout_width="0dp"
@@ -58,17 +60,7 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/sectionDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
 
-                android:paddingLeft="30dp"
-                android:paddingRight="30dp"
-                android:paddingTop="20dp"
-                android:text="What is your first name?"
-                android:textColor="@color/darkgrey"
-                android:textSize="17dp" />
         </LinearLayout>
         </RelativeLayout>
 
@@ -79,9 +71,23 @@
             android:layout_height="match_parent"
             android:layout_above="@+id/bottom"
             android:layout_below="@+id/top"
-            android:layout_marginTop="10dp"
 
             >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            <TextView
+                android:id="@+id/sectionDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:paddingLeft="30dp"
+                android:paddingRight="30dp"
+                android:paddingTop="10dp"
+                android:text="What is your first name?"
+                android:textColor="@color/darkgrey"
+                android:textSize="17dp" />
 
             <LinearLayout
                 android:id="@+id/Questions"
@@ -92,6 +98,7 @@
                 android:paddingLeft="30dp"
                 android:paddingRight="30dp"
                 ></LinearLayout>
+            </LinearLayout>
 
         </ScrollView>
 
@@ -180,4 +187,20 @@
         </RelativeLayout>
     </RelativeLayout>
 
-</android.support.constraint.ConstraintLayout>
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:fitsSystemWindows="true">
+
+        <ExpandableListView
+            android:id="@+id/navigationmenu"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginTop="192dp"
+            android:background="@android:color/white">
+        </ExpandableListView>
+    </android.support.design.widget.NavigationView>
+
+</android.support.v4.widget.DrawerLayout>

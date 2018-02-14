@@ -12,6 +12,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import static com.example.codemaven3015.sampleapplogin.R.id.clientId;
@@ -84,7 +86,7 @@ public class DataBaseHealper extends SQLiteOpenHelper {
         db.execSQL("create table "+ TABLE_LAUNGUAGE+" (ID INTEGER PRIMARY KEY AUTOINCREMENT, LAUNGUAGE_ID TEXT, LAUNGUAGE_NAME TEXT)");
         db.execSQL("create table "+ TABLE_SURVEY_SECTION+" (SECTION_ID INTEGER, SURVEY_ID INTEGER, SECTION_TITLE TEXT, SECTION_DESC TEXT, SECTION_SUGGESTION TEXT)");
         db.execSQL("create table "+ TABLE_SECTION_GROUP+" (GROUP_ID INTEGER, SECTION_ID INTEGER, SURVEY_ID INTEGER, GROUP_TITLE TEXT, GROUP_DESC TEXT, GROUP_SUGGESTION TEXT ,FLAG TEXT)");
-        db.execSQL("create table "+ TABLE_SURVEY_QUESTION+" (QUESTION_ID INTEGER, SECTION_ID INTEGER, GROUP_ID INTEGER, SURVEY_ID INTEGER, QUESTION_TYPE TEXT, QUESTION_TEXT TEXT, QUESTION_SECTION_SUGGESTION TEXT,IS_OPTIONAL INTEGER, QUESTION_OPTION TEXT, QUESTION_ORDER TEXT, QUESTION_NO INTEGER,COMPARE_WITH TEXT, QUESTION_TIMER TEXT)");
+        db.execSQL("create table "+ TABLE_SURVEY_QUESTION+" (QUESTION_ID INTEGER, SECTION_ID INTEGER, GROUP_ID INTEGER, SURVEY_ID INTEGER, QUESTION_TYPE TEXT, QUESTION_TEXT TEXT, QUESTION_SECTION_SUGGESTION TEXT,IS_OPTIONAL INTEGER, QUESTION_OPTION TEXT, QUESTION_ORDER TEXT, QUESTION_NO INTEGER,COMPARE_WITH TEXT, QUESTION_TIMER TEXT, QUESTION_TITLE TEXT)");
         //db.execSQL("create table "+ TABLE_SURVEY_QUESTION_OPTION+" (OPTION_ID INTEGER, QUESTION_ID INTEGER, OPTION_DESC TEXT)");
         db.execSQL("create table "+ TABLE_SURVEY_ANSWER+" (ANSWER_ID INTEGER PRIMARY KEY AUTOINCREMENT, QUESTION_ID INTEGER, CLIENT_ID INTEGER, CLIENT_ID_TEMP INTEGER,ANSWER_TEXT TEXT, FLAG INTEGER,SURVEY_ID INTEGER,TYPE TEXT,PROJECT_CODE TEXT)");
         db.execSQL("create table "+TABLE_CLIENT_INFO+" (CLIENT_ID INTEGER, SURVEY_ID INTEGER)");
@@ -267,10 +269,14 @@ public class DataBaseHealper extends SQLiteOpenHelper {
         //getAnswerFromDB();
 
     }
-    public void deleteAnswerIfUpdated(String clientId){
+    public void deleteAnswerIfUpdated(String clientId,String survey_id){
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_SURVEY_ANSWER, "CLIENT_ID_TEMP =?", new String[]{clientId});
-        db.delete(TABLE_SURVEY_ANSWER, "CLIENT_ID =?", new String[]{clientId});
+        if (survey_id.equals("")){
+            db.delete(TABLE_SURVEY_ANSWER, "CLIENT_ID =? ", new String[]{clientId});
+        }else{
+            db.delete(TABLE_SURVEY_ANSWER, "CLIENT_ID =? AND SURVEY_ID =?", new String[]{clientId, survey_id});
+        }
     }
     public Boolean checkAnswerToupdate(){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -283,15 +289,17 @@ public class DataBaseHealper extends SQLiteOpenHelper {
             return false;
         }
     }
-    public Cursor getAnswerFromDB(String clientId,boolean flag){
+    public Cursor getAnswerFromDB(String surveyId,String clientId,boolean flag){
         SQLiteDatabase db = this.getWritableDatabase();
         String Query = "";
+        Cursor res;
         if(flag){
             Query = "SELECT * FROM " + TABLE_SURVEY_ANSWER + " WHERE CLIENT_ID_TEMP =?";
+            res = db.rawQuery(Query,new String[] {clientId}, null);
         }else{
-            Query = "SELECT * FROM " + TABLE_SURVEY_ANSWER + " WHERE CLIENT_ID =? ";
+            Query = "SELECT * FROM " + TABLE_SURVEY_ANSWER + " WHERE CLIENT_ID =? AND SURVEY_ID =? ";
+            res = db.rawQuery(Query,new String[] {clientId,surveyId}, null);
         }
-        Cursor res = db.rawQuery(Query,new String[] {clientId}, null);
         //Cursor res = db.rawQuery("select * from "+TABLE_SURVEY_ANSWER+" WHERE FLAG = 0", null,);
         return res;
     }
@@ -323,12 +331,24 @@ public class DataBaseHealper extends SQLiteOpenHelper {
         Cursor res = db.rawQuery("select DISTINCT CLIENT_ID from "+TABLE_SURVEY_ANSWER+" WHERE FLAG = 0 AND CLIENT_ID IS NOT NULL", null);
         return res;
     }
-    public Cursor getLanguageList(){
-
-        //insertDataSurveyList();
+    public ArrayList<String> selectExistingDistinctSameClientSurvey(String client_id){
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("select * from "+TABLE_LAUNGUAGE, null);
-        return res;
+
+        String Query = //"select * from "+TABLE_SURVEY_ANSWER+" WHERE FLAG = 0 AND CLIENT_ID =?";
+                "select DISTINCT SURVEY_ID from "+TABLE_SURVEY_ANSWER+" WHERE FLAG = 0 AND CLIENT_ID =?";
+        Cursor res1 = db.rawQuery(Query,new String[] {client_id}, null);
+        ArrayList<String> diffrentSurveyId = new ArrayList<String>();
+        res1.moveToFirst();
+        do{
+            diffrentSurveyId.add(res1.getString(0));
+        }while(res1.moveToNext());
+//        for(int i = 0;i<res1.getCount();i++){
+//            String value = res1.getString(6);
+//            value = value+res1.getString(3);
+//            Log.e("fvd",value);
+//        }
+        res1.close();
+        return diffrentSurveyId;
     }
 
     public void insertDataLanguage(JSONArray jArray) throws JSONException{
@@ -455,6 +475,7 @@ public class DataBaseHealper extends SQLiteOpenHelper {
             contentValue.put("QUESTION_NO",json_data.getString("question_no"));
             contentValue.put("COMPARE_WITH",json_data.getString("compare_with"));
             contentValue.put("QUESTION_TIMER",json_data.getString("question_timer"));
+            contentValue.put("QUESTION_TITLE",json_data.getString("question_title"));
 
             db.insert(TABLE_SURVEY_QUESTION,null,contentValue );
         }
@@ -530,6 +551,19 @@ public class DataBaseHealper extends SQLiteOpenHelper {
             return "";
         }
     }
+    public String getQuestionByQuestionOrderandSurveyId(String question_order,String surveyId){
+        Cursor csr1;
+        SQLiteDatabase db = this.getWritableDatabase();
+        String Query = "SELECT * FROM " + TABLE_SURVEY_QUESTION + " WHERE QUESTION_ORDER =? AND SURVEY_ID =? ";
+        csr1 = db.rawQuery(Query,new String[] {question_order,surveyId}, null);
+        if(csr1.getCount()>0) {
+            csr1.moveToFirst();
+            return csr1.getString(0);
+        }else{
+            return "0";
+        }
+    }
+
     public Cursor getQuestionByQuestionOrder(String question_order,String section_id){
         Cursor csr;
         SQLiteDatabase db = this.getWritableDatabase();

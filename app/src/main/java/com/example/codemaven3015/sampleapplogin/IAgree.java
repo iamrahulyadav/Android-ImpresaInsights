@@ -99,6 +99,10 @@ public class IAgree extends AppCompatActivity {
         else if(Iagree == 0){
             //do noting
             showMessage("Info","Please Select One Option");
+        }else if(Iagree == 2){
+            Intent i  = new Intent(IAgree.this,welcome.class);
+            i.putExtra("from","not_main");
+            startActivity(i);
         }
     }
 
@@ -145,7 +149,7 @@ public class IAgree extends AppCompatActivity {
         if(surveyDetails.length >0 ) {
             helloTextView.setText(surveyDetails[1]);
             textViewSurveyName.setText(surveyDetails[1]);
-            if((SurveyId.equals("4"))||(SurveyId.equals("5"))||(SurveyId.equals("7"))){
+            if(!(SurveyId.equals("1"))){
                 textView_desc.setText(surveyDetails[2]);
                radioIagreeActivity.setVisibility(View.INVISIBLE);
                 textViewtitle.setVisibility(View.GONE);

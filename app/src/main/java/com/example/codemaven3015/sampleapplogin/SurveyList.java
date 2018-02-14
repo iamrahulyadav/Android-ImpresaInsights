@@ -3,6 +3,7 @@ package com.example.codemaven3015.sampleapplogin;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -31,6 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public class SurveyList extends AppCompatActivity {
     DataBaseHealper myDB;
@@ -112,7 +114,24 @@ public class SurveyList extends AppCompatActivity {
                     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(MATCH_PARENT, heightButtonPxl);
                     layoutParams.height = heightButtonPxl;
                     btn.setTextSize(20);
-                    layoutParams.setMargins(marginLeftPxl, 0, marginLeftPxl, marginBottomPxl);
+                    if(str.equals("8")){
+                        TextView tvQuestion = new TextView(this);
+                        tvQuestion.setText("OPERATIONS MANAGER");
+                        LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
+                        tvQuestion.setTextColor(getResources().getColor(R.color.darkgrey));
+                        tvQuestion.setTypeface(Typeface.DEFAULT_BOLD);
+                        tvQuestion.setTextSize(20);
+                        tvQuestion.setTextColor(getResources().getColor(R.color.blue));
+                        layoutParams1.setMargins(marginLeftPxl, 0, 0, marginBottomPxl/2);
+                        tvQuestion.setLayoutParams(layoutParams1);
+                        ll.addView(tvQuestion);
+                        layoutParams.setMargins(marginLeftPxl+marginLeftPxl, 0, marginLeftPxl+marginLeftPxl, marginBottomPxl);
+                    }else if(str.equals("9")||str.equals("10")||str.equals("11")){
+                        layoutParams.setMargins(marginLeftPxl+marginLeftPxl, 0, marginLeftPxl+marginLeftPxl, marginBottomPxl);
+                    }else{
+                        layoutParams.setMargins(marginLeftPxl, 0, marginLeftPxl, marginBottomPxl);
+                    }
+
                     // btn.setPadding(marginPx,marginPx,marginPx,marginPx);
                     btn.setLayoutParams(layoutParams);
                     if (flagBtnColor) {

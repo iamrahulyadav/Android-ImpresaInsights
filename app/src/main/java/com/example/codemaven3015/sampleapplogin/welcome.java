@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.LinearGradient;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -317,14 +318,18 @@ public class welcome extends AppCompatActivity {
             if(newClient.getCount()>0) {
                 newClient.moveToFirst();
                 do{
-                answerAllUser.put(getAllDataWithAnswer(newClient.getString(0),true));
+                answerAllUser.put(getAllDataWithAnswer("1",newClient.getString(0),true));
             }while(newClient.moveToNext());
             }
             if(existingClient.getCount()>0) {
                 existingClient.moveToFirst();
                 do{
                     if(myDB.ifFlageisNottwo(existingClient.getString(0))) {
-                        answerAllUser.put(getAllDataWithAnswer(existingClient.getString(0), false));
+                        ArrayList<String> diffrentSurvey = myDB.selectExistingDistinctSameClientSurvey(existingClient.getString(0));
+                        for(int i = 0;i<diffrentSurvey.size();i++) {
+                            Log.e("Check",diffrentSurvey.get(i).toString());
+                            answerAllUser.put(getAllDataWithAnswer(diffrentSurvey.get(i),existingClient.getString(0), false));
+                        }
                     }
                 }while(existingClient.moveToNext());
             }
@@ -334,8 +339,8 @@ public class welcome extends AppCompatActivity {
 
         }
     }
-    public JSONObject getAllDataWithAnswer(String clientid,Boolean flag) throws JSONException {
-        Cursor ans = myDB.getAnswerFromDB(clientid,flag);
+    public JSONObject getAllDataWithAnswer(String surveyId,String clientid,Boolean flag) throws JSONException {
+        Cursor ans = myDB.getAnswerFromDB(surveyId,clientid,flag);
         String phone = "";
         String name = "";
         String projectCode = "";
@@ -513,7 +518,7 @@ public class welcome extends AppCompatActivity {
 
     }
     public void deleteUpgatedEntriesInAnswerTable(String clientId){
-        myDB.deleteAnswerIfUpdated(clientId);
+        myDB.deleteAnswerIfUpdated(clientId,"");
     }
     public void onClickLogout(View view){
 
